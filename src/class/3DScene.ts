@@ -1,6 +1,6 @@
 import * as THREE from "three";
 // make sure types work with the patched GLTF loader
-import { type GLTFLoader as TrueGLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+import { GLTFLoader as TrueGLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 // very hacky but it works to fix the shader bug...
 import { GLTFLoader } from "./3d/Custom_GLTFLoader";
 import CameraControls from "camera-controls";
@@ -24,7 +24,6 @@ import { multiplyTexture } from "./3d/canvas/multiplyTexture";
 import { HatType, HatTypeList } from "../constants/Extensions";
 import localforage from "localforage";
 import { traverseAddShader, traverseMesh } from "./3d/shader/ShaderUtils";
-import { RoomEnvironment } from "three/examples/jsm/Addons.js";
 import { getSetting } from "../util/SettingsHelper";
 
 export enum CameraPosition {
@@ -40,7 +39,7 @@ export class Mii3DScene {
   #camera: THREE.PerspectiveCamera;
   #controls: CameraControls;
   #textureLoader: THREE.TextureLoader;
-  #gltfLoader: TrueGLTFLoader;
+  #gltfLoader!: TrueGLTFLoader;
   #scene: THREE.Scene;
   #renderer: THREE.WebGLRenderer;
   #parent: HTMLElement;
@@ -92,12 +91,34 @@ export class Mii3DScene {
     this.setupType = setupType;
 
     getSetting("shaderType").then((type) => {
+      // glTF Loader hack only for FFL shader to force srgb-linear textures.
+      if (type === "lightDisabled" || type === "none") {
+        this.#gltfLoader = new GLTFLoader() as TrueGLTFLoader;
+      } else {
+        this.#gltfLoader = new TrueGLTFLoader();
+      }
+
       if (type === "none") {
-        // hack for some lighting
-        const pmremGen = new THREE.PMREMGenerator(this.#renderer);
-        const roomEnv = pmremGen.fromScene(new RoomEnvironment()).texture;
-        this.#scene.environment = roomEnv;
-        this.#scene.environmentIntensity = 0.6;
+        const cubeTextureLoader = new THREE.CubeTextureLoader();
+        const environmentMap = cubeTextureLoader.load([
+          "./cube_map.png", // px.png
+          "./cube_map.png", // nx.png
+          "./cube_map.png", // py.png
+          "./cube_map.png", // ny.png
+          "./cube_map.png", // pz.png
+          "./cube_map.png", // nz.png
+        ]);
+        this.#scene.environment = environmentMap;
+        this.#scene.environmentIntensity = 1.25;
+
+        const directionalLight = new THREE.DirectionalLight(0xebfeff, Math.PI);
+        directionalLight.position.set(1, 0.1, 1);
+        // directionalLight.visible = false;
+        this.#scene.add(directionalLight);
+
+        const ambientLight = new THREE.AmbientLight(0x666666, Math.PI / 16);
+        // ambientLight.visible = false;
+        this.#scene.add(ambientLight);
       } else if (type !== "lightDisabled") {
         this.#scene.environmentIntensity = 0;
       }
@@ -178,7 +199,6 @@ export class Mii3DScene {
     });
 
     this.#textureLoader = new THREE.TextureLoader();
-    this.#gltfLoader = new GLTFLoader() as TrueGLTFLoader;
 
     this.mii = mii;
 
@@ -770,6 +790,8 @@ export class Mii3DScene {
               ...params,
             } as unknown as any)
           );
+          //@ts-expect-error
+          window.GLB = GLB;
           this.mii.favoriteColor = favoriteColor;
 
           GLB.scene.name = "MiiHead";
@@ -785,6 +807,14 @@ export class Mii3DScene {
 
               hatModel.scene.name = "HatScene";
               let i = 0;
+              if (GLB.asset.extras.partsTransform.hatTranslate) {
+                const [x, y, z] = GLB.asset.extras.partsTransform.hatTranslate;
+                console.log(GLB.asset.extras.partsTransform.hatTranslate);
+                const vec = new THREE.Vector3(x, y, z);
+                hatModel.scene.position.add(vec);
+                //@ts-expect-error
+                window.hatModel = hatModel;
+              }
               hatModel.scene.traverse((o: any) => {
                 // "HatRoot" would be the name of the parent object to the hat if it is an armature
                 if (o.name === "HatScene" || o.name === "HatRoot") return;

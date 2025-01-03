@@ -85,21 +85,9 @@ export async function traverseMesh(node: THREE.Mesh, mpCharInfo: Mii) {
     modulateColor = new THREE.Vector4(...userData.modulateColor, 1);
   }
 
-  // Define macros based on the presence of textures
-  const defines: Record<string, any> = {};
-
-  // let tex: THREE.Texture | null = null;
-
-  THREE.ColorManagement.enabled = false;
-  if (originalMaterial.map) {
-    defines.USE_MAP = "";
-
-    // try to fix it some more.. lol
-    originalMaterial.map.colorSpace = THREE.LinearSRGBColorSpace;
-    originalMaterial.needsUpdate = true;
-  }
-
   if (shaderSetting === "none") {
+    THREE.ColorManagement.enabled = true;
+
     if (
       modulateType === cMaterialName.FFL_MODULATE_TYPE_SHAPE_MASK ||
       modulateType === cMaterialName.FFL_MODULATE_TYPE_SHAPE_NOSELINE
@@ -111,7 +99,8 @@ export async function traverseMesh(node: THREE.Mesh, mpCharInfo: Mii) {
         blending: THREE.CustomBlending,
         blendDstAlpha: THREE.OneFactor,
         transparent: originalMaterial.transparent,
-        alphaTest: originalMaterial.alphaTest,
+        alphaTest: 0.5,
+        reflectivity: 0,
       });
       node.material = nonShaderMaterial;
     } else {
@@ -130,6 +119,20 @@ export async function traverseMesh(node: THREE.Mesh, mpCharInfo: Mii) {
       node.material = nonShaderMaterial;
     }
     return;
+  }
+
+  // Define macros based on the presence of textures
+  const defines: Record<string, any> = {};
+
+  // let tex: THREE.Texture | null = null;
+
+  THREE.ColorManagement.enabled = false;
+  if (originalMaterial.map) {
+    defines.USE_MAP = "";
+
+    // try to fix it some more.. lol
+    originalMaterial.map.colorSpace = THREE.LinearSRGBColorSpace;
+    originalMaterial.needsUpdate = true;
   }
 
   // Function to Map FFLCullMode to three.js material side

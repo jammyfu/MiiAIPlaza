@@ -1,5 +1,8 @@
 @use "./wiiu.scss";
 
+$checkbox-unchecked: url("data:image/svg+xml,%3Csvg width='128' height='128' viewBox='0 0 128 128' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='128' height='128' rx='27' fill='%23FF5C4A'/%3E%3Cpath d='M88 40L40 88' stroke='white' stroke-width='14' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M40 40L88 88' stroke='white' stroke-width='14' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+$checkbox-checked: url("data:image/svg+xml,%3Csvg width='128' height='128' viewBox='0 0 128 128' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='128' height='128' rx='27' fill='%2300BF50'/%3E%3Cpath d='M100 38L50.5 88L28 65.2727' stroke='white' stroke-width='14' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+
 @font-face {
   font-family: "NTLG";
   src: url("../assets/fnt/NTLG.woff2");
@@ -346,6 +349,7 @@ $desktopWidth: 1280px;
 
 .flex-group {
   display: flex;
+  align-items: center;
   flex-wrap: wrap;
   gap: 0.5rem;
 }
@@ -411,6 +415,19 @@ input {
   }
   &[type="range"] {
     width: 100%;
+  }
+  // Hack for SVG checkbox icons.
+  &[type="checkbox"] {
+    width: 1.3rem;
+    height: 1.3rem;
+    appearance: none !important;
+    border-radius: 4px !important;
+    border: 0 !important;
+    background-size: cover !important;
+    background-image: $checkbox-unchecked !important;
+    &:checked {
+      background-image: $checkbox-checked !important;
+    }
   }
 }
 
@@ -507,7 +524,6 @@ input {
           min-height: 64px;
           padding: 8px;
           &.active {
-            background-color: var(--focus);
             box-shadow: 0 0 0 0.3rem var(--selection-color);
           }
         }
@@ -603,6 +619,9 @@ input {
       &.active {
         box-shadow: 0 0 0 0.3rem var(--selection-color);
       }
+    }
+    &.active {
+      background-color: var(--focus);
     }
     overflow: visible;
     position: relative;
@@ -703,6 +722,9 @@ input {
         align-items: center;
         border-right-width: 1px;
         &.active {
+          // Fully highlight selected option.
+          border-radius: 8px;
+          z-index: 1;
           background-color: var(--focus);
           box-shadow: 0 0 0 0.3rem var(--selection-color);
         }
@@ -746,17 +768,21 @@ input {
           // border: 0.1rem solid rgba(var(--stroke-rgb), 0.4);
         }
       }
-      @media screen and (prefers-color-scheme: dark) {
-        svg {
-          $distance: 1px;
-          $blur: 0;
-          $color: #666666;
-          filter: drop-shadow($distance 0px 0px $color)
-            drop-shadow((-$distance) 0px 0px $color)
-            drop-shadow(0px $distance 0px $color)
-            drop-shadow(0px (-$distance) 0px $color);
-        }
-      }
+    }
+  }
+}
+
+// Fix the dark-only drop shadow so it's only on normal theme.
+:root[data-theme="normal"] .tab-content .feature-set-group .feature-item {
+  @media screen and (prefers-color-scheme: dark) {
+    svg {
+      $distance: 1px;
+      $blur: 0;
+      $color: #666666;
+      filter: drop-shadow($distance 0px 0px $color)
+        drop-shadow((-$distance) 0px 0px $color)
+        drop-shadow(0px $distance 0px $color)
+        drop-shadow(0px (-$distance) 0px $color);
     }
   }
 }

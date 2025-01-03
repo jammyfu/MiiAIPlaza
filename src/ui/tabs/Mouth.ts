@@ -91,7 +91,7 @@ export function MouthTab(data: TabRenderInit) {
               soundStart: "scale_down",
               soundEnd: "scale_up",
               min: 0,
-              max: 7,
+              max: 8,
               part: RenderPart.Face,
             },
             {

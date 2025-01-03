@@ -335,19 +335,23 @@ export default class Mii {
   public extGlassColor!: number;
   public extGlassType!: number;
   // Extended extension data used in this app only
-  public extHatType!: number; // Hat type is currently unused
+  public extHatType!: number;
   public extHatColor!: number;
+  // currently reserved, will be optional common colors.
+  public extMiiC_v3_reserved1!: number;
+  public extMiiC_v3_reserved2!: number;
 
   public initBuffer!: Buffer;
 
   constructor(buffer: Buffer) {
-    this.isNfpStoreExtentionData = false;
+    this.isMiiCData = false;
     if (buffer.byteLength === 0x60) {
       this.bitStream = new ExtendedBitStream(
-        Buffer.concat([buffer, new Uint8Array(10)])
+        // 96 + 12 = 108 bytes total for allowing FFSD files to import into MiiC v3.
+        Buffer.concat([buffer, new Uint8Array(12)])
       );
     } else {
-      const bytesToAdd = 0x6a - buffer.byteLength;
+      const bytesToAdd = 0x6c - buffer.byteLength;
       let tmpBuf;
       if (bytesToAdd > 0) {
         tmpBuf = Buffer.concat([buffer, new Uint8Array(bytesToAdd)]);
@@ -355,13 +359,13 @@ export default class Mii {
         tmpBuf = buffer;
       }
       this.bitStream = new ExtendedBitStream(tmpBuf);
-      if (buffer.byteLength > 0x60) this.isNfpStoreExtentionData = true;
+      if (buffer.byteLength > 0x60) this.isMiiCData = true;
     }
     this.initBuffer = buffer;
     this.decode();
   }
 
-  isNfpStoreExtentionData!: boolean;
+  isMiiCData!: boolean;
 
   hasExtendedColors(): boolean {
     if (
@@ -388,15 +392,17 @@ export default class Mii {
           0x60,
           // FFSD + NfpStoreDataExtension
           0x68,
-          // FFSD + NfpStoreDataExtension + MiiCreatorDataExtension (Bugged)
+          // MiiC v1 (switch colors, hat color only)
           0x69,
-          // FFSD + NfpStoreDataExtension + MiiCreatorDataExtension
+          // MiiC v2 (switch colors, hat type and hat color)
           0x6a,
+          // MiiC v3 (switch colors, hats, and favorite/skin color)
+          0x6c,
         ]
       ),
       `Invalid Mii data size. Got ${
         this.bitStream.length / 8
-      }, expected 96 for FFSD, 104 for NfpStoreDataExtension, or 106 for MiiCreatorDataExtension`
+      }, expected 96 for FFSD, 104 for MiiC v1, or 106 for MiiC v2, or 108 for MiiC v3.`
     );
 
     // Value range and type checks
@@ -819,6 +825,12 @@ export default class Mii {
     if (this.bitStream.length / 8 > 0x69) {
       this.extHatColor = this.bitStream.readUint8();
     }
+    if (this.bitStream.length / 8 > 0x70) {
+      this.extMiiC_v3_reserved1 = this.bitStream.readUint8();
+    }
+    if (this.bitStream.length / 8 > 0x71) {
+      this.extMiiC_v3_reserved2 = this.bitStream.readUint8();
+    }
 
     if (this.extFacelineColor) this.trueSkinColor = this.extFacelineColor;
     if (this.extHairColor) this.trueHairColor = this.extHairColor;
@@ -942,6 +954,9 @@ export default class Mii {
     // Some custom CUSTOM data
     this.bitStream.writeUint8(this.extHatType);
     this.bitStream.writeUint8(this.extHatColor);
+    // currently reserved, will be common colors
+    this.bitStream.writeUint8(this.extMiiC_v3_reserved1);
+    this.bitStream.writeUint8(this.extMiiC_v3_reserved2);
 
     // console.log(
     //   "Wrote 8 extra bytes for NfpStoreDataExtention:",

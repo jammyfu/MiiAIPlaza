@@ -43,21 +43,32 @@ export const settingsInfo: Record<string, any> = {
     type: "checkbox",
     label: "Background Music",
     default: true,
+    description: "Toggle background music depending on the theme."
   },
   sfx: {
     type: "checkbox",
     label: "Sound Effects",
     default: true,
+    description: "Toggle sound effects for buttons and inputs."
   },
   wiiu: {
     type: "checkbox",
     label: "Enable Wii U theme",
     default: false,
+    description:
+      "When this is disabled, your device's color theme preferences will be used.",
   },
   cameraPan: {
     type: "checkbox",
     label: "Static camera in editor",
     default: false,
+    description: "The camera will be further away in the editor and cannot be moved."
+  },
+  autoCloseCustomRender: {
+    type: "checkbox",
+    label: "Auto-close custom render menu",
+    default: true,
+    description: "The custom render menu will automatically close when pressing save."
   },
   editMode: {
     type: "multi",
@@ -72,14 +83,15 @@ export const settingsInfo: Record<string, any> = {
   shaderType: {
     type: "multi",
     label: "Shader Type",
-    description: "Sorry that most of the shaders are not yet ready for use.",
+    description:
+      "Sorry that most of the shaders are not yet ready for use.\nUsing the Simple shader brings back the old simplistic Mii Creator lighting from the early days.",
     default: "wiiu",
     choices: [
       { label: "No Lighting", value: "lightDisabled" },
       { label: "Simple", value: "none" },
       { label: "Wii U (default)", value: "wiiu" },
       { label: "Switch (WIP)", value: "switch", disabled: true },
-      { label: "Miitomo", value: "miitomo", disabled: true },
+      { label: "Miitomo (WIP)", value: "miitomo", disabled: true },
     ],
   },
   bodyModel: {
@@ -230,6 +242,11 @@ export async function Settings() {
               .text(settingsInfo[key].label)
           )
         );
+        if (settingsInfo[key].description) {
+          modalBody.append(
+            new Html("small").text(settingsInfo[key].description)
+          );
+        }
         break;
       case "multi":
         const val = await localforage.getItem(prefixedKey);

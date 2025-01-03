@@ -35,7 +35,7 @@ Some of the custom hat models are provided by the Models Resource:
 - [Top Hat](https://www.models-resource.com/nintendo_switch/supersmashbrosultimate/model/30314/)
 - [Ribbon & Bow](https://www.models-resource.com/3ds/nintendogscats/model/30239/)
 
-Thanks to timtodile for creating the new hat models:
+Thanks to [Timimimi](https://github.com/Timiimiimii) for creating the new hat models:
 
 - Cat Ears
 - Hijab

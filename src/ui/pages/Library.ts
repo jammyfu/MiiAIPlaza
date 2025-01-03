@@ -41,14 +41,14 @@ export const savedMiiCount = async () =>
   (await localforage.keys()).filter((k) => k.startsWith("mii-")).length;
 export const newMiiId = async () =>
   `mii-${Date.now()}-${await savedMiiCount()}`;
-export const miiIconUrl = (mii: Mii) =>
+export const miiIconUrl = (mii: Mii, library: boolean = true) =>
   `${Config.renderer.renderHeadshotURLNoParams}?data=${mii
     .encodeStudio()
     .toString(
       "hex"
     )}&shaderType=0&type=variableiconbody&width=180&verifyCharInfo=0&miic=${encodeURIComponent(
     mii.encode().toString("base64")
-  )}`;
+  )}&source=${library ? "library" : "lookalike"}`;
 
 export async function Library(highlightMiiId?: string) {
   function shutdown(): Promise<void> {
@@ -315,6 +315,7 @@ const miiCreateDialog = (shutdown: Function) => {
 
                   await localforage.setItem(id, miiDataToSave);
 
+                  shutdown();
                   modal.qs(".modal-body button")!.elm.click();
                 } catch (e) {
                   Modal.alert("Error", `Invalid Mii data: ${e}`);
@@ -375,7 +376,7 @@ const miiCreatePNID = async (shutdown: Function) => {
   Loader.show();
 
   let pnid = await fetch(
-      Config.dataFetch.pnidFetchURL(encodeURIComponent(input))
+    Config.dataFetch.pnidFetchURL(encodeURIComponent(input))
   );
 
   Loader.hide();
@@ -396,9 +397,9 @@ const miiCreatePNID = async (shutdown: Function) => {
 };
 const miiCreateRandom = async (shutdown: Function) => {
   Loader.show();
-  let random = await fetch(
-    Config.dataFetch.nnidRandomURL
-  ).then((j) => j.json());
+  let random = await fetch(Config.dataFetch.nnidRandomURL).then((j) =>
+    j.json()
+  );
   Loader.hide();
 
   shutdown();
@@ -429,7 +430,7 @@ const miiCreateRandomFFL = async (shutdown: Function) => {
     FFLiDatabaseRandom_Get(randomMii);
 
     let button = new Html("button")
-      .append(new Html("img").attr({ src: miiIconUrl(randomMii) }))
+      .append(new Html("img").attr({ src: miiIconUrl(randomMii, false) }))
       .appendTo(container);
 
     const randomMiiB64 = randomMii.encode().toString("base64");
@@ -910,6 +911,7 @@ export async function customRender(miiData: Mii) {
       configuration = mii as any;
       updateConfiguration();
       console.log("updated", configuration);
+      oldConfiguration = Object.assign({}, configuration);
     },
   })
     .style({ height: "auto" })
@@ -926,7 +928,8 @@ export async function customRender(miiData: Mii) {
     .appendTo(tabsContent);
 
   window.addEventListener("resize", () => {
-    scene.resize();
+    const { width, height } = parentBox.elm.getBoundingClientRect();
+    scene.resize(width, height);
   });
 
   const scene = new Mii3DScene(
@@ -960,12 +963,16 @@ export async function customRender(miiData: Mii) {
         break;
     }
 
-    scene.traverseAddFaceMaterial(
-      scene.getHead() as Mesh,
-      `&data=${encodeURIComponent(base64Data)}&expression=${
-        configuration.expression
-      }&width=896&verifyCharInfo=0`
-    );
+    // Only update expression when expression is changed.
+    console.log(oldConfiguration.expression, configuration.expression);
+    if (oldConfiguration.expression !== configuration.expression) {
+      scene.traverseAddFaceMaterial(
+        scene.getHead() as Mesh,
+        `&data=${encodeURIComponent(base64Data)}&expression=${
+          configuration.expression
+        }&width=896&verifyCharInfo=0`
+      );
+    }
 
     const pose = "Pose." + String(configuration.pose).padStart(2, "0");
 
@@ -974,15 +981,13 @@ export async function customRender(miiData: Mii) {
     } else {
       scene.swapAnimation("Wait");
     }
-
-    oldConfiguration = configuration;
   }
 
   //@ts-expect-error
   window.scene = scene;
 
   scene.init().then(() => {
-    scene.updateBody();
+    scene.updateMiiHead();
     scene.focusCamera(CameraPosition.MiiFullBody, true, false);
     parentBox.append(scene.getRendererElement());
   });
