@@ -6,8 +6,7 @@ import EditorIcons from "../constants/EditorIcons";
 import { CameraPosition, Mii3DScene } from "./3DScene";
 import { EyeTab } from "../ui/tabs/Eye";
 import { HeadTab } from "../ui/tabs/Head";
-import type { TabBase, TabRenderInit } from "../constants/TabRenderType";
-import { EmptyTab } from "../ui/tabs/Empty";
+import type { TabBase } from "../constants/TabRenderType";
 import { MiscTab } from "../ui/tabs/Misc";
 import { NoseTab } from "../ui/tabs/Nose";
 import { FavoriteColorTab } from "../ui/tabs/FavoriteColor";
@@ -18,9 +17,6 @@ import {
   MiiFavoriteColorIconTable,
   MiiFavoriteColorLookupTable,
   MiiGlassesColorIconTable,
-  MiiHairColorTable,
-  MiiMouthColorLipTable,
-  MiiMouthColorTable,
   SwitchMiiColorTable,
   SwitchMiiColorTableLip,
 } from "../constants/ColorTables";
@@ -32,7 +28,6 @@ import { FacialHairTab } from "../ui/tabs/FacialHair";
 import { MoleTab } from "../ui/tabs/Mole";
 import { EyebrowTab } from "../ui/tabs/Eyebrow";
 import { GlassesTab } from "../ui/tabs/Glasses";
-import localforage from "localforage";
 import { Config } from "../config";
 import { OptionsTab } from "../ui/tabs/Options";
 import { ExtHatTab } from "../ui/tabs/ExtHat";

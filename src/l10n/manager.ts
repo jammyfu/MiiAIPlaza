@@ -14,7 +14,6 @@ try {
   console.log("error");
 }
 
-
 export const langManager = {
   async setLanguage(lang: string) {
     try {

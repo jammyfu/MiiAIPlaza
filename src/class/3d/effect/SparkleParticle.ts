@@ -10,7 +10,13 @@ export class SparkleParticle {
   geometry!: THREE.BufferGeometry<THREE.NormalBufferAttributes>;
   material!: THREE.PointsMaterial;
   particles!: THREE.Points<any, any, THREE.Object3DEventMap>;
-  constructor(scene: any, position: any, texture: any, duration = 0.2, particleCount = 6) {
+  constructor(
+    scene: any,
+    position: any,
+    texture: any,
+    duration = 0.2,
+    particleCount = 6
+  ) {
     this.scene = scene;
     this.position = position;
     this.texture = texture;
@@ -34,28 +40,28 @@ export class SparkleParticle {
     for (let i = 0; i < this.particleCount; i++) {
       let validPosition = false;
       let x, y, z;
-    
+
       while (!validPosition) {
         x = this.position.x + Math.random() * 5 - 2.5;
         y = this.position.y + Math.random() * 6.5 - 2.5;
         z = this.position.z + Math.random() * 5 - 2.5;
-    
+
         validPosition = true;
-    
+
         // Check distance from the new particle to all previously placed particles
         for (let j = 0; j < i; j++) {
           const dx = x - positions[j * 3]!;
           const dy = y - positions[j * 3 + 1]!;
           const dz = z - positions[j * 3 + 2]!;
           const distance = Math.sqrt(dx * dx + dy * dy + dz * dz);
-    
+
           if (distance < minDistance) {
             validPosition = false;
             break;
           }
         }
       }
-    
+
       positions.push(x, y, z);
       sizes.push(Math.random() * 5 + 0.1); // Random size for the sparkle
     }

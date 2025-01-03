@@ -2,7 +2,6 @@ import Mii from "./external/mii-js/mii";
 import { Buffer as Buf } from "../node_modules/buffer/index";
 import { setupUi } from "./ui/setup";
 import { MiiEditor } from "./class/MiiEditor";
-import { Library } from "./ui/pages/Library";
 import LazyLoad, { type ILazyLoadInstance } from "vanilla-lazyload";
 import { langManager } from "./l10n/manager";
 

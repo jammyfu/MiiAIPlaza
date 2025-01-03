@@ -12,7 +12,6 @@ import {
   ToVer3GlassColorTable,
   ToVer3GlassTypeTable,
   ToVer3HairColorTable,
-  ToVer3MouthColorTable,
 } from "../../constants/ColorTables";
 
 const STUDIO_RENDER_URL_BASE = Config.renderer.baseURL;

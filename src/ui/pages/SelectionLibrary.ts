@@ -350,9 +350,9 @@ const miiCreatePNID = async () => {
 };
 const miiCreateRandom = async () => {
   Loader.show();
-  let random = await fetch(
-    Config.dataFetch.nnidRandomURL
-  ).then((j) => j.json());
+  let random = await fetch(Config.dataFetch.nnidRandomURL).then((j) =>
+    j.json()
+  );
   Loader.hide();
 
   new MiiEditor(

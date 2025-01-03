@@ -3,16 +3,11 @@ import {
   MiiPagedFeatureSet,
 } from "../components/MiiPagedFeatureSet";
 import EditorIcons from "../../constants/EditorIcons";
-import {
-  MiiHairColorTable,
-  SwitchMiiColorTable,
-} from "../../constants/ColorTables";
+import { SwitchMiiColorTable } from "../../constants/ColorTables";
 import type { TabRenderInit } from "../../constants/TabRenderType";
 import { ArrayNum } from "../../util/NumberArray";
 import { RenderPart } from "../../class/MiiEditor";
 import {
-  makeHeaderFSI,
-  makeSeparator,
   makeSeparatorFSI,
   MiiHairTable,
   MiiSwitchColorTable,

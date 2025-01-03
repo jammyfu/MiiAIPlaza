@@ -6,13 +6,7 @@ import { Input } from "../components/Input";
 import Mii from "../../external/mii-js/mii";
 import Modal from "../components/Modal";
 import { AddButtonSounds } from "../../util/AddButtonSounds";
-import {
-  FeatureSetType,
-  MiiPagedFeatureSet,
-} from "../components/MiiPagedFeatureSet";
-import EditorIcons from "../../constants/EditorIcons";
 import { getMii, RenderPart } from "../../class/MiiEditor";
-import { Config } from "../../config";
 
 export function MiscTab(data: TabRenderInit) {
   let tmpMii = new Mii(data.mii.encode());

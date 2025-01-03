@@ -1,5 +1,5 @@
 // unused for now, not ported to three.js yet
-export default /*glsl*/`
+export default /*glsl*/ `
 #define AGX_FEATURE_ALBEDO_TEXTURE
 #define AGX_FEATURE_MII
 /**

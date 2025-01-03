@@ -1,10 +1,7 @@
 // These convert the actual indices into the positions used on the UI
 
 import Html from "@datkat21/html";
-import {
-  FeatureSetType,
-  type FeatureSetMiscItem,
-} from "../ui/components/MiiPagedFeatureSet";
+import { FeatureSetType } from "../ui/components/MiiPagedFeatureSet";
 
 // for example to be used with the CSS order property.
 export const MiiEyeTable: Record<number, number> = {

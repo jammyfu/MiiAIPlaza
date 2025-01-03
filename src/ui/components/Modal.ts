@@ -1,5 +1,4 @@
 import Html from "@datkat21/html";
-import { playSound } from "../../class/audio/SoundManager";
 import { AddButtonSounds } from "../../util/AddButtonSounds";
 
 export type ModalButton = {

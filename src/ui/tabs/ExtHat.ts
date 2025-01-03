@@ -2,11 +2,9 @@ import {
   FeatureSetType,
   MiiPagedFeatureSet,
 } from "../components/MiiPagedFeatureSet";
-import EditorIcons from "../../constants/EditorIcons";
 import type { TabRenderInit } from "../../constants/TabRenderType";
 import { ArrayNum } from "../../util/NumberArray";
 import { RenderPart } from "../../class/MiiEditor";
-import type Mii from "../../external/mii-js/mii";
 import { MiiFavoriteColorLookupTable } from "../../constants/ColorTables";
 import { numToHex } from "../../util/NumberToHexString";
 

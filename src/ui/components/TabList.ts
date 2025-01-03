@@ -1,5 +1,4 @@
 import Html from "@datkat21/html";
-import gsap from "gsap";
 import { AddButtonSounds } from "../../util/AddButtonSounds";
 
 export interface Tab {

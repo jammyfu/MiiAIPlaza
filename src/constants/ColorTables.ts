@@ -9,7 +9,6 @@ export type MiiLookupTableSpecial = Record<
 >;
 export type MiiLookupTableColor = Record<number, any>;
 
-
 export const MiiFavoriteColorLookupTable: MiiLookupTableHex = {
   /** Red */
   0: 0xd21e14,

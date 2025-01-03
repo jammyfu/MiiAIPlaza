@@ -1,18 +1,9 @@
-import Mii from "../../external/mii-js/mii";
 import { AddButtonSounds } from "../../util/AddButtonSounds";
-import { Button } from "../components/Button";
-import {
-  FeatureSetType,
-  MiiPagedFeatureSet,
-} from "../components/MiiPagedFeatureSet";
 import Modal from "../components/Modal";
-import { Buffer as Buf } from "../../../node_modules/buffer/index";
-import { RenderPart } from "../../class/MiiEditor";
 import Html from "@datkat21/html";
 import localforage from "localforage";
 import { getMusicManager } from "../../class/audio/MusicManager";
 import { getSoundManager } from "../../class/audio/SoundManager";
-import { Library } from "./Library";
 
 export const updateSettings = async (force: boolean = false) => {
   // Background Music
@@ -43,13 +34,13 @@ export const settingsInfo: Record<string, any> = {
     type: "checkbox",
     label: "Background Music",
     default: true,
-    description: "Toggle background music depending on the theme."
+    description: "Toggle background music depending on the theme.",
   },
   sfx: {
     type: "checkbox",
     label: "Sound Effects",
     default: true,
-    description: "Toggle sound effects for buttons and inputs."
+    description: "Toggle sound effects for buttons and inputs.",
   },
   wiiu: {
     type: "checkbox",
@@ -62,13 +53,15 @@ export const settingsInfo: Record<string, any> = {
     type: "checkbox",
     label: "Static camera in editor",
     default: false,
-    description: "The camera will be further away in the editor and cannot be moved."
+    description:
+      "The camera will be further away in the editor and cannot be moved.",
   },
   autoCloseCustomRender: {
     type: "checkbox",
     label: "Auto-close custom render menu",
     default: true,
-    description: "The custom render menu will automatically close when pressing save."
+    description:
+      "The custom render menu will automatically close when pressing save.",
   },
   editMode: {
     type: "multi",

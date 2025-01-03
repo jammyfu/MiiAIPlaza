@@ -1,5 +1,3 @@
-let promiseList = new Map<string, Promise<string | false>>();
-
 function makeFrame(params: string, fullscreen: boolean) {
   const frame = document.createElement("iframe");
   if (fullscreen) {

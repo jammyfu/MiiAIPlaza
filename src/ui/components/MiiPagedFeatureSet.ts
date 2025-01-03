@@ -4,7 +4,6 @@ import { TabList, TabListType, type Tab } from "./TabList";
 import md5 from "md5";
 import { playSound } from "../../class/audio/SoundManager";
 import { RenderPart } from "../../class/MiiEditor";
-import { Input } from "./Input";
 
 export enum FeatureSetType {
   Icon,
