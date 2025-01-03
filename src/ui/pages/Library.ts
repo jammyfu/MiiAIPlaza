@@ -555,13 +555,41 @@ const miiEdit = (mii: MiiLocalforage, shutdown: () => any, miiData: Mii) => {
       },
       {
         text: "Delete",
-        callback() {
+        async callback() {
+          let scaredIcon: Blob,
+            fearfulIcon: Blob,
+            reliefIcon: Blob,
+            scaredIconURL: string,
+            fearfulIconURL: string,
+            reliefIconURL: string;
+
+          scaredIcon = await (
+            await fetch(miiIconUrl(miiData) + "&expression=10")
+          ).blob();
+          fearfulIcon = await (
+            await fetch(miiIconUrl(miiData) + "&expression=30")
+          ).blob();
+          reliefIcon = await (
+            await fetch(miiIconUrl(miiData) + "&expression=1")
+          ).blob();
+
+          scaredIconURL = URL.createObjectURL(scaredIcon);
+          fearfulIconURL = URL.createObjectURL(fearfulIcon);
+          reliefIconURL = URL.createObjectURL(reliefIcon);
+
+          function release() {
+            URL.revokeObjectURL(scaredIconURL);
+            URL.revokeObjectURL(fearfulIconURL);
+            URL.revokeObjectURL(reliefIconURL);
+          }
+
           let tmpDeleteModal = Modal.modal(
             "Warning",
-            "Are you sure you want to delete this Mii?",
+            `Are you sure you want to delete ${miiData.miiName}?`,
             "body",
             {
               async callback(e) {
+                release();
                 await localforage.removeItem(mii.id);
                 await shutdown();
                 Library();
@@ -571,34 +599,37 @@ const miiEdit = (mii: MiiLocalforage, shutdown: () => any, miiData: Mii) => {
             },
             {
               callback(e) {
-                /* ... */
+                release();
               },
               text: "No",
             }
           );
 
+          // center
+          tmpDeleteModal.qs(".modal-body")!.classOn("flex-group");
+
           const scaredMiiImage = new Html("img")
             // surprised with open mouth expression
-            .attr({ src: miiIconUrl(miiData) + "&expression=10" })
+            .attr({ src: scaredIconURL })
             .style({ width: "180px", margin: "-18px auto 0 auto" });
 
-          tmpDeleteModal.qs(".modal-body")?.prepend(scaredMiiImage);
+          tmpDeleteModal.qs(".modal-body")!.prepend(scaredMiiImage);
           tmpDeleteModal.qsa("button")!.forEach((item) => {
             const yes = item?.elm.classList.contains("danger");
             item!.on("pointerenter", () => {
               if (yes) {
                 scaredMiiImage.attr({
-                  src: miiIconUrl(miiData) + "&expression=30",
+                  src: fearfulIconURL,
                 });
               } else {
                 scaredMiiImage.attr({
-                  src: miiIconUrl(miiData) + "&expression=1",
+                  src: reliefIconURL,
                 });
               }
             });
             item!.on("pointerleave", () => {
               scaredMiiImage.attr({
-                src: miiIconUrl(miiData) + "&expression=10",
+                src: scaredIconURL,
               });
             });
           });
