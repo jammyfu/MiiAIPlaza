@@ -543,6 +543,19 @@ const miiColorConversionWarning = async (miiData: Mii) => {
   return true;
 };
 
+const miiFFSDWarning = async (miiData: Mii) => {
+  if (miiData.hasExtendedColors() === true) {
+    let result = await Modal.prompt(
+      "Warning",
+      "This Mii is using extended Switch colors and/or MiiCreator features, but those colors will be lost when converting to FFSD. Is this OK?",
+      "body",
+      false
+    );
+    if (result === false) return false;
+  }
+  return true;
+};
+
 const miiExport = (mii: MiiLocalforage, miiData: Mii) => {
   Modal.modal(
     "Mii Export",
@@ -701,7 +714,7 @@ const miiExportDownload = async (mii: MiiLocalforage, miiData: Mii) => {
     {
       text: "Download FFSD file",
       async callback() {
-        if (!(await miiColorConversionWarning(miiData))) return;
+        if (!(await miiFFSDWarning(miiData))) return;
         const blob = new Blob([miiData.encodeFFSD()]);
         const url = URL.createObjectURL(blob);
 
