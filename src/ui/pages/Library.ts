@@ -22,6 +22,7 @@ import {
 import { downloadLink, saveArrayBuffer } from "../../util/downloadLink";
 import { ArrayNum } from "../../util/NumberArray";
 import {
+  Material,
   MeshStandardMaterial,
   type Mesh,
   type ShaderMaterial,
@@ -1097,6 +1098,8 @@ export async function customRender(miiData: Mii) {
     parentBox.append(scene.getRendererElement());
   });
 
+  let shouldClose = await getSetting("autoCloseCustomRender");
+
   const rendererElm = scene.getRendererElement();
 
   function finalizeRender() {
@@ -1109,9 +1112,11 @@ export async function customRender(miiData: Mii) {
           image.src,
           `${miiData.miiName}_all_body_${new Date().toJSON()}.png`
         );
-        scene.shutdown();
-        parent.cleanup();
-        modal.qs("button")?.elm.click();
+        if (shouldClose) {
+          scene.shutdown();
+          parent.cleanup();
+          modal.qs("button")?.elm.click();
+        }
       };
     });
   }
@@ -1119,10 +1124,14 @@ export async function customRender(miiData: Mii) {
   async function save3DModel() {
     const shaderSetting = await getSetting("shaderType");
     // Firstly, fix up the materials?
+    let i = 0;
+    let mats = new Map<number, any>();
     scene.getScene().traverse((o) => {
       if ((o as Mesh).isMesh !== true) return;
 
       const m = o as Mesh;
+
+      mats.set(i, m.material);
 
       console.log(m.name, m.geometry.userData);
 
@@ -1166,6 +1175,8 @@ export async function customRender(miiData: Mii) {
         alphaTest: 0.5,
         map: map,
       });
+
+      i++;
     });
 
     const exporter = new GLTFExporter();
@@ -1179,9 +1190,23 @@ export async function customRender(miiData: Mii) {
             `${miiData.miiName}_all_body_${new Date().toJSON()}.glb`
           );
         }
-        scene.shutdown();
-        parent.cleanup();
-        modal.qs("button")?.elm.click();
+        if (shouldClose) {
+          scene.shutdown();
+          parent.cleanup();
+          modal.qs("button")?.elm.click();
+        } else {
+          // Revert back all materials.
+          i = 0;
+          scene.getScene().traverse((o) => {
+            if ((o as Mesh).isMesh !== true) return;
+
+            const m = o as Mesh;
+
+            m.material = mats.get(i);
+
+            i++;
+          });
+        }
       },
       (error) => {
         console.error("Oops, something went wrong:", error);
