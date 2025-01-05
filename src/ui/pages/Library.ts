@@ -873,7 +873,7 @@ const miiExportDownload = async (mii: MiiLocalforage, miiData: Mii) => {
     {
       text: "Show other raw data formats",
       async callback() {
-        if (!(await miiColorConversionWarning(miiData))) return;
+        if (!(await miiFFSDWarning(miiData))) return;
         const modal = Modal.modal(
           "Miscellaneous Output Formats",
           "Click inside a code block to select it.",
