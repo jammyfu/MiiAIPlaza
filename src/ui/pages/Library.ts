@@ -62,14 +62,22 @@ export const miiIconUrl = (
   width: number = 180
 ) => {
   let url = Config.renderer.renderHeadshotURLNoParams;
+
   let params = new URLSearchParams();
 
   params.set("data", mii.encodeStudio().toString("hex"));
   switch (currentShader) {
     case "wiiu":
+    case "wiiu_gloss":
       params.set("shaderType", "0");
       break;
     case "none":
+    case "wiiu_blinn":
+      params.set("shaderType", "3");
+      break;
+    case "wiiu_ffliconwithbody":
+      params.set("shaderType", "4");
+      break;
     case "switch":
       params.set("shaderType", "1");
       break;

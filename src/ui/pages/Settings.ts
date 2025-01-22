@@ -70,7 +70,11 @@ export const updateSettings = async (force: boolean = false) => {
             params.set("shaderType", "0");
             break;
           case "none":
+          case "wiiu_blinn":
             params.set("shaderType", "3");
+            break;
+          case "wiiu_ffliconwithbody":
+            params.set("shaderType", "4");
             break;
           case "switch":
             params.set("shaderType", "1");
@@ -78,6 +82,7 @@ export const updateSettings = async (force: boolean = false) => {
           case "miitomo":
             params.set("shaderType", "2");
             break;
+          case "lightDisabled":
             params.set("shaderType", "0");
             params.set("lightEnable", "0");
             break;
@@ -205,7 +210,10 @@ export const settingsInfo: Record<string, any> = {
     choices: [
       { label: "No Lighting", value: "lightDisabled" },
       { label: "Simple", value: "none" },
-      { label: "Wii U (default)", value: "wiiu" },
+      { label: "Glossy", value: "wiiu_gloss" },
+      { label: "Wii U (Default)", value: "wiiu" },
+      { label: "Wii U (Blinn)", value: "wiiu_blinn" },
+      { label: "Wii U (Alt)", value: "wiiu_ffliconwithbody" },
       { label: "Switch (WIP)", value: "switch", disabled: true },
       { label: "Miitomo (WIP)", value: "miitomo", disabled: true },
     ],

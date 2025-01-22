@@ -16,7 +16,7 @@ export const Config = {
     renderHeadshotURLNoParams: `${baseURL}.png`,
     renderFullBodyURL: `${baseURL}.png?shaderType=0&type=all_body_sugar&width=420&verifyCharInfo=0&scale=1`,
     render3DHeadURL: `${baseURL}.glb?shaderType=0&type=face&width=260&verifyCharInfo=0`,
-    renderFaceURL: `${baseURL}.png?scale=1&drawStageMode=mask_only`,
+    renderFaceURL: `${baseURL}.png?scale=1&drawStageMode=mask_only&verifyCharInfo=0`,
   },
   dataFetch: {
     // For fetching data from various sources.
