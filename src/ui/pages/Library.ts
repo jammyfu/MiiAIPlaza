@@ -2140,8 +2140,6 @@ export async function customRender(miiData: Mii) {
           const canvas = document.createElement("canvas");
           const context = canvas.getContext("2d")!;
 
-          document.body.appendChild(canvas);
-
           // Set canvas dimensions
           canvas.width = map.image.width;
           canvas.height = map.image.height;
