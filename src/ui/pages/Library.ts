@@ -61,13 +61,71 @@ export const miiIconUrl = (
   let params = new URLSearchParams();
 
   params.set("data", mii.encodeStudio().toString("hex"));
+  switch (currentShader) {
+    case "wiiu":
+      params.set("shaderType", "0");
+      break;
+    case "none":
+    case "switch":
+      params.set("shaderType", "1");
+      break;
+    case "miitomo":
+      params.set("shaderType", "2");
+      break;
+    case "lightDisabled":
+      params.set("shaderType", "0");
+      params.set("lightEnable", "0");
+      break;
+  }
+  params.set("bodyType", currentBodyModel);
+  params.set("type", view);
+  params.set("width", width.toString());
+  params.set("verifyCharInfo", "0");
+  params.set("miic", encodeURIComponent(mii.encode().toString("base64")));
+  params.set("version", Config.version.string);
+  params.set("source", library ? "library" : "lookalike");
+  params.set(
+    "pantsColor",
+    mii.normalMii === false ? "gold" : mii.favorite === true ? "red" : "gray"
+  );
+
+  if (mii.extHatType !== 0) {
+    params.set("hatType", String(mii.extHatType));
+  }
+  if (mii.extHatColor !== 0) {
+    params.set("hatColor", String(mii.extHatColor));
+  }
+
+  // params.set(
+  //   "lightXDirection",
+  //   "0"
+  // );
+  // params.set(
+  //   "lightYDirection",
+  //   "0"
+  // );
+  // params.set(
+  //   "lightZDirection",
+  //   "57"
+  // );
+
   return `${url}?${params.toString()}`;
 };
 
+let currentShader: string = "wiiu";
+document.addEventListener("library-shader-update", async () => {
+  currentShader = await getSetting("shaderType");
+});
+let currentBodyModel: string = "wiiu";
+document.addEventListener("library-body-update", async () => {
+  currentBodyModel = await getSetting("bodyModel");
+});
 let shutdown: () => any = () => {
   console.log("Shutdown was called but was not set yet!");
 };
 export async function Library(highlightMiiId?: string) {
+  currentShader = await getSetting("shaderType");
+  currentBodyModel = await getSetting("bodyModel");
   function shutdownReal(): Promise<void> {
     return new Promise((resolve) => {
       container.class("fadeOut");

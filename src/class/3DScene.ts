@@ -784,6 +784,7 @@ export class Mii3DScene {
                 break;
             }
           }
+          params["verifyCharInfo"] = "0";
           const GLB = await this.#gltfLoader.loadAsync(
             tmpMii.studioUrl({
               ext: "glb",

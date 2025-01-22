@@ -338,8 +338,8 @@ export default class Mii {
   public extHatType!: number;
   public extHatColor!: number;
   // currently reserved, will be optional common colors.
-  public extMiiC_v3_reserved1!: number;
-  public extMiiC_v3_reserved2!: number;
+  public extFacePaintColor!: number;
+  public extShirtColor!: number;
 
   public initBuffer!: Buffer;
 
@@ -522,8 +522,12 @@ export default class Mii {
       `Invalid Mii face type. Got ${this.faceType}, expected 0-11`
     );
     assert.ok(
-      Util.inRange(this.skinColor, Util.range(10)),
+      Util.inRange(this.skinColor, Util.range(1000)),
       `Invalid Mii skin color. Got ${this.skinColor}, expected 0-10`
+    );
+    assert.ok(
+      Util.inRange(this.extFacePaintColor, Util.range(110)),
+      `Invalid Mii face paint color. Got ${this.skinColor}, expected 0-109`
     );
     assert.ok(
       Util.inRange(this.wrinklesType, Util.range(12)),
@@ -825,11 +829,15 @@ export default class Mii {
     if (this.bitStream.length / 8 > 0x69) {
       this.extHatColor = this.bitStream.readUint8();
     }
-    if (this.bitStream.length / 8 > 0x70) {
-      this.extMiiC_v3_reserved1 = this.bitStream.readUint8();
+    if (this.bitStream.length / 8 > 0x6a) {
+      this.extFacePaintColor = this.bitStream.readUint8();
+    } else {
+      this.extFacePaintColor = 0;
     }
-    if (this.bitStream.length / 8 > 0x71) {
-      this.extMiiC_v3_reserved2 = this.bitStream.readUint8();
+    if (this.bitStream.length / 8 > 0x6b) {
+      this.extShirtColor = this.bitStream.readUint8();
+    } else {
+      this.extShirtColor = 0;
     }
 
     if (this.extFacelineColor) this.trueSkinColor = this.extFacelineColor;
@@ -954,9 +962,9 @@ export default class Mii {
     // Some custom CUSTOM data
     this.bitStream.writeUint8(this.extHatType);
     this.bitStream.writeUint8(this.extHatColor);
-    // currently reserved, will be common colors
-    this.bitStream.writeUint8(this.extMiiC_v3_reserved1);
-    this.bitStream.writeUint8(this.extMiiC_v3_reserved2);
+    // MiiC v3 fields
+    this.bitStream.writeUint8(this.extFacePaintColor);
+    this.bitStream.writeUint8(this.extShirtColor);
 
     // console.log(
     //   "Wrote 8 extra bytes for NfpStoreDataExtention:",
@@ -1158,7 +1166,12 @@ export default class Mii {
     encodeMiiPart(this.eyebrowType);
     encodeMiiPart(this.eyebrowSpacing);
     encodeMiiPart(this.eyebrowYPosition);
-    encodeMiiPart(this.trueSkinColor);
+    if (this.extFacePaintColor !== 0) {
+      encodeMiiPart(this.extFacePaintColor + 9);
+    } else {
+      encodeMiiPart(this.trueSkinColor);
+    }
+
     encodeMiiPart(this.makeupType);
     encodeMiiPart(this.faceType);
     encodeMiiPart(this.wrinklesType);
