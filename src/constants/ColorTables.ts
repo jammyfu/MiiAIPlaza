@@ -8,6 +8,7 @@ export type MiiLookupTableSpecial = Record<
   { top: string; bottom: string }
 >;
 export type MiiLookupTableColor = Record<number, any>;
+export type MiiLookupTableQrColor = number[];
 
 export const MiiFavoriteColorLookupTable: MiiLookupTableHex = {
   /** Red */
@@ -357,6 +358,17 @@ export const MiiSwitchSkinColorList: Record<number, string> = {
   8: "#8c3c23",
   9: "#3c2d23",
 };
+
+// The actual palettes aren't shown here, only a lookup table
+export const MiiTLHairSprayToSwitchColor: MiiLookupTableQrColor = [
+  55, 51, 50, 12, 16, 12, 67, 61,
+
+  51, 64, 69, 66, 65, 86, 85, 93,
+
+  92, 19, 20, 20, 15, 32, 35, 26,
+
+  38, 41, 43, 18, 95, 97, 97, 99,
+];
 
 export const ToVer3GlassTypeTable = [
   0, 1, 2, 3, 4, 5, 6, 7, 8, 1, 2, 1, 3, 7, 7, 6, 7, 8, 7, 7,
