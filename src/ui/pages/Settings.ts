@@ -567,14 +567,34 @@ export async function replayUpdateNotice() {
 }
 
 export async function displayUpdateNotice() {
-  const hasSeenLatestUpdate = await getSetting(
-    `has-seen-${Config.version.string}`
-  );
-  console.log(hasSeenLatestUpdate);
-  if (hasSeenLatestUpdate === false || hasSeenLatestUpdate === null) {
+  const seenKey = `has-seen-${Config.version.string}`;
+  const seenValue = await getSetting(seenKey);
+  const notSeenLatest = (seenValue === false || seenValue === null);
+
+  // https://stackoverflow.com/a/326076
+  const isInIframe = window.self !== window.top;
+
+  // Should the user see the update popup?
+  const shouldSeeNotice =
+    // Do not show to first time users
+    //@ts-expect-error
+    !window.firstVisit // NOTE: src/l10n/manager.ts
+    // undefined = l10n manager did not run?, false = language key is null (never ran site)
+    && !isInIframe // Do not show to API users
+    // Show if has-seen key doesn't exist
+    && notSeenLatest;
+
+  //@ts-expect-error
+  console.log(`seenLatest: ${seenLatest}\nfirstVisit: ${window.firstVisit}\nshould see update notice?: ${shouldSeeNotice}`);
+
+  //@ts-expect-error
+  if (window.firstVisit && !isInIframe) {
+    // First time? You have "seen" the current version
+    await setSetting(seenKey, true);
+  } else if (shouldSeeNotice) {
     let m = Modal.modal(
       `New Update: ${Config.version.string}`,
-      "Yes new update",
+      "Yes new update", // placeholder will be replaced
       "body",
       {
         text: "OK",
