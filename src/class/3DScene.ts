@@ -58,6 +58,8 @@ export class Mii3DScene {
   type: "m" | "f";
   cameraPan!: boolean;
   shaderOverride: boolean;
+  bodyModel!: string;
+  handColor!: [number, number, number];
 
   constructor(
     mii: Mii,
@@ -93,6 +95,10 @@ export class Mii3DScene {
     }
     this.getRendererElement().classList.add("scene");
     this.setupType = setupType;
+
+    getSetting("bodyModel").then((type) => {
+      this.bodyModel = type;
+    });
 
     getSetting("shaderType").then((type) => {
       // glTF Loader hack only for FFL shader to force srgb-linear textures.
@@ -227,7 +233,8 @@ export class Mii3DScene {
   focusCamera(
     part: CameraPosition,
     force: boolean = false,
-    transition: boolean = true
+    transition: boolean = true,
+    onlyReturn: boolean = false
   ) {
     this.#controls.smoothTime = 0.2;
 
@@ -244,24 +251,34 @@ export class Mii3DScene {
     // }
 
     if (part === CameraPosition.MiiFullBody) {
-      pos.y = 10;
-      this.#controls.moveTo(pos.x, pos.y, pos.z, transition);
-      this.#controls.rotateTo(0, Math.PI / 2, transition);
-      this.#controls.dollyTo(35, transition);
-      if (this.cameraPan === false) {
-        this.#controls.dollyTo(120, transition);
+      if (body !== undefined && head !== undefined) {
+        const box = new THREE.Box3().setFromObject(body);
+        const box2 = new THREE.Box3().setFromObject(head);
+        pos.y = box2.max.y / 2;
       }
+      if (onlyReturn === false) {
+        this.#controls.moveTo(pos.x, pos.y, pos.z, transition);
+        this.#controls.rotateTo(0, Math.PI / 2, transition);
+        this.#controls.dollyTo(40, transition);
+        if (this.cameraPan === false) {
+          this.#controls.dollyTo(120, transition);
+        }
+      }
+      return pos;
     } else if (part === CameraPosition.MiiHead) {
       if (body !== undefined) {
         const box = new THREE.Box3().setFromObject(body);
         pos.y = box.max.y - box.min.y;
       }
-      this.#controls.moveTo(pos.x, pos.y + 2, pos.z, transition);
-      this.#controls.rotateTo(0, Math.PI / 2, transition);
-      this.#controls.dollyTo(25, transition);
-      if (this.cameraPan === false) {
-        this.#controls.dollyTo(100, transition);
+      if (onlyReturn === false) {
+        this.#controls.moveTo(pos.x, pos.y + 2, pos.z, transition);
+        this.#controls.rotateTo(0, Math.PI / 2, transition);
+        this.#controls.dollyTo(25, transition);
+        if (this.cameraPan === false) {
+          this.#controls.dollyTo(100, transition);
+        }
       }
+      return pos;
     }
   }
   playEndingAnimation() {
@@ -414,6 +431,24 @@ export class Mii3DScene {
         });
       // adds shader material
       else traverseMesh(gBodyMesh, this.mii);
+
+      const gHandsMesh = glb.scene.getObjectByName(
+        `hands_${type}`
+      )! as THREE.Mesh;
+      gHandsMesh.geometry.userData = {
+        cullMode: 1,
+        modulateColor: MiiFavoriteFFLColorLookupTable[this.mii.favoriteColor],
+        modulateMode: 0,
+        modulateType: cMaterialName.FFL_MODULATE_TYPE_SHAPE_BODY,
+      };
+      if (this.shaderOverride)
+        gHandsMesh.material = new THREE.MeshStandardMaterial({
+          roughness: 1,
+          metalness: 1,
+          color: MiiFavoriteColorLookupTable[this.mii.favoriteColor],
+        });
+      // adds shader material
+      else traverseMesh(gHandsMesh, this.mii);
 
       const gLegsMesh = glb.scene.getObjectByName(
         `legs_${type}`
@@ -638,7 +673,10 @@ export class Mii3DScene {
           this.#scene
             .getObjectByName("MiiHead")!
             .setRotationFromQuaternion(quaternion);
-          // this.#scene.getObjectByName("MiiHead")!.rotation.x -= Math.PI / 2;
+          if (bodyModel === "miitomo") {
+            // hacky
+            this.#scene.getObjectByName("MiiHead")!.rotation.z -= Math.PI / 2;
+          }
         }
       };
     };
@@ -936,9 +974,12 @@ export class Mii3DScene {
           traverseAddShader(GLB.scene, this.mii);
           console.debug("Traversing shader now");
 
-          const headBone = this.#scene
-            .getObjectByName(this.type)!
-            .getObjectByName("head") as THREE.Bone;
+          const body = this.#scene.getObjectByName(this.type)!;
+
+          let headBone = body.getObjectByName("head") as THREE.Bone;
+          if (headBone === undefined)
+            headBone = body.getObjectByName("Head") as THREE.Bone;
+
           if (!headBone) return;
           headBone.updateMatrixWorld(true);
 
@@ -956,7 +997,18 @@ export class Mii3DScene {
             // GLB.scene.rotation.x -= Math.PI / 2;
           }
 
+          const bodyModelType = this.bodyModel;
           this.#scene.add(GLB.scene);
+          console.debug("Adding head to scene");
+
+          // Hacky fix for head being snapped in the wrong direction for 1 frame
+          if (bodyModelType === "miitomo") {
+            GLB.scene.rotation.z -= Math.PI / 2;
+          }
+
+          // setTimeout(() => {
+          //   debugger;
+          // }, 10);
         } catch (e) {
           console.error(e);
         }

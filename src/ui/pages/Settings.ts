@@ -4,6 +4,8 @@ import Html from "@datkat21/html";
 import localforage from "localforage";
 import { getMusicManager } from "../../class/audio/MusicManager";
 import { getSoundManager } from "../../class/audio/SoundManager";
+import { getSetting, setSetting } from "../../util/SettingsHelper";
+import { Config } from "../../config";
 
 export const updateSettings = async (force: boolean = false) => {
   // Background Music
@@ -14,16 +16,119 @@ export const updateSettings = async (force: boolean = false) => {
   let useSfx = await localforage.getItem("settings_sfx");
   if (useSfx === true) getSoundManager().unmute();
   else if (useSfx === false) getSoundManager().mute();
-  // Wii U Theme
-  document.documentElement.dataset.theme =
-    (await localforage.getItem("settings_wiiu")) === true ? "wiiu" : "normal";
+
+  const wiiu = await localforage.getItem("settings_wiiu");
+  // Migrate old Wii U theme setting
+  if (wiiu) {
+    await localforage.removeItem("settings_wiiu");
+    await localforage.setItem("settings_theme", "wiiu");
+  }
+
+  const theme = await localforage.getItem("settings_theme");
+  if (theme === null) {
+    await setSetting("theme", "default");
+  }
+
+  // Theme selector
+  document.documentElement.dataset.theme = String(
+    await localforage.getItem("settings_theme")
+  );
   if (
-    prevSetting["wiiu"] !== (await localforage.getItem("settings_wiiu")) ||
+    prevSetting["theme"] !== (await localforage.getItem("settings_theme")) ||
     force
   ) {
     setTimeout(async () => {
       document.dispatchEvent(new CustomEvent("theme-change"));
     }, 33.33);
+  }
+
+  // Update library images on shader type change
+  if (
+    prevSetting["shaderType"] !==
+    (await localforage.getItem("settings_shaderType"))
+  ) {
+    console.log("shaderType changed!!!");
+    // update all images that used shader
+    let currentShader = await getSetting("shaderType");
+    document.dispatchEvent(new CustomEvent("library-shader-update"));
+    if (Html.qsa("img[data-src]") !== null)
+      Html.qsa("img[data-src]")!.forEach((img) => {
+        const image = img!.elm as HTMLImageElement;
+        const source = image.src.trim() || image.dataset.src!;
+        let sourceToUpdate = image.src.trim() !== "" ? "src" : "data-src";
+        console.log(sourceToUpdate);
+        if (!source.includes("?")) return;
+        const params = new URLSearchParams(source.split("?").pop());
+
+        params.delete("shaderType");
+        params.delete("lightEnable");
+
+        // TODO: probably shouldn't hard-code this and it should be a constant lookup table or something
+        switch (currentShader) {
+          case "wiiu":
+          case "wiiu_gloss":
+            params.set("shaderType", "0");
+            break;
+          case "none":
+            params.set("shaderType", "3");
+            break;
+          case "switch":
+            params.set("shaderType", "1");
+            break;
+          case "miitomo":
+            params.set("shaderType", "2");
+            break;
+            params.set("shaderType", "0");
+            params.set("lightEnable", "0");
+            break;
+        }
+
+        if (sourceToUpdate === "src") {
+          image.src = `${source.split("?")[0]}?${params.toString()}`;
+        } else if (sourceToUpdate === "data-src") {
+          image.dataset.src = `${source.split("?")[0]}?${params.toString()}`;
+        }
+      });
+  }
+  // copy paste spaghetti code for body model too
+  if (
+    prevSetting["bodyModel"] !==
+    (await localforage.getItem("settings_bodyModel"))
+  ) {
+    console.log("bodyModel changed!!!");
+    // update all images that used shader
+    let bodyType = await getSetting("bodyModel");
+    document.dispatchEvent(new CustomEvent("library-body-update"));
+    if (Html.qsa("img[data-src]") !== null)
+      Html.qsa("img[data-src]")!.forEach((img) => {
+        const image = img!.elm as HTMLImageElement;
+        const source = image.src.trim() || image.dataset.src!;
+        let sourceToUpdate = image.src.trim() !== "" ? "src" : "data-src";
+        if (!source.includes("?")) return;
+        const params = new URLSearchParams(source.split("?").pop());
+
+        params.delete("bodyType");
+
+        // TODO: probably shouldn't hard-code this and it should be a constant lookup table or something
+        switch (bodyType) {
+          case "wiiu":
+          case "lightDisabled":
+            params.set("bodyType", "0");
+            break;
+          case "switch":
+            params.set("bodyType", "1");
+            break;
+          case "miitomo":
+            params.set("bodyType", "2");
+            break;
+        }
+
+        if (sourceToUpdate === "src") {
+          image.src = `${source.split("?")[0]}?${params.toString()}`;
+        } else if (sourceToUpdate === "data-src") {
+          image.dataset.src = `${source.split("?")[0]}?${params.toString()}`;
+        }
+      });
   }
 };
 
@@ -42,13 +147,6 @@ export const settingsInfo: Record<string, any> = {
     default: true,
     description: "Toggle sound effects for buttons and inputs.",
   },
-  wiiu: {
-    type: "checkbox",
-    label: "Enable Wii U theme",
-    default: false,
-    description:
-      "When this is disabled, your device's color theme preferences will be used.",
-  },
   cameraPan: {
     type: "checkbox",
     label: "Static camera in editor",
@@ -63,6 +161,20 @@ export const settingsInfo: Record<string, any> = {
     description:
       "The custom render menu will automatically close when pressing save.",
   },
+  autoCloseQrScan: {
+    type: "checkbox",
+    label: "Auto-close QR scan menu",
+    default: true,
+    description: "The QR code scanner will disappear after a successful scan.",
+  },
+  allowQrCamera: {
+    type: "checkbox",
+    label: "Allow using camera in QR scanner",
+    default: true,
+    description:
+      "When this is disabled, the camera won't be used and some errors may not appear.",
+  },
+
   editMode: {
     type: "multi",
     label: "Editing Mode",
@@ -73,11 +185,22 @@ export const settingsInfo: Record<string, any> = {
       { label: "3D (default)", value: "3d" },
     ],
   },
+  theme: {
+    type: "multi",
+    label: "Theme",
+    default: "default",
+    description:
+      "When this is set to default, your device's color theme preferences will be used.",
+    choices: [
+      { label: "Default", value: "default" },
+      { label: "Wii U", value: "wiiu" },
+    ],
+  },
   shaderType: {
     type: "multi",
     label: "Shader Type",
     description:
-      "Sorry that most of the shaders are not yet ready for use.\nUsing the Simple shader brings back the old simplistic Mii Creator lighting from the early days.",
+      "Sorry that most of the shaders are not yet ready for use.\nUsing the Simple shader brings back the old simplistic Mii Creator lighting from the early days.\n* Does not apply to 2D mode.",
     default: "wiiu",
     choices: [
       { label: "No Lighting", value: "lightDisabled" },
@@ -96,8 +219,15 @@ export const settingsInfo: Record<string, any> = {
     choices: [
       { label: "Wii U (default)", value: "wiiu" },
       { label: "Switch", value: "switch", disabled: true },
-      { label: "Miitomo", value: "miitomo", disabled: true },
+      { label: "Miitomo", value: "miitomo" },
     ],
+  },
+  bodyModelHands: {
+    type: "checkbox",
+    label: "Color hands to skin tone",
+    default: false,
+    description:
+      "The hands of the body will match the Mii's skin tone.\n* This currently doesn't apply to 3D model exports due to a bug.",
   },
   saveData: {
     type: "non-settings-multi",
@@ -196,6 +326,7 @@ export async function Settings() {
   const modalBody = modal.qs(".modal-body")!.clear();
   // fix wii u theme center-aligning items
   modalBody.elm.style.setProperty("align-items", "flex-start", "important");
+  modalBody.elm.style.setProperty("max-width", "600px");
 
   for (const key in settingsInfo) {
     let prefixedKey = prefix + key;
@@ -209,28 +340,35 @@ export async function Settings() {
     switch (settingsInfo[key].type) {
       case "checkbox":
         modalBody.append(
-          new Html("div").class("flex-group").appendMany(
-            new Html("input")
-              .attr({
-                id: prefixedKey,
-                type: "checkbox",
-                checked:
-                  (await localforage.getItem(prefixedKey)) === true
-                    ? true
-                    : undefined,
-              })
-              .on("input", async (e) => {
-                prevSetting[key] = await localforage.getItem(prefixedKey);
-                await localforage.setItem(
-                  prefixedKey,
-                  (e.target as HTMLInputElement).checked
-                );
-                updateSettings();
-              }),
-            new Html("label")
-              .attr({ for: prefixedKey })
-              .text(settingsInfo[key].label)
-          )
+          new Html("div")
+            .class("flex-group")
+            .style({ "justify-content": "flex-start" })
+            .appendMany(
+              AddButtonSounds(
+                new Html("input")
+                  .attr({
+                    id: prefixedKey,
+                    type: "checkbox",
+                    checked:
+                      (await localforage.getItem(prefixedKey)) === true
+                        ? true
+                        : undefined,
+                  })
+                  .on("input", async (e) => {
+                    prevSetting[key] = await localforage.getItem(prefixedKey);
+                    await localforage.setItem(
+                      prefixedKey,
+                      (e.target as HTMLInputElement).checked
+                    );
+                    updateSettings();
+                  }),
+                "hover",
+                "select_misc"
+              ),
+              new Html("label")
+                .attr({ for: prefixedKey })
+                .text(settingsInfo[key].label)
+            )
         );
         if (settingsInfo[key].description) {
           modalBody.append(
@@ -240,68 +378,134 @@ export async function Settings() {
         break;
       case "multi":
         const val = await localforage.getItem(prefixedKey);
+        let options = await Promise.all(
+          settingsInfo[key].choices.map(async (c: any) => {
+            let colorSpan: Html | undefined = undefined;
+
+            let isActive = false;
+
+            if (typeof c.isColor !== "undefined") {
+              colorSpan = new Html("span").style({
+                width: "1.2em",
+                height: "1.2em",
+                "border-radius": "6px",
+              });
+              colorSpan.style({
+                "background-color": "var(--hover)",
+                border: "1px solid var(--stroke)",
+              });
+              const value = await localforage.getItem(prefixedKey)!;
+              if (typeof value === "string") {
+                if (value.startsWith("#")) {
+                  colorSpan.style({ "background-color": value });
+                  isActive = true;
+                }
+              }
+            }
+
+            const multiButton = new Html("button")
+              .class(
+                c.value === val || isActive
+                  ? "selected-setting"
+                  : (undefined as any)
+              )
+              .attr({ "data-setting": prefixedKey })
+              .text(c.label)
+              .on("click", async (e) => {
+                prevSetting[key] = String(
+                  await localforage.getItem(prefixedKey)
+                );
+                let isActive = false;
+                if (typeof c.isColor !== "undefined") {
+                  // Prompt a color selection
+                  const color = new Html("input")
+                    .attr({ type: "color" })
+                    .style({ position: "fixed", opacity: "0" })
+                    .appendTo("body");
+                  if (prevSetting[key].startsWith("#")) {
+                    color.val(prevSetting[key]);
+                    isActive = true;
+                  }
+                  color.elm.click();
+
+                  // set dependent on this
+                  color.on("change", (e) => {
+                    localforage.setItem(prefixedKey, color.getValue());
+                    if (colorSpan)
+                      colorSpan.style({ "background-color": color.getValue() });
+                    color.cleanup();
+                    isActive = true;
+                  });
+                } else {
+                  await localforage.setItem(prefixedKey, c.value);
+                }
+                updateSettings();
+                const t = e.target as HTMLElement;
+                t.parentElement!.querySelectorAll(
+                  `[data-setting="${prefixedKey}"]`
+                ).forEach((p) => {
+                  p.classList.remove("selected-setting");
+                });
+                if (c.isColor !== undefined) {
+                  if (isActive) {
+                    t.classList.add("selected-setting");
+                  }
+                  const color = String(await localforage.getItem(prefixedKey));
+                  if (colorSpan) colorSpan.style({ "background-color": color });
+                } else t.classList.add("selected-setting");
+              });
+
+            if (colorSpan !== undefined) {
+              colorSpan.prependTo(multiButton);
+            }
+
+            const button = AddButtonSounds(multiButton, "hover", "select_misc");
+
+            if (c.disabled) {
+              button.attr({ disabled: true });
+            }
+
+            return button;
+          })
+        );
+        console.log(options);
         modalBody.appendMany(
           new Html("label").text(settingsInfo[key].label),
           new Html("small").text(settingsInfo[key].description),
-          new Html("div").class("flex-group").appendMany(
-            ...settingsInfo[key].choices.map((c: any) => {
-              const button = AddButtonSounds(
-                new Html("button")
-                  .class(
-                    c.value === val ? "selected-setting" : (undefined as any)
-                  )
-                  .attr({ "data-setting": prefixedKey })
-                  .text(c.label)
-                  .on("click", async (e) => {
-                    prevSetting[key] = await localforage.getItem(prefixedKey);
-                    await localforage.setItem(prefixedKey, c.value);
-                    updateSettings();
-                    const t = e.target as HTMLElement;
-                    t.parentElement!.querySelectorAll(
-                      `[data-setting="${prefixedKey}"]`
-                    ).forEach((p) => {
-                      p.classList.remove("selected-setting");
-                    });
-                    t.classList.add("selected-setting");
-                  }),
-                "hover",
-                "select_misc"
-              );
-
-              if (c.disabled) {
-                button.attr({ disabled: true });
-              }
-
-              return button;
-            })
-          )
+          new Html("div")
+            .class("flex-group")
+            .style({ "justify-content": "flex-start" })
+            .appendMany(...options)
         );
         break;
       case "non-settings-multi":
         modalBody.appendMany(
           new Html("label").text(settingsInfo[key].label),
           new Html("small").text(settingsInfo[key].description),
-          new Html("div").class("flex-group").appendMany(
-            ...settingsInfo[key].choices.map((c: any) => {
-              const button = AddButtonSounds(
-                new Html("button")
-                  .attr({ disabled: c.disabled })
-                  .class(c.type)
-                  .text(c.label)
-                  .on("click", async (e) => {
-                    c.select();
-                  }),
-                "hover",
-                "select_misc"
-              );
+          new Html("div")
+            .class("flex-group")
+            .style({ "justify-content": "flex-start" })
+            .appendMany(
+              ...settingsInfo[key].choices.map((c: any) => {
+                const button = AddButtonSounds(
+                  new Html("button")
+                    .attr({ disabled: c.disabled })
+                    .class(c.type)
+                    .text(c.label)
+                    .on("click", async (e) => {
+                      c.select();
+                    }),
+                  "hover",
+                  "select_misc"
+                );
 
-              if (c.disabled) {
-                button.attr({ disabled: true });
-              }
+                if (c.disabled) {
+                  button.attr({ disabled: true });
+                }
 
-              return button;
-            })
-          )
+                return button;
+              })
+            )
         );
         break;
     }
