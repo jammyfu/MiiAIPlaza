@@ -18,6 +18,7 @@ export class SoundManager {
     this.gainNode.connect(this.audioContext.destination);
     this.muted = false;
     this.previousVolume = 0.28;
+    this.queue = new Set();
 
     const theme = document.documentElement.dataset.theme;
     let currentTheme = theme;
@@ -54,6 +55,8 @@ export class SoundManager {
     this.soundBufs[name] = audioBuffer;
   }
 
+  queue!: Set<string>;
+
   playSound(name: string) {
     const soundBuffer = this.soundBufs[name];
     if (!soundBuffer) {
@@ -61,10 +64,18 @@ export class SoundManager {
       return;
     }
 
+    if (this.queue.has(name)) return;
+
     const source = this.audioContext.createBufferSource();
     source.buffer = soundBuffer;
     source.connect(this.gainNode);
     source.start();
+
+    this.queue.add(name);
+
+    setTimeout(() => {
+      this.queue.delete(name);
+    }, 50);
   }
 
   setVolume(volume: number) {
