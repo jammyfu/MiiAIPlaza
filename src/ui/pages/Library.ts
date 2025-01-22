@@ -1594,7 +1594,7 @@ const miiExportDownload = async (mii: MiiLocalforage, miiData: Mii) => {
             },
           },
           {
-            text: "Download Charinfo file",
+            text: "Download CharInfo (Switch) file",
             async callback() {
               //if (!(await miiColorConversionWarning(miiData))) return;
               const blob = new Blob([miiData.encodeCharinfo()]);
