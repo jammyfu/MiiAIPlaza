@@ -1265,7 +1265,7 @@ const miiFFSDWarning = async (miiData: Mii) => {
   if (miiData.hasExtendedColors() === true) {
     let result = await Modal.prompt(
       "Warning",
-      'This Mii is using extended Switch colors and/or MiiCreator features, but those features will be lost when converting to FFSD.\nUse "Save MiiCreator data" or "Save Charinfo data" if you want to keep the data.\nIs this OK?',
+      'This Mii is using extended Switch colors and/or MiiCreator features, but those features will be lost when converting to FFSD.\nUse "Save MiiCreator data" or "Save CharInfo (Switch) data" if you want to keep the data.\nIs this OK?',
       "body",
       false
     );
