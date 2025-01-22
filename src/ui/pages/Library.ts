@@ -7,11 +7,12 @@ import { Buffer } from "../../../node_modules/buffer/index";
 import Loader from "../components/Loader";
 import { AddButtonSounds } from "../../util/AddButtonSounds";
 import {
+  createIconCard,
+  createMiiCard,
   getMiiRender,
   MiiCustomRenderType,
   QRCodeCanvas,
 } from "../../util/miiImageUtils";
-import { Link } from "../components/Link";
 import { Config } from "../../config";
 import EditorIcons from "../../constants/EditorIcons";
 import { CameraPosition, Mii3DScene, SetupType } from "../../class/3DScene";
@@ -39,7 +40,7 @@ import {
 import { MiiFavoriteColorIconTable } from "../../constants/ColorTables";
 import { getString as _ } from "../../l10n/manager";
 import { FFLiDatabaseRandom_Get } from "../../external/ffl/FFLiDatabaseRandom";
-import { Settings } from "./Settings";
+import { replayUpdateNotice, Settings } from "./Settings";
 import { getSetting } from "../../util/SettingsHelper";
 import { GLTFExporter } from "three/examples/jsm/Addons.js";
 import {
@@ -50,6 +51,7 @@ import {
   startScanner,
 } from "../../util/DecodeQRCode";
 import { playSound } from "../../class/audio/SoundManager";
+import type CameraControls from "camera-controls";
 import { sRGB } from "../../util/Color";
 export const savedMiiCount = async () =>
   (await localforage.keys()).filter((k) => k.startsWith("mii-")).length;
@@ -383,30 +385,145 @@ export async function Library(highlightMiiId?: string) {
         })
       )
     ),
-    new Html("div")
-      .class("sidebar-credits")
-      .appendMany(
-        new Html("span").text("Credits"),
-        AddButtonSounds(
-          Link(
-            "Source code by datkat21",
-            "https://github.com/datkat21/mii-maker-real"
+    new Html("div").class("sidebar-credits").appendMany(
+      new Html("div")
+        .class("flex-group")
+        .style({ width: "100%" })
+        .appendMany(
+          AddButtonSounds(
+            new Html("button")
+              .text("Credits")
+              .on("click", async () => {
+                var m = Modal.modal(
+                  "Credits",
+                  "",
+                  "body",
+                  { text: "Cancel" },
+                  { text: "OK" }
+                );
+                m.qs(".modal-body span")!.cleanup();
+                m.qs(".modal-content")!.style({
+                  "max-width": "100%",
+                  "max-height": "100%",
+                });
+                const mb = m.qs(".modal-body")!;
+                const container = new Html("div").class("col").prependTo(mb);
+                new Html("span")
+                  .text("Check out the people behind Mii Creator!")
+                  .style({
+                    "font-size": "20px",
+                    "flex-shrink": "0",
+                    "margin-bottom": "-16px",
+                  })
+                  .prependTo(mb);
+
+                createMiiCard(
+                  container,
+                  "Austin☆²¹ / Kat21",
+                  "datkat21",
+                  "https://github.com/datkat21",
+                  "Author of Mii Creator",
+                  "00070e555d5863674e53666975777c767c7d848b9299989f9ea1a8a9b5bc89e1e9efececf6ecf6ece8f3faf7fbfdfe"
+                );
+                createMiiCard(
+                  container,
+                  "Arian",
+                  "ariankordi",
+                  "https://github.com/ariankordi",
+                  'Creator of <a target="_blank" href="https://mii-unsecure.ariankordi.net">Mii Renderer (REAL)</a> and was a big help with debugging many issues',
+                  "080037030d020531020c030105040a0209000001000a011004010b0100662f04000214031603140d04000a020109"
+                );
+                createMiiCard(
+                  container,
+                  "obj",
+                  "objecty",
+                  "https://x.com/objecty_twitt",
+                  "Composed the music for the site",
+                  "00070e3b3f3c4649555e5c6675777a7a7f7e818890979ea5b4b7bebbbac188bdc6ced4ccd6cccfe3f5f8fffcff0513"
+                );
+                createMiiCard(
+                  container,
+                  "Timothy",
+                  "Timimimi",
+                  "https://github.com/Timiimiimii",
+                  "Modeled many of the custom hats and helped with debugging",
+                  "00070e3c4554575c616c6872818b909da0b1b7bec3cad0d78f93a1b1c0c78ce8f0f8fdf2f8f3f7ebebf6fdfcfffffb"
+                );
+                createMiiCard(
+                  container,
+                  "David J.",
+                  "dwyazzo90",
+                  "https://x.com/dwyazzo90",
+                  "Helped with design and created the Wii U theme",
+                  "0800450308040402020c0308060406020a0001000006000804000a0800326702010314031304190d04000a040109"
+                );
+              })
+              .style({ flex: "1" })
+          ),
+          AddButtonSounds(
+            new Html("button")
+              .text("Help/Contact")
+              .on("click", async () => {
+                var m = Modal.modal(
+                  "Contact",
+                  "",
+                  "body",
+                  { text: "Cancel" },
+                  { text: "OK" }
+                );
+                m.qs(".modal-body span")!.cleanup();
+                m.qs(".modal-content")!.style({
+                  "max-width": "100%",
+                  "max-height": "100%",
+                });
+                const mb = m.qs(".modal-body")!;
+                const container = new Html("div")
+                  .class("col")
+                  .style({ gap: "0" })
+                  .prependTo(mb);
+                new Html("span")
+                  .text("Here's where you can contact the author, Kat21")
+                  .style({
+                    "font-size": "20px",
+                    "flex-shrink": "0",
+                    "margin-bottom": "-16px",
+                  })
+                  .prependTo(mb);
+
+                createIconCard(
+                  container,
+                  "E-mail (Preferred)",
+                  "mailto:datkat21.yt@gmail.com",
+                  "datkat21.yt@gmail.com",
+                  EditorIcons.contact_email
+                );
+                createIconCard(
+                  container,
+                  "Discord",
+                  "",
+                  "kat21",
+                  EditorIcons.contact_discord
+                );
+                createIconCard(
+                  container,
+                  "File an issue on GitHub",
+                  "https://github.com/datkat21/mii-creator",
+                  "datkat21/mii-creator",
+                  EditorIcons.contact_github
+                );
+              })
+              .style({ flex: "1" })
           )
         ),
-        AddButtonSounds(
-          Link(
-            "Mii Rendering API by ariankordi",
-            "https://mii-unsecure.ariankordi.net"
-          )
-        ),
-        AddButtonSounds(
-          Link("Mii Maker Music by objecty", "https://x.com/objecty_twitt")
-        ),
-        AddButtonSounds(
-          Link("Wii U theme by dwyazzo90", "https://x.com/dwyazzo90")
-        ),
-        new Html("strong").text("This site is not affiliated with Nintendo.")
-      )
+      new Html("strong").text("This site is not affiliated with Nintendo."),
+      new Html("small")
+        .text(`${Config.version.string} (${Config.version.name})`)
+        .style({ cursor: "pointer" })
+        .on("click", () => {
+          replayUpdateNotice();
+        })
+      // new Html("strong").text("Please send any feedback or bug reports either through GitHub issues or to my email: datkat21.yt@gmail.com"),
+    )
   );
 }
 
@@ -1609,6 +1726,7 @@ export async function customRender(miiData: Mii) {
     renderWidth: 720,
     renderHeight: 720,
     cameraPosition: 1,
+    animSpeed: 100,
   };
 
   const base64Data = miiData.encodeStudio().toString("hex");
@@ -1619,6 +1737,7 @@ export async function customRender(miiData: Mii) {
     wii: 4,
     wiiu: 14,
     switch: 5,
+    miitomo: 16,
   };
 
   let bodyModelSetting = (await getSetting("bodyModel")) as string;
@@ -1630,71 +1749,184 @@ export async function customRender(miiData: Mii) {
 
   console.log(bodyModelSetting);
 
+  let controls: CameraControls,
+    rotationFactor = Math.PI / 8;
+
+  const e: Record<string, FeatureSetEntry> = {
+    camera: {
+      label: "Camera",
+      header:
+        "Use mouse or touch to move the camera around.\nUsing touch, rotate the camera around with one finger, and drag with two fingers to pan. Pinch with two fingers to zoom.\nIf you like this site, please consider sharing it with others and credit me or the site when you post your renders! 🙂",
+      items: [
+        {
+          type: FeatureSetType.Slider,
+          property: "fov",
+          iconStart: "FOV",
+          iconEnd: "",
+          min: 5,
+          max: 90,
+          part: RenderPart.Face,
+        },
+        {
+          type: FeatureSetType.Misc,
+          html: new Html("div").class("flex-group", "col").appendMany(
+            new Html("label").text("Position"),
+            new Html("div").class("flex-group").appendMany(
+              new Html("button").text("Center horizontally").on("click", () => {
+                const newPosition = scene.focusCamera(
+                  CameraPosition.MiiFullBody,
+                  true,
+                  false,
+                  true
+                )!;
+                let target = new Vector3();
+                controls.getTarget(target);
+                target.x = newPosition.x;
+                controls.moveTo(target.x, target.y, target.z);
+              }),
+              new Html("button").text("Center vertically").on("click", () => {
+                const newPosition = scene.focusCamera(
+                  CameraPosition.MiiFullBody,
+                  true,
+                  false,
+                  true
+                )!;
+                let target = new Vector3();
+                controls.getTarget(target);
+                target.y = newPosition.y;
+                controls.moveTo(target.x, target.y, target.z);
+              }),
+              new Html("button").text("Reset").on("click", () => {
+                const newPosition = scene.focusCamera(
+                  CameraPosition.MiiFullBody,
+                  true,
+                  false,
+                  true
+                )!;
+                scene
+                  .getControls()
+                  .moveTo(newPosition.x, newPosition.y, newPosition.z);
+              })
+            ),
+            new Html("label").text("Rotate"),
+            new Html("div").class("flex-group").appendMany(
+              new Html("button").text("Up").on("click", () => {
+                scene
+                  .getControls()
+                  .rotateTo(
+                    controls.azimuthAngle,
+                    controls.polarAngle - rotationFactor
+                  );
+              }),
+              new Html("button").text("Down").on("click", () => {
+                scene
+                  .getControls()
+                  .rotateTo(
+                    controls.azimuthAngle,
+                    controls.polarAngle + rotationFactor
+                  );
+              }),
+              new Html("button").text("Left").on("click", () => {
+                scene
+                  .getControls()
+                  .rotateTo(
+                    controls.azimuthAngle - rotationFactor,
+                    controls.polarAngle
+                  );
+              }),
+              new Html("button").text("Right").on("click", () => {
+                scene
+                  .getControls()
+                  .rotateTo(
+                    controls.azimuthAngle + rotationFactor,
+                    controls.polarAngle
+                  );
+              }),
+              new Html("button").text("Reset").on("click", () => {
+                controls.rotateTo(0, Math.PI / 2);
+              })
+            )
+          ),
+          select() {},
+        },
+      ],
+    },
+    // TODO
+    // scene: {
+    //   label: "Scene",
+    //   header: "Change the default background color in Settings.",
+    //   items: [
+    //     {
+    //       type: FeatureSetType.Misc,
+    //       html: new Html("div")
+    //         .class("input-group")
+    //         .appendMany(
+    //           new Html("label").text("H"),
+    //           new Html("button").text("H"),
+    //           new Html("button").text("H"),
+    //           new Html("button").text("H")
+    //         ),
+    //       select() {
+    //         /* ... */
+    //       },
+    //     },
+    //   ],
+    // },
+    pose: {
+      label: "Pose",
+      header:
+        "Change the Body Model option in Settings to get many different options of poses!\n\nUse option 0 here for the default animation.",
+      items: ArrayNum(poseCount).map((k) => ({
+        type: FeatureSetType.Icon,
+        value: k,
+        // icon: String(k),
+        icon:
+          k === 0
+            ? "None"
+            : `<img src="assets/images/poses/${bodyModelSetting}/${String(
+                k
+              ).padStart(2, "0")}.png" height=120>`,
+        part: RenderPart.Head,
+      })),
+    },
+    expression: {
+      label: "Expression",
+      items: ArrayNum(70)
+        .filter((n) => !expressionDuplicateList.includes(n))
+        .map((k) => ({
+          type: FeatureSetType.Icon,
+          value: k,
+          icon: `<img class="lazy" width=128 height=128 data-src="${
+            Config.renderer.renderHeadshotURLNoParams
+          }?width=128&scale=1&data=${encodeURIComponent(
+            base64Data
+          )}&expression=${k}&type=fflmakeicon&verifyCharInfo=0">`,
+          part: RenderPart.Head,
+        })),
+    },
+    animation: {
+      label: "Animation",
+      header:
+        "This usually only applies to Miitomo body model which has animations for its poses.",
+      items: [
+        {
+          type: FeatureSetType.Slider,
+          property: "animSpeed",
+          part: RenderPart.Face,
+          iconStart: "0x",
+          iconEnd: "2x",
+          min: 0,
+          max: 200,
+        },
+      ],
+    },
+  };
+
   // very hacky way to use feature set to create tabs
   MiiPagedFeatureSet({
     mii: configuration,
     miiIsNotMii: true,
-    entries: {
-      page1: {
-        label: "Camera",
-        header:
-          "Use mouse or touch to move the camera around.\n\nIf you like this site, please consider sharing it with others and crediing me when you post your renders! 🙂",
-        items: [
-          {
-            type: FeatureSetType.Slider,
-            property: "fov",
-            iconStart: "FOV",
-            iconEnd: "",
-            min: 5,
-            max: 70,
-            part: RenderPart.Face,
-          },
-        ],
-      },
-      pose: {
-        label: "Pose",
-        header:
-          "Change the Body Model option in Settings to get many different options of poses!\n\nUse option 0 here for the default animation.",
-        items: ArrayNum(poseCount).map((k) => ({
-          type: FeatureSetType.Icon,
-          value: k,
-          icon: String(k),
-          part: RenderPart.Head,
-        })),
-      },
-      expression: {
-        label: "Expression",
-        items: ArrayNum(70)
-          .filter((n) => !expressionDuplicateList.includes(n))
-          .map((k) => ({
-            type: FeatureSetType.Icon,
-            value: k,
-            icon: `<img class="lazy" width=128 height=128 data-src="https://mii-renderer.nxw.pw/miis/image.png?width=128&scale=1&data=${encodeURIComponent(
-              base64Data
-            )}&expression=${k}&type=fflmakeicon&verifyCharInfo=0">`,
-            part: RenderPart.Head,
-          })),
-      },
-      page2: {
-        label: "Render",
-        header:
-          "Let's face it, you've been waiting for this feature, right? Well, it's not coming yet. I'm looking at you, LHI2010.\n\nCheck back in, hmm, maybe a few more months, heh...\n\nPsst.. If you like digging through these menus so much, why not check the settings to change your shader?",
-        items: [
-          {
-            type: FeatureSetType.Text,
-            property: "renderWidth",
-            part: RenderPart.Face,
-            label: "Width",
-          },
-          {
-            type: FeatureSetType.Text,
-            property: "renderHeight",
-            part: RenderPart.Face,
-            label: "Height",
-          },
-        ],
-      },
-    },
+    entries: e as any,
     onChange(mii, forceRender, part) {
       configuration = mii as any;
       updateConfiguration();
@@ -1704,6 +1936,30 @@ export async function customRender(miiData: Mii) {
   })
     .style({ height: "auto" })
     .appendTo(tabsContent);
+
+  let playing = true;
+
+  let pauseButton = AddButtonSounds(
+    new Html("button")
+      .text("Pause Animation")
+      .on("click", () => {
+        if (playing === true) {
+          playing = false;
+        } else {
+          playing = true;
+        }
+        scene.anim.forEach((anim) => {
+          if (playing === true) {
+            anim.paused = false;
+            pauseButton.text("Pause Animation");
+          } else {
+            anim.paused = true;
+            pauseButton.text("Play Animation");
+          }
+        });
+      })
+      .appendTo(tabsContent)
+  );
 
   new Html("button")
     .text("Download PNG")
@@ -1726,9 +1982,32 @@ export async function customRender(miiData: Mii) {
     SetupType.Screenshot,
     (renderer) => {}
   );
+  controls = scene.getControls();
 
   //@ts-expect-error testing
   window.scene = scene;
+
+  // Background color
+  const useGreenScreen = await getSetting("customRenderGreenScreen");
+  if (useGreenScreen !== "off") {
+    let color: string = useGreenScreen;
+    switch (useGreenScreen) {
+      case "green":
+        color = "#00ff00";
+        break;
+      case "blue":
+        color = "#0000ff";
+        break;
+      case "white":
+        color = "#ffffff";
+        break;
+      case "black":
+        color = "#000000";
+        break;
+    }
+
+    scene.getScene().background = new Color(color);
+  }
 
   let oldConfiguration: any = {
     fov: 30,
@@ -1737,6 +2016,7 @@ export async function customRender(miiData: Mii) {
     renderWidth: 720,
     renderHeight: 720,
     cameraPosition: 1,
+    animSpeed: 1,
   };
 
   function updateConfiguration() {
@@ -1766,8 +2046,17 @@ export async function customRender(miiData: Mii) {
 
     if (scene.animations.get(`${scene.type}-${pose}`)) {
       scene.swapAnimation(pose);
+      if (playing === false) {
+        scene.anim.forEach((a) => (a.paused = true));
+      }
     } else {
       scene.swapAnimation("Wait");
+    }
+    scene.anim.forEach((a) => {
+      a.timeScale = configuration.animSpeed / 100;
+    });
+    if (bodyModelSetting === "miitomo") {
+      scene.anim.get(scene.type)!.timeScale *= 0.5;
     }
   }
 

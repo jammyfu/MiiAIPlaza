@@ -384,11 +384,18 @@ $desktopWidth: 1280px;
   }
 }
 
+.modal-body.force-start .flex-group {
+  justify-content: flex-start !important;
+}
 .flex-group {
   display: flex;
+  justify-content: center;
   align-items: center;
   flex-wrap: wrap;
   gap: 0.5rem;
+  span {
+    text-align: center;
+  }
 }
 .col {
   display: flex;
@@ -433,7 +440,13 @@ button {
   pointer-events: none;
 }
 
-input {
+video {
+  background-color: var(--root);
+  border: 2px solid var(--stroke);
+}
+
+input,
+select {
   display: block;
   font: inherit;
   background-color: var(--root);

@@ -237,6 +237,20 @@ export const settingsInfo: Record<string, any> = {
     description:
       "The hands of the body will match the Mii's skin tone.\n* This currently doesn't apply to 3D model exports due to a bug.",
   },
+  customRenderGreenScreen: {
+    type: "multi",
+    label: "Use background in custom render",
+    default: "off",
+    description: "The custom render will have a solid color background.",
+    choices: [
+      { label: "Disabled", value: "off" },
+      { label: "Green", value: "green" },
+      { label: "Blue", value: "blue" },
+      { label: "Black", value: "black" },
+      { label: "White", value: "white" },
+      { label: "Custom", value: "custom", isColor: true },
+    ],
+  },
   saveData: {
     type: "non-settings-multi",
     label: "Save Data",

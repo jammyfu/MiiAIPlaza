@@ -112,8 +112,10 @@ export const getMiiRender = async (
         case MiiCustomRenderType.HeadOnly:
           // hide body from view
           scn.getObjectByName("body_m")!.visible = false;
+          scn.getObjectByName("hands_m")!.visible = false;
           scn.getObjectByName("legs_m")!.visible = false;
           scn.getObjectByName("body_f")!.visible = false;
+          scn.getObjectByName("hands_f")!.visible = false;
           scn.getObjectByName("legs_f")!.visible = false;
           // Get the bounding box of the object
           scene.focusCamera(CameraPosition.MiiHead, true, false);
@@ -161,7 +163,7 @@ export const getMiiRender = async (
             parent.cleanup();
           };
         }
-      }, 700);
+      }, 500);
     });
   });
 };
