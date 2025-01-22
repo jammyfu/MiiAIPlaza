@@ -1652,7 +1652,7 @@ const miiExportDownload = async (mii: MiiLocalforage, miiData: Mii) => {
           .qs(".modal-body")!
           .prependMany(
             new Html("div").appendMany(
-              new Html("span").class("h4").text("Charinfo data (Hex)"),
+              new Html("span").class("h4").text("CharInfo (Switch) data (Hex)"),
               new Html("pre")
                 .class("pre-wrap", "mb-0")
                 .text(miiData.encodeCharinfo().toString("hex"))
