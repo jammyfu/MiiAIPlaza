@@ -553,7 +553,7 @@ export async function displayUpdateNotice() {
     && notSeenLatest;
 
   //@ts-expect-error
-  console.log(`seenLatest: ${seenLatest}\nfirstVisit: ${window.firstVisit}\nshould see update notice?: ${shouldSeeNotice}`);
+  console.log(`notSeenLatest: ${notSeenLatest}\nfirstVisit: ${window.firstVisit}\nshould see update notice?: ${shouldSeeNotice}`);
 
   //@ts-expect-error
   if (window.firstVisit && !isInIframe) {
