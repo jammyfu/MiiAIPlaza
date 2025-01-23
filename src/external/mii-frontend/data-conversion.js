@@ -644,7 +644,7 @@ const switchCharInfoHex = [...switchCharInfoData].map(byteToHex).join('');
       // texture which will look wrong here
       // so just remove it in order to avoid
       // ppl who use that and don't know that
-      .replace("&shaderType=1", "")
+      .replace("&shaderType=switch", "")
       .replace(".png?", ".glb?");
     modelDownloadButtons[0].setAttribute(
       "action", // actually a form lmao

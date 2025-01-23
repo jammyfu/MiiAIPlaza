@@ -71,23 +71,23 @@ export const miiIconUrl = (
   switch (currentShader) {
     case "wiiu":
     case "wiiu_gloss":
-      params.set("shaderType", "0");
+      params.set("shaderType", "wiiu");
       break;
     case "none":
     case "wiiu_blinn":
-      params.set("shaderType", "3");
+      params.set("shaderType", "wiiu_blinn");
       break;
     case "wiiu_ffliconwithbody":
-      params.set("shaderType", "4");
+      params.set("shaderType", "ffliconwithbody");
       break;
     case "switch":
-      params.set("shaderType", "1");
+      params.set("shaderType", "switch");
       break;
     case "miitomo":
-      params.set("shaderType", "2");
+      params.set("shaderType", "miitomo");
       break;
     case "lightDisabled":
-      params.set("shaderType", "0");
+      params.set("shaderType", "wiiu");
       params.set("lightEnable", "0");
       break;
   }

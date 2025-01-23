@@ -1364,7 +1364,7 @@ export default class Mii {
       ...STUDIO_RENDER_DEFAULTS,
       ...queryParams,
       data: this.encodeStudio().toString("hex"),
-      shaderType: 0,
+      shaderType: "default",
     };
 
     let fileExt = "png";

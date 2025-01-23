@@ -21,7 +21,7 @@ export const newMiiId = async () =>
 export const miiIconUrl = (mii: Mii) =>
   `${Config.renderer.renderHeadshotURLNoParams}?data=${mii
     .encodeStudio()
-    .toString("hex")}&shaderType=0&type=face&width=180&verifyCharInfo=0`;
+    .toString("hex")}&shaderType=wiiu&type=face&width=180&verifyCharInfo=0`;
 
 export function SelectionLibrary(highlightMiiId?: string): Promise<Mii> {
   return new Promise(async (resolve, reject) => {
