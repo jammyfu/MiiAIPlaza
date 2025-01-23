@@ -5,6 +5,7 @@ import localforage from "localforage";
 import { getMusicManager } from "../../class/audio/MusicManager";
 import { getSoundManager } from "../../class/audio/SoundManager";
 import { getSetting, setSetting } from "../../util/SettingsHelper";
+import { adjustShaderQuery, ShaderType, BodyType } from "../../constants/BodyShaderTypes";
 import { Config } from "../../config";
 
 export const updateSettings = async (force: boolean = false) => {
@@ -63,30 +64,8 @@ export const updateSettings = async (force: boolean = false) => {
         params.delete("shaderType");
         params.delete("lightEnable");
 
-        // TODO: probably shouldn't hard-code this and it should be a constant lookup table or something
-        switch (currentShader) {
-          case "wiiu":
-          case "wiiu_gloss":
-            params.set("shaderType", "wiiu");
-            break;
-          case "none":
-          case "wiiu_blinn":
-            params.set("shaderType", "wiiu_blinn");
-            break;
-          case "wiiu_ffliconwithbody":
-            params.set("shaderType", "ffliconwithbody");
-            break;
-          case "switch":
-            params.set("shaderType", "switch");
-            break;
-          case "miitomo":
-            params.set("shaderType", "miitomo");
-            break;
-          case "lightDisabled":
-            params.set("shaderType", "wiiu");
-            params.set("lightEnable", "0");
-            break;
-        }
+        // set shader type in query params
+        adjustShaderQuery(params, currentShader);
 
         if (sourceToUpdate === "src") {
           image.src = `${source.split("?")[0]}?${params.toString()}`;
@@ -114,19 +93,8 @@ export const updateSettings = async (force: boolean = false) => {
 
         params.delete("bodyType");
 
-        // TODO: probably shouldn't hard-code this and it should be a constant lookup table or something
-        switch (bodyType) {
-          case "wiiu":
-          case "lightDisabled":
-            params.set("bodyType", "0");
-            break;
-          case "switch":
-            params.set("bodyType", "1");
-            break;
-          case "miitomo":
-            params.set("bodyType", "2");
-            break;
-        }
+        // assuming the bodyType string is supported on the server
+        params.set("bodyType", bodyType);
 
         if (sourceToUpdate === "src") {
           image.src = `${source.split("?")[0]}?${params.toString()}`;
@@ -206,16 +174,16 @@ export const settingsInfo: Record<string, any> = {
     label: "Shader Type",
     description:
       "Sorry that most of the shaders are not yet ready for use.\nUsing the Simple shader brings back the old simplistic Mii Creator lighting from the early days.\n* Does not apply to 2D mode.",
-    default: "wiiu",
+    default: ShaderType.WiiU,
     choices: [
-      { label: "No Lighting", value: "lightDisabled" },
-      { label: "Simple", value: "none" },
-      { label: "Glossy", value: "wiiu_gloss" },
-      { label: "Wii U (Default)", value: "wiiu" },
-      { label: "Wii U (Blinn)", value: "wiiu_blinn" },
-      { label: "Wii U (Alt)", value: "wiiu_ffliconwithbody" },
-      { label: "Switch (WIP)", value: "switch", disabled: true },
-      { label: "Miitomo (WIP)", value: "miitomo", disabled: true },
+      { label: "No Lighting", value: ShaderType.LightDisabled },
+      { label: "Simple", value: ShaderType.Simple },
+      { label: "Glossy", value: ShaderType.WiiUGloss },
+      { label: "Wii U (Default)", value: ShaderType.WiiU },
+      { label: "Wii U (Blinn)", value: ShaderType.WiiUBlinn },
+      { label: "Wii U (Alt)", value: ShaderType.WiiUFFLIconWithBody },
+      { label: "Switch (WIP)", value: ShaderType.Switch, disabled: true },
+      { label: "Miitomo (WIP)", value: ShaderType.Miitomo, disabled: true },
     ],
   },
   bodyModel: {
@@ -223,11 +191,11 @@ export const settingsInfo: Record<string, any> = {
     label: "Body Model",
     description:
       "Pose selections are different depending on the body model you use.\n* Does not apply to 2D mode.",
-    default: "wiiu",
+    default: ShaderType.WiiU,
     choices: [
-      { label: "Wii U (default)", value: "wiiu" },
-      { label: "Switch", value: "switch", disabled: true },
-      { label: "Miitomo", value: "miitomo" },
+      { label: "Wii U (default)", value: BodyType.WiiU },
+      { label: "Switch", value: BodyType.WiiU, disabled: true },
+      { label: "Miitomo", value: BodyType.Miitomo },
     ],
   },
   bodyModelHands: {

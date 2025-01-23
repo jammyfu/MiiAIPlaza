@@ -41,6 +41,7 @@ import { MiiFavoriteColorIconTable } from "../../constants/ColorTables";
 import { getString as _ } from "../../l10n/manager";
 import { FFLiDatabaseRandom_Get } from "../../external/ffl/FFLiDatabaseRandom";
 import { replayUpdateNotice, Settings } from "./Settings";
+import { adjustShaderQuery, ShaderType, BodyType } from "../../constants/BodyShaderTypes";
 import { getSetting } from "../../util/SettingsHelper";
 import { GLTFExporter } from "three/examples/jsm/Addons.js";
 import {
@@ -68,29 +69,8 @@ export const miiIconUrl = (
   let params = new URLSearchParams();
 
   params.set("data", mii.encodeStudio().toString("hex"));
-  switch (currentShader) {
-    case "wiiu":
-    case "wiiu_gloss":
-      params.set("shaderType", "wiiu");
-      break;
-    case "none":
-    case "wiiu_blinn":
-      params.set("shaderType", "wiiu_blinn");
-      break;
-    case "wiiu_ffliconwithbody":
-      params.set("shaderType", "ffliconwithbody");
-      break;
-    case "switch":
-      params.set("shaderType", "switch");
-      break;
-    case "miitomo":
-      params.set("shaderType", "miitomo");
-      break;
-    case "lightDisabled":
-      params.set("shaderType", "wiiu");
-      params.set("lightEnable", "0");
-      break;
-  }
+  // set shader type in query params
+  adjustShaderQuery(params, currentShader);
   params.set("bodyType", currentBodyModel);
   params.set("type", view);
   params.set("width", width.toString());
@@ -126,11 +106,11 @@ export const miiIconUrl = (
   return `${url}?${params.toString()}`;
 };
 
-let currentShader: string = "wiiu";
+let currentShader: ShaderType = ShaderType.WiiU;
 document.addEventListener("library-shader-update", async () => {
   currentShader = await getSetting("shaderType");
 });
-let currentBodyModel: string = "wiiu";
+let currentBodyModel: BodyType = BodyType.WiiU;
 document.addEventListener("library-body-update", async () => {
   currentBodyModel = await getSetting("bodyModel");
 });
