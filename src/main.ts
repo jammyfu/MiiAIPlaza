@@ -13,6 +13,7 @@ declare global {
     buffer: Buf;
     localforage: LocalForage;
     LazyLoad: ILazyLoadInstance;
+    firstVisit: boolean;
   }
 }
 

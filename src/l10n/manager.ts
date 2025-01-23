@@ -13,7 +13,6 @@ async function setLanguage(lang: string, isFirst: boolean) {
     // HACK: get value of language since it
     // is always set and use as indicator
     // if this is the user's first visit.
-    //@ts-expect-error
     window.firstVisit = langValue === null; // bool
   }
   // initialize the key to default

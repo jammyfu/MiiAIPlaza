@@ -549,7 +549,6 @@ export async function displayUpdateNotice() {
   // Should the user see the update popup?
   const shouldSeeNotice =
     // Do not show to first time users
-    //@ts-expect-error
     !window.firstVisit && // NOTE: src/l10n/manager.ts
     // undefined = l10n manager did not run?, false = language key is null (never ran site)
     !isInIframe && // Do not show to API users
@@ -557,11 +556,9 @@ export async function displayUpdateNotice() {
     notSeenLatest;
 
   console.log(
-    //@ts-expect-error
     `notSeenLatest: ${notSeenLatest}\nfirstVisit: ${window.firstVisit}\nshould see update notice?: ${shouldSeeNotice}`
   );
 
-  //@ts-expect-error
   if (window.firstVisit && !isInIframe) {
     // First time? You have "seen" the current version
     await setSetting(seenKey, true);
