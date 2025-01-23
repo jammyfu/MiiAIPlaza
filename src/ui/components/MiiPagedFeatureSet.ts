@@ -328,7 +328,7 @@ export function MiiPagedFeatureSet(set: FeatureSet) {
 
                 featureRange.val(
                   item.inverse
-                    ? item.max - (tmpMii as Record<string, any>)[item.property]
+                    ? item.max - (tmpMii as Record<string, any>)[item.property] + item.min
                     : (tmpMii as Record<string, any>)[item.property]
                 );
 
