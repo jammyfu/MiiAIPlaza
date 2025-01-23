@@ -198,7 +198,7 @@ export const settingsInfo: Record<string, any> = {
     default: ShaderType.WiiU,
     choices: [
       { label: "Wii U (default)", value: BodyType.WiiU },
-      { label: "Switch", value: BodyType.WiiU, disabled: true },
+      { label: "Switch", value: BodyType.Switch, disabled: true },
       { label: "Miitomo", value: BodyType.Miitomo },
     ],
   },
