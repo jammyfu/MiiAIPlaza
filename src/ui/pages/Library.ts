@@ -1597,7 +1597,7 @@ const miiExportDownload = async (mii: MiiLocalforage, miiData: Mii) => {
             text: "Download CharInfo (Switch) file",
             async callback() {
               //if (!(await miiColorConversionWarning(miiData))) return;
-              const blob = new Blob([miiData.encodeCharinfo()]);
+              const blob = new Blob([miiData.encodeCharInfoSwitch()]);
               const url = URL.createObjectURL(blob);
 
               const a = document.createElement("a");
@@ -1655,7 +1655,7 @@ const miiExportDownload = async (mii: MiiLocalforage, miiData: Mii) => {
               new Html("span").class("h4").text("CharInfo (Switch) data (Hex)"),
               new Html("pre")
                 .class("pre-wrap", "mb-0")
-                .text(miiData.encodeCharinfo().toString("hex"))
+                .text(miiData.encodeCharInfoSwitch().toString("hex"))
             ),
             new Html("div").appendMany(
               new Html("span").class("h4").text("MiiC (Base64)"),
