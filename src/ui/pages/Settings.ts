@@ -5,6 +5,7 @@ import localforage from "localforage";
 import { getMusicManager } from "../../class/audio/MusicManager";
 import { getSoundManager } from "../../class/audio/SoundManager";
 import { getSetting, setSetting } from "../../util/SettingsHelper";
+import { adjustShaderQuery, ShaderType, BodyType } from "../../constants/BodyShaderTypes";
 import { Config } from "../../config";
 
 export const updateSettings = async (force: boolean = false) => {
@@ -63,30 +64,8 @@ export const updateSettings = async (force: boolean = false) => {
         params.delete("shaderType");
         params.delete("lightEnable");
 
-        // TODO: probably shouldn't hard-code this and it should be a constant lookup table or something
-        switch (currentShader) {
-          case "wiiu":
-          case "wiiu_gloss":
-            params.set("shaderType", "0");
-            break;
-          case "none":
-          case "wiiu_blinn":
-            params.set("shaderType", "3");
-            break;
-          case "wiiu_ffliconwithbody":
-            params.set("shaderType", "4");
-            break;
-          case "switch":
-            params.set("shaderType", "1");
-            break;
-          case "miitomo":
-            params.set("shaderType", "2");
-            break;
-          case "lightDisabled":
-            params.set("shaderType", "0");
-            params.set("lightEnable", "0");
-            break;
-        }
+        // set shader type in query params
+        adjustShaderQuery(params, currentShader);
 
         if (sourceToUpdate === "src") {
           image.src = `${source.split("?")[0]}?${params.toString()}`;
@@ -114,19 +93,8 @@ export const updateSettings = async (force: boolean = false) => {
 
         params.delete("bodyType");
 
-        // TODO: probably shouldn't hard-code this and it should be a constant lookup table or something
-        switch (bodyType) {
-          case "wiiu":
-          case "lightDisabled":
-            params.set("bodyType", "0");
-            break;
-          case "switch":
-            params.set("bodyType", "1");
-            break;
-          case "miitomo":
-            params.set("bodyType", "2");
-            break;
-        }
+        // assuming the bodyType string is supported on the server
+        params.set("bodyType", bodyType);
 
         if (sourceToUpdate === "src") {
           image.src = `${source.split("?")[0]}?${params.toString()}`;
@@ -206,16 +174,16 @@ export const settingsInfo: Record<string, any> = {
     label: "Shader Type",
     description:
       "Sorry that most of the shaders are not yet ready for use.\nUsing the Simple shader brings back the old simplistic Mii Creator lighting from the early days.\n* Does not apply to 2D mode.",
-    default: "wiiu",
+    default: ShaderType.WiiU,
     choices: [
-      { label: "No Lighting", value: "lightDisabled" },
-      { label: "Simple", value: "none" },
-      { label: "Glossy", value: "wiiu_gloss" },
-      { label: "Wii U (Default)", value: "wiiu" },
-      { label: "Wii U (Blinn)", value: "wiiu_blinn" },
-      { label: "Wii U (Alt)", value: "wiiu_ffliconwithbody" },
-      { label: "Switch (WIP)", value: "switch", disabled: true },
-      { label: "Miitomo (WIP)", value: "miitomo", disabled: true },
+      { label: "No Lighting", value: ShaderType.LightDisabled },
+      { label: "Simple", value: ShaderType.Simple },
+      { label: "Glossy", value: ShaderType.WiiUGloss },
+      { label: "Wii U (Default)", value: ShaderType.WiiU },
+      { label: "Wii U (Blinn)", value: ShaderType.WiiUBlinn },
+      { label: "Wii U (Alt)", value: ShaderType.WiiUFFLIconWithBody },
+      { label: "Switch (WIP)", value: ShaderType.Switch, disabled: true },
+      { label: "Miitomo (WIP)", value: ShaderType.Miitomo, disabled: true },
     ],
   },
   bodyModel: {
@@ -223,11 +191,11 @@ export const settingsInfo: Record<string, any> = {
     label: "Body Model",
     description:
       "Pose selections are different depending on the body model you use.\n* Does not apply to 2D mode.",
-    default: "wiiu",
+    default: ShaderType.WiiU,
     choices: [
-      { label: "Wii U (default)", value: "wiiu" },
-      { label: "Switch", value: "switch", disabled: true },
-      { label: "Miitomo", value: "miitomo" },
+      { label: "Wii U (default)", value: BodyType.WiiU },
+      { label: "Switch", value: BodyType.WiiU, disabled: true },
+      { label: "Miitomo", value: BodyType.Miitomo },
     ],
   },
   bodyModelHands: {
@@ -567,14 +535,34 @@ export async function replayUpdateNotice() {
 }
 
 export async function displayUpdateNotice() {
-  const hasSeenLatestUpdate = await getSetting(
-    `has-seen-${Config.version.string}`
-  );
-  console.log(hasSeenLatestUpdate);
-  if (hasSeenLatestUpdate === false || hasSeenLatestUpdate === null) {
+  const seenKey = `has-seen-${Config.version.string}`;
+  const seenValue = await getSetting(seenKey);
+  const notSeenLatest = (seenValue === false || seenValue === null);
+
+  // https://stackoverflow.com/a/326076
+  const isInIframe = window.self !== window.top;
+
+  // Should the user see the update popup?
+  const shouldSeeNotice =
+    // Do not show to first time users
+    //@ts-expect-error
+    !window.firstVisit // NOTE: src/l10n/manager.ts
+    // undefined = l10n manager did not run?, false = language key is null (never ran site)
+    && !isInIframe // Do not show to API users
+    // Show if has-seen key doesn't exist
+    && notSeenLatest;
+
+  //@ts-expect-error
+  console.log(`notSeenLatest: ${notSeenLatest}\nfirstVisit: ${window.firstVisit}\nshould see update notice?: ${shouldSeeNotice}`);
+
+  //@ts-expect-error
+  if (window.firstVisit && !isInIframe) {
+    // First time? You have "seen" the current version
+    await setSetting(seenKey, true);
+  } else if (shouldSeeNotice) {
     let m = Modal.modal(
       `New Update: ${Config.version.string}`,
-      "Yes new update",
+      "Yes new update", // placeholder will be replaced
       "body",
       {
         text: "OK",

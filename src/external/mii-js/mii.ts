@@ -1227,43 +1227,37 @@ export default class Mii {
     return miiStudioData;
   }
 
-  // CharInfo (Switch) encoding function courtesy of Timimimi
-  public encodeCharinfo(): Buffer {
+  // Encoding for Switch CharInfo (nn::mii::CharInfo) format
+  // Originally implemented by Timiimiimii: https://github.com/Timiimiimii
+  public encodeCharInfoSwitch(): Buffer {
     this.validate(); // * Don't write invalid Mii data
 
     // TODO - Maybe create a new stream instead of modifying the original?
     this.bitStream.bitSeek(0);
 
-    this.bitStream.writeUint8(RandomInt(255));
-    this.bitStream.writeUint8(RandomInt(255));
-    this.bitStream.writeUint8(RandomInt(255));
-    this.bitStream.writeUint8(RandomInt(255));
-    this.bitStream.writeUint8(RandomInt(255));
-    this.bitStream.writeUint8(RandomInt(255));
-    this.bitStream.writeUint8(RandomInt(255));
-    this.bitStream.writeUint8(RandomInt(255));
-    this.bitStream.writeUint8(RandomInt(255));
-    this.bitStream.writeUint8(RandomInt(255));
-    this.bitStream.writeUint8(RandomInt(255));
-    this.bitStream.writeUint8(RandomInt(255));
-    this.bitStream.writeUint8(RandomInt(255));
-    this.bitStream.writeUint8(RandomInt(255));
-    this.bitStream.writeUint8(RandomInt(255));
-    this.bitStream.writeUint8(RandomInt(255));
-    //listen idk what those are and im testing this
+    // Write createID field (nn::mii::CreateId).
+    for (let i = 0; i < 16; i++) { // UUIDv4 length
+      let r = RandomInt(255);
+      if (i == 8) { // If this is the 8th field...
+        // Set bits checked by nn::mii::CreateId::IsValid() on Switch
+        r &= 0b00111111; r |= 0b10000000;
+      }
+      this.bitStream.writeUint8(r); // Write
+    }
+
     this.bitStream.writeUTF16String(this.miiName);
 
-    this.bitStream.writeUint8(0);
-    this.bitStream.writeUint8(0);
-    this.bitStream.writeUint8(0);
-    // i mean. it works but.
+    this.bitStream.writeUint8(0); // Padding for name
+    this.bitStream.writeUint8(this.characterSet);
+    this.bitStream.writeUint8(0); // ???
 
     this.bitStream.writeUint8(this.favoriteColor);
     this.bitStream.writeUint8(this.gender);
     this.bitStream.writeUint8(this.height);
     this.bitStream.writeUint8(this.build);
-    this.bitStream.writeUint8(this.normalMii);
-    this.bitStream.writeUint8(this.regionLock); //region move? idk im putting this in now
+    // type field - 0 = normal, 1 = special, inverse
+    this.bitStream.writeUint8(!this.normalMii);
+    this.bitStream.writeUint8(this.regionLock);
 
     this.bitStream.writeUint8(this.faceType);
     this.bitStream.writeUint8(this.trueSkinColor);
@@ -1337,9 +1331,8 @@ export default class Mii {
     this.bitStream.writeUint8(this.moleXPosition);
     this.bitStream.writeUint8(this.moleYPosition);
 
-    this.bitStream.writeUint8(0); //always zero
+    this.bitStream.writeUint8(0); // Always zero.
 
-    // pray that this flarking works
     return Buffer.from(this.bitStream.view._view).slice(0, 0x58);
   }
 
@@ -1371,7 +1364,7 @@ export default class Mii {
       ...STUDIO_RENDER_DEFAULTS,
       ...queryParams,
       data: this.encodeStudio().toString("hex"),
-      shaderType: 0,
+      shaderType: "default",
     };
 
     let fileExt = "png";

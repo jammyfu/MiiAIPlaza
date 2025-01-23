@@ -33,6 +33,7 @@ import {
   type DrawParamMaterial,
 } from "./SwitchShaderMaterials";
 import type Mii from "../../../external/mii-js/mii";
+import { ShaderType } from "../../../constants/BodyShaderTypes";
 import { getSetting } from "../../../util/SettingsHelper";
 import { miitomoFragmentShader, miitomoVertexShader } from "./MiitomoShader";
 
@@ -85,12 +86,12 @@ export async function traverseMesh(node: THREE.Mesh, mpCharInfo: Mii) {
   // reused for extra materials
   function modifyMaterialParam() {
     // Wii U shader modifiers
-    if (shaderSetting === "wiiu_blinn") {
+    if (shaderSetting === ShaderType.WiiUBlinn) {
       materialParam = { ...materialParam, ...FFLBlinnMaterial };
-    } else if (shaderSetting === "wiiu_gloss") {
+    } else if (shaderSetting === ShaderType.WiiUGloss) {
       materialParam = { ...materialParam, ...FFLGlossMaterial };
       lightDir = cLightDirGlossy;
-    } else if (shaderSetting === "wiiu_ffliconwithbody") {
+    } else if (shaderSetting === ShaderType.WiiUFFLIconWithBody) {
       lightDir = cLightDirFFLIconWithBody;
       lightAmbient = cLightAmbientFFLIconWithBody;
       lightDiffuse = cLightDiffuseFFLIconWithBody;
@@ -115,7 +116,7 @@ export async function traverseMesh(node: THREE.Mesh, mpCharInfo: Mii) {
   }
   THREE.ColorManagement.enabled = false;
 
-  if (shaderSetting === "none") {
+  if (shaderSetting === ShaderType.Simple) {
     THREE.ColorManagement.enabled = true;
 
     if (
@@ -182,7 +183,7 @@ export async function traverseMesh(node: THREE.Mesh, mpCharInfo: Mii) {
 
   let finalMat: THREE.Material;
 
-  if (shaderSetting === "switch") {
+  if (shaderSetting === ShaderType.Switch) {
     /* Do A LOTTA Calculations */
     let drawParamMaterial: DrawParamMaterial;
     let commonColor: number = 0; // failsafe common color set
@@ -524,7 +525,7 @@ export async function traverseMesh(node: THREE.Mesh, mpCharInfo: Mii) {
         alphaTest: originalMaterial.alphaTest, // Handle alpha testing
       });
     }
-  } else if (shaderSetting === "lightDisabled") {
+  } else if (shaderSetting === ShaderType.LightDisabled) {
     // it's easier to use the shader w/ lightEnable set to false for this
     // as MeshBasicMaterial is too bright
     finalMat = new THREE.ShaderMaterial({
@@ -556,7 +557,7 @@ export async function traverseMesh(node: THREE.Mesh, mpCharInfo: Mii) {
       transparent: originalMaterial.transparent, // Handle transparency
       alphaTest: originalMaterial.alphaTest, // Handle alpha testing
     });
-  } else if (shaderSetting === "miitomo") {
+  } else if (shaderSetting === ShaderType.Miitomo) {
     console.log("You are using Miitomo shader :)");
     finalMat = new THREE.ShaderMaterial({
       vertexShader: miitomoVertexShader,
