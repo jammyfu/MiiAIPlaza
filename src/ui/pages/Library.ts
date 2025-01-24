@@ -1875,7 +1875,7 @@ export async function customRender(miiData: Mii) {
       label: "Pose",
       header: new Html("div").appendMany(
         new Html("span").html(
-          'Change the Body Model option in Settings to get many different options of poses!\n\nDo you like the Mii that does the poses? His name is "dummy".&nbsp;'
+          'Change the Body Model option in Settings to get many different options of poses!<br/><br/>Do you like the Mii that does the poses? His name is "dummy".&nbsp;'
         ),
         new Html("a").text("Click here").on("click", (e) => {
           // goodbye custom render :(
