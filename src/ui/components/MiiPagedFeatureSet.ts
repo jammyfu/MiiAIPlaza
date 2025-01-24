@@ -86,7 +86,8 @@ export type FeatureSetItem =
   | FeatureSetMiscItem;
 export interface FeatureSetEntry {
   label: string;
-  header?: string;
+  header?: Html | string;
+  headerIsHtml?: boolean;
   validationProperty?: string;
   // value
   validationFunction?: Function;
@@ -128,9 +129,15 @@ export function MiiPagedFeatureSet(set: FeatureSet) {
           .appendTo(content);
 
         if (entry.header) {
-          setList.append(
-            new Html("div").class("feature-set-header").text(entry.header)
-          );
+          const header = new Html("div").class("feature-set-header");
+
+          if (entry.headerIsHtml !== undefined) {
+            header.append(entry.header);
+          } else {
+            header.text(entry.header as string);
+          }
+
+          setList.append(header);
         }
 
         if ("items" in entry) {
@@ -328,7 +335,9 @@ export function MiiPagedFeatureSet(set: FeatureSet) {
 
                 featureRange.val(
                   item.inverse
-                    ? item.max - (tmpMii as Record<string, any>)[item.property] + item.min
+                    ? item.max -
+                        (tmpMii as Record<string, any>)[item.property] +
+                        item.min
                     : (tmpMii as Record<string, any>)[item.property]
                 );
 

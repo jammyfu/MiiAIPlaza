@@ -522,6 +522,54 @@ type MiiLocalforage = {
   mii: string;
 };
 
+async function importMiiConfirmation(
+  mii: Mii,
+  source: string,
+  title: string = "Mii Import"
+) {
+  var m2 = Modal.modal(
+    title,
+    "",
+    "body",
+    {
+      text: "Cancel",
+    },
+    {
+      text: "Don't Save",
+    },
+    {
+      text: "Save",
+      async callback(e) {
+        const id = await newMiiId();
+        await localforage.setItem(id, mii.encode().toString("base64"));
+        shutdown();
+        Library(id);
+      },
+    }
+  );
+
+  m2.qs(".modal-content")!.styleJs({ maxWidth: "100%", maxHeight: "100%" });
+  m2.qs(".modal-body span")!.cleanup();
+
+  m2.qs(".modal-body")!
+    .style({ "align-items": "center", gap: "1.5rem" })
+    .prependMany(
+      new Html("span").text(`Do you want to save this Mii?`),
+      new Html("small").text(source),
+      new Html("span")
+        .style({ "font-size": "20px" })
+        .text(`${mii.miiName} has arrived!`),
+      new Html("img")
+        .attr({
+          src: miiIconUrl(mii, "qr_code", "all_body_sugar", 260),
+        })
+        .style({
+          width: "260px",
+          height: "260px",
+          "object-fit": "contain",
+        })
+    );
+}
 const miiCreateDialog = () => {
   const m = Modal.modal(
     "New Mii",
@@ -751,48 +799,7 @@ const miiScanQR = async () => {
       qrReturnToMenu = false;
       m.qs(".modal-header button")?.elm.click();
     }
-    var m2 = Modal.modal(
-      "Mii QR Scanned",
-      "",
-      "body",
-      {
-        text: "Cancel",
-      },
-      {
-        text: "Don't Save",
-      },
-      {
-        text: "Save",
-        async callback(e) {
-          const id = await newMiiId();
-          await localforage.setItem(id, mii.encode().toString("base64"));
-          shutdown();
-          Library(id);
-        },
-      }
-    );
-
-    m2.qs(".modal-content")!.styleJs({ maxWidth: "100%", maxHeight: "100%" });
-    m2.qs(".modal-body span")!.cleanup();
-
-    m2.qs(".modal-body")!
-      .style({ "align-items": "center", gap: "1.5rem" })
-      .prependMany(
-        new Html("span").text(`Do you want to save this Mii?`),
-        new Html("small").text(source),
-        new Html("span")
-          .style({ "font-size": "20px" })
-          .text(`${mii.miiName} has arrived!`),
-        new Html("img")
-          .attr({
-            src: miiIconUrl(mii, "qr_code", "all_body_sugar", 260),
-          })
-          .style({
-            width: "260px",
-            height: "260px",
-            "object-fit": "contain",
-          })
-      );
+    importMiiConfirmation(mii, source, "Mii QR Scanned");
   }
 
   // initialize qr callback for data handling
@@ -1866,8 +1873,28 @@ export async function customRender(miiData: Mii) {
     // },
     pose: {
       label: "Pose",
-      header:
-        "Change the Body Model option in Settings to get many different options of poses!\n\nUse option 0 here for the default animation.",
+      header: new Html("div").appendMany(
+        new Html("span").html(
+          'Change the Body Model option in Settings to get many different options of poses!\n\nDo you like the Mii that does the poses? His name is "dummy".&nbsp;'
+        ),
+        new Html("a").text("Click here").on("click", (e) => {
+          // goodbye custom render :(
+          scene.shutdown();
+          parent.cleanup();
+          modal.qs("button")?.elm.click();
+
+          // easter egg !!!!!
+          const mii = new Mii(
+            Buffer.from(
+              "A4EAwAAAAAAAAAAAgP9wmQAAAAAAAAAAAABkAHUAbQBtAHkAAAAAAAAAAAAAAEBAEgAeARJoYxoHA2YWIRQTZgwAAAEAUkhQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIWBAAAICAAAAAAAAGQA",
+              "base64"
+            )
+          );
+          importMiiConfirmation(mii, "Mii Creator Test Mii");
+        }),
+        new Html("span").html("&nbsp;to obtain him in your library :)")
+      ),
+      headerIsHtml: true,
       items: ArrayNum(poseCount).map((k) => ({
         type: FeatureSetType.Icon,
         value: k,

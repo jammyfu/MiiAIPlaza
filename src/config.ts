@@ -31,8 +31,8 @@ export const Config = {
     // ^^ scaleLimit, scaleLimitClampY, scaleApply
   },
   version: {
-    string: "v0.9.0",
-    name: "QR code & MiiC v3 support",
+    string: "v0.9.1",
+    name: "Patch Update",
 
     // ignore that I'm just writing HTML here
     changelog: `
@@ -50,6 +50,16 @@ export const Config = {
       <p style="margin-bottom:0"><strong style="color:var(--error-color)">Please <a href="mailto:datkat21.yt@gmail.com">contact me</a> <small>(kat21)</small> if you have any feedback, feature requests, or bug reports.</strong></p>
       <small>(Some people are just not aware that kat21 made this app, not ariankordi. if you are one of those people you should know by now. Also this project is named "Mii Creator", not "Mii Creator Web," or any other "mii maker" thing. 🙂)</small>
     </div>
+
+    <h3>NEW: v0.9.1 - Patch Update</h3>
+
+    <ul style="display:flex;flex-direction:column;gap:8px;line-height:1.75rem">
+      <li>Bug fix the contact menu not closing</li>
+      <li>Wii U theme small design tweaks to fix some stuff broken by the new UI</li>
+      <li>Rename "Glossy" shader to "Toon"</li>
+      <li>Fix a bug where the Wii U animations were sped up.</li>
+      <li style="color:var(--error-color)">You can now obtain the placeholder Mii used in the pose renders from the custom render menu!</li>
+    </ul>
 
     <h3>The new changes</h3>
 
