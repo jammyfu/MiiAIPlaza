@@ -216,7 +216,11 @@ export async function Library(highlightMiiId?: string) {
       });
 
       // Special
-      if (miiData.normalMii === false || miiData.favorite === true) {
+      if (
+        miiData.normalMii === false ||
+        miiData.favorite === true ||
+        specialMii
+      ) {
         const star = new Html("i")
           .style({ position: "absolute", top: "-22px", right: "-18px" })
 
