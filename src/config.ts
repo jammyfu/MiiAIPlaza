@@ -58,7 +58,7 @@ export const Config = {
       <li>Wii U theme small design tweaks to fix some stuff broken by the new UI</li>
       <li>Rename "Glossy" shader to "Toon"</li>
       <li>Fix a bug where the Wii U animations were sped up.</li>
-      <li style="color:var(--error-color)">You can now obtain the placeholder Mii used in the pose renders from the custom render menu!</li>
+      <li style="color:var(--error-color)">Secret Special Miis can be obtained through random menus (there is only 1 for now)</li>
     </ul>
 
     <h3>The new changes</h3>
