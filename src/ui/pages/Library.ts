@@ -225,7 +225,7 @@ export async function Library(highlightMiiId?: string) {
         if (miiData.favorite === true) {
           star.html(EditorIcons.favorite).style({ color: cPantsColorRedHex });
         }
-        if (miiData.normalMii === false) {
+        if (miiData.normalMii === false || specialMii) {
           star.html(EditorIcons.special).style({ color: cPantsColorGoldHex });
         }
       }
