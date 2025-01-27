@@ -435,8 +435,10 @@ export class MiiEditor {
               Config.renderer.renderFullBodyURL
             }&data=${encodeURIComponent(
               this.mii.encodeStudio().toString("hex")
-            )}&hatType=${this.mii.extHatType}&hatColor=${
-              this.mii.extHatColor
+            )}&${Config.renderer.hatTypeParam}=${
+              this.mii.extHatType + Config.renderer.hatTypeAdd
+            }&${Config.renderer.hatColorParam}=${
+              this.mii.extHatColor + Config.renderer.hatColorAdd
             }&miic=${encodeURIComponent(
               this.mii.encode().toString("base64")
             )}&pantsColor=${pantsColor}`,

@@ -89,10 +89,16 @@ export const miiIconUrl = (
   );
 
   if (mii.extHatType !== 0) {
-    params.set("hatType", String(mii.extHatType));
+    params.set(
+      Config.renderer.hatTypeParam,
+      String(mii.extHatType + Config.renderer.hatTypeAdd)
+    );
   }
   if (mii.extHatColor !== 0) {
-    params.set("hatColor", String(mii.extHatColor));
+    params.set(
+      Config.renderer.hatColorParam,
+      String(mii.extHatColor + Config.renderer.hatColorAdd)
+    );
   }
 
   // params.set(
@@ -204,9 +210,11 @@ export async function Library(highlightMiiId?: string) {
       let extraData = "";
       // hat
       if (miiData.extHatType !== 0) {
-        extraData += `&hatType=${encodeURIComponent(
-          miiData.extHatType
-        )}&hatColor=${encodeURIComponent(miiData.extHatColor)}`;
+        extraData += `&${Config.renderer.hatTypeParam}=${encodeURIComponent(
+          miiData.extHatType + Config.renderer.hatTypeAdd
+        )}&${Config.renderer.hatColorParam}=${encodeURIComponent(
+          miiData.extHatColor + Config.renderer.hatColorAdd
+        )}`;
       }
 
       let miiImage = new Html("img").class("lazy").attr({

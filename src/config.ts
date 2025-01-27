@@ -1,8 +1,12 @@
 // Configuration file used client-side.
 
 // Instance of FFL-Testing/Mii Studio API compatible renderer.
-const baseURL = "https://mii-renderer.nxw.pw/miis/image";
+// const baseURL = "http://localhost:5000/miis/image"; // <-- Uncomment this when using local FFL-testing for development
+const baseURL = "https://mii-renderer.nxw.pw/miis/image"; // <-- Comment this when committing for prod
 // ^^ image.png, image.glb
+const newApiParams = false;
+// false if using FFL-Testing-with-hats
+// true if using new FFL-Testing version with headwear
 
 // Origin used for NNID, PNID, and random NNID fetch.
 // Details: https://github.com/ariankordi/nwf-mii-cemu-toy/blob/ffl-renderer-proto-integrate/README.md
@@ -17,6 +21,12 @@ export const Config = {
     renderFullBodyURL: `${baseURL}.png?shaderType=wiiu&type=all_body_sugar&width=420&verifyCharInfo=0&scale=1`,
     render3DHeadURL: `${baseURL}.glb?shaderType=wiiu&type=face&width=260&verifyCharInfo=0`,
     renderFaceURL: `${baseURL}.png?scale=1&drawStageMode=mask_only&verifyCharInfo=0`,
+
+    // Parameters determined by the specific version of the server used
+    hatTypeParam: newApiParams ? "headwearIndex" : "hatType",
+    hatTypeAdd: newApiParams ? 0 : 0,
+    hatColorParam: newApiParams ? "headwearColor" : "hatColor",
+    hatColorAdd: newApiParams ? -1 : 0,
   },
   dataFetch: {
     // For fetching data from various sources.
