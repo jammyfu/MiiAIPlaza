@@ -6,17 +6,19 @@ export class Mii2DRenderer {
   #ctx: CanvasRenderingContext2D;
   mii: Mii;
 
-  #headImage!: HTMLImageElement;
+  #headImageFront!: HTMLImageElement;
+  #headImageBack!: HTMLImageElement;
   #bodyImage!: HTMLImageElement;
-  #pantsImage!: HTMLImageElement;
+  // #pantsImage!: HTMLImageElement;
 
   constructor(parent: HTMLElement, mii: Mii) {
     this.mii = mii;
 
     // init canvas images
-    this.#headImage = new Image();
+    this.#headImageFront = new Image();
+    this.#headImageBack = new Image();
     this.#bodyImage = new Image();
-    this.#pantsImage = new Image();
+    // this.#pantsImage = new Image();
 
     const canvas = document.createElement("canvas");
     canvas.width = 1024;
@@ -50,16 +52,23 @@ export class Mii2DRenderer {
       this.mii.miiName
     )}&creatorName=${encodeURIComponent(this.mii.creatorName)}`;
 
-    const bodyImgURL = `./assets/images/2d/m-body-0.png`;
-    const pantImageURL = `./assets/images/2d/m-legs-gray.png`;
+    // const bodyImgURL = `./assets/images/2d/m-body-0.png`;
+    // const pantImageURL = `./assets/images/2d/m-legs-gray.png`;
 
-    this.#headImage.src = headImgURL;
-    this.#bodyImage.src = bodyImgURL;
-    this.#pantsImage.src = pantImageURL;
+    this.#headImageFront.src = headImgURL + "&splitMode=front";
+    this.#headImageBack.src = headImgURL + "&splitMode=back";
+    this.#bodyImage.src = this.mii.studioAssetUrlBody(); // bodyImgURL;
+    // this.#pantsImage.src = pantImageURL;
 
     await Promise.all([
       new Promise((resolve) => {
-        this.#headImage.onload = () => {
+        this.#headImageFront.onload = () => {
+          console.log("Head image loaded");
+          resolve(true);
+        };
+      }),
+      new Promise((resolve) => {
+        this.#headImageBack.onload = () => {
           console.log("Head image loaded");
           resolve(true);
         };
@@ -70,12 +79,12 @@ export class Mii2DRenderer {
           resolve(true);
         };
       }),
-      new Promise((resolve) => {
-        this.#pantsImage.onload = () => {
-          console.log("Pant image loaded");
-          resolve(true);
-        };
-      }),
+      // new Promise((resolve) => {
+      //   this.#pantsImage.onload = () => {
+      //     console.log("Pant image loaded");
+      //     resolve(true);
+      //   };
+      // }),
     ]);
   }
 
@@ -93,21 +102,28 @@ export class Mii2DRenderer {
     this.#ctx.clearRect(0, 0, this.#canvas.width, this.#canvas.height);
 
     this.#ctx.drawImage(
+      this.#headImageBack,
+      this.#canvas.width / 4,
+      headYPos,
+      this.#canvas.width / 2,
+      this.#canvas.height / 2
+    );
+    this.#ctx.drawImage(
       this.#bodyImage,
       bodyXPos,
       bodyYPos,
       bodyWidth,
       bodyHeight
     );
+    // this.#ctx.drawImage(
+    //   this.#pantsImage,
+    //   bodyXPos,
+    //   bodyYPos,
+    //   bodyWidth,
+    //   bodyHeight
+    // );
     this.#ctx.drawImage(
-      this.#pantsImage,
-      bodyXPos,
-      bodyYPos,
-      bodyWidth,
-      bodyHeight
-    );
-    this.#ctx.drawImage(
-      this.#headImage,
+      this.#headImageFront,
       this.#canvas.width / 4,
       headYPos,
       this.#canvas.width / 2,
