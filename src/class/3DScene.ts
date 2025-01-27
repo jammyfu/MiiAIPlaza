@@ -29,6 +29,7 @@ import { HatType, HatTypeList } from "../constants/Extensions";
 import localforage from "localforage";
 import { traverseAddShader, traverseMesh } from "./3d/shader/ShaderUtils";
 import { getSetting } from "../util/SettingsHelper";
+import { ShaderType } from "../constants/BodyShaderTypes";
 
 export enum CameraPosition {
   MiiHead,
@@ -1098,8 +1099,12 @@ export class Mii3DScene {
                 );
 
                 if (tex) {
-                  // Initialize the texture on the GPU to prevent lag frames
+                  // Simple shader mask color space fix
+                  if ((await getSetting("shaderType")) === ShaderType.Simple) {
+                    tex.colorSpace = "srgb";
+                  }
                   tex.flipY = false;
+                  // Initialize the texture on the GPU to prevent lag frames
                   this.#renderer.initTexture(tex);
 
                   child.material = new THREE.MeshStandardMaterial({
