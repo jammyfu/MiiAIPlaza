@@ -552,6 +552,8 @@ export async function Settings() {
         break;
     }
   }
+  
+  await checkConditions();
 }
 
 export async function replayUpdateNotice() {
