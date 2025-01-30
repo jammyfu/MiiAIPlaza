@@ -193,7 +193,7 @@ export const settingsInfo: Record<string, any> = {
   simpleShaderLegacyColors: {
     type: "checkbox",
     label: "Use legacy colors for Simple shader",
-    default: true,
+    default: false,
     condition: (settings: any) => settings.shaderType === ShaderType.Simple,
     description: "Bring back the old, brighter body and pants colors.",
   },
@@ -552,7 +552,7 @@ export async function Settings() {
         break;
     }
   }
-  
+
   await checkConditions();
 }
 
