@@ -2,8 +2,7 @@ import type { RGBColor } from "../class/3d/shader/fflShaderConst";
 
 export type MiiLookupTableHex = Record<number, number>;
 export type MiiLookupTableString = Record<number, string>;
-export type MiiLookupTableVec3 = Record<number, [number, number, number]>;
-export type MiiLookupTableVec4 = Record<number, RGBColor>;
+export type MiiLookupTableVec3 = Record<number, RGBColor>;
 export type MiiLookupTableSpecial = Record<
   number,
   { top: string; bottom: string }
@@ -38,7 +37,7 @@ export const MiiFavoriteColorLookupTable: MiiLookupTableHex = {
   11: 0x181814,
 };
 
-export const MiiFavoriteColorVec4Table: MiiLookupTableVec4 = {
+export const MiiFavoriteColorVec4Table: MiiLookupTableVec3 = {
   0: [0.8235294117647058, 0.11764705882352941, 0.0784313725490196],
   1: [1, 0.43137254901960786, 0.09803921568627451],
   2: [1, 0.8470588235294118, 0.12549019607843137],

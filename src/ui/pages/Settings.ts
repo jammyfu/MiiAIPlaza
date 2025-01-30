@@ -190,6 +190,13 @@ export const settingsInfo: Record<string, any> = {
       { label: "Miitomo (WIP)", value: ShaderType.Miitomo, disabled: true },
     ],
   },
+  simpleShaderLegacyColors: {
+    type: "checkbox",
+    label: "Use legacy colors for Simple shader",
+    default: true,
+    condition: (settings: any) => settings.shaderType === ShaderType.Simple,
+    description: "Bring back the old, brighter body and pants colors.",
+  },
   bodyModel: {
     type: "multi",
     label: "Body Model",
@@ -335,6 +342,30 @@ export async function Settings() {
   modalBody.elm.style.setProperty("align-items", "flex-start", "important");
   modalBody.elm.style.setProperty("max-width", "600px");
 
+  async function checkConditions() {
+    const items = [...elements];
+
+    const allSettings: Record<string, any> = {};
+
+    for (const key in settingsInfo) {
+      allSettings[key] = await getSetting(key);
+    }
+
+    for (const [key, element] of items) {
+      if (settingsInfo[key].condition) {
+        let result = settingsInfo[key].condition(allSettings);
+
+        if (result === true) {
+          element.style.display = "flex";
+        } else {
+          element.style.display = "none";
+        }
+      }
+    }
+  }
+
+  let elements: Map<string, HTMLElement> = new Map();
+
   for (const key in settingsInfo) {
     let prefixedKey = prefix + key;
 
@@ -346,7 +377,7 @@ export async function Settings() {
 
     switch (settingsInfo[key].type) {
       case "checkbox":
-        modalBody.append(
+        const checkboxDiv = new Html("div").class("col").appendMany(
           new Html("div")
             .class("flex-group")
             .style({ "justify-content": "flex-start" })
@@ -368,6 +399,7 @@ export async function Settings() {
                       (e.target as HTMLInputElement).checked
                     );
                     updateSettings();
+                    checkConditions();
                   }),
                 "hover",
                 "select_misc"
@@ -375,13 +407,11 @@ export async function Settings() {
               new Html("label")
                 .attr({ for: prefixedKey })
                 .text(settingsInfo[key].label)
-            )
+            ),
+          new Html("small").text(settingsInfo[key].description)
         );
-        if (settingsInfo[key].description) {
-          modalBody.append(
-            new Html("small").text(settingsInfo[key].description)
-          );
-        }
+        elements.set(key, checkboxDiv.elm);
+        modalBody.append(checkboxDiv);
         break;
       case "multi":
         const val = await localforage.getItem(prefixedKey);
@@ -447,6 +477,7 @@ export async function Settings() {
                   await localforage.setItem(prefixedKey, c.value);
                 }
                 updateSettings();
+                checkConditions();
                 const t = e.target as HTMLElement;
                 t.parentElement!.querySelectorAll(
                   `[data-setting="${prefixedKey}"]`
@@ -475,8 +506,8 @@ export async function Settings() {
             return button;
           })
         );
-        console.log(options);
-        modalBody.appendMany(
+
+        let multiDiv = new Html("div").class("col").appendMany(
           new Html("label").text(settingsInfo[key].label),
           new Html("small").text(settingsInfo[key].description),
           new Html("div")
@@ -484,9 +515,11 @@ export async function Settings() {
             .style({ "justify-content": "flex-start" })
             .appendMany(...options)
         );
+        elements.set(key, multiDiv.elm);
+        modalBody.append(multiDiv);
         break;
       case "non-settings-multi":
-        modalBody.appendMany(
+        const nonSettingsMulti = new Html("div").class("col").appendMany(
           new Html("label").text(settingsInfo[key].label),
           new Html("small").text(settingsInfo[key].description),
           new Html("div")
@@ -514,6 +547,8 @@ export async function Settings() {
               })
             )
         );
+        elements.set(key, nonSettingsMulti.elm);
+        modalBody.append(nonSettingsMulti);
         break;
     }
   }
