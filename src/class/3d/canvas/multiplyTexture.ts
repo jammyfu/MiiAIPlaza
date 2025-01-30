@@ -30,6 +30,9 @@ export function multiplyTexture(tex: Texture, color: FFLColor) {
     RGBAFormat,
     UnsignedByteType
   );
+  modifiedTexture.repeat = tex.repeat;
+  modifiedTexture.wrapS = tex.wrapS;
+  modifiedTexture.wrapT = tex.wrapT;
   modifiedTexture.needsUpdate = true;
 
   return modifiedTexture;
