@@ -130,8 +130,24 @@ export async function traverseMesh(node: THREE.Mesh, mpCharInfo: Mii) {
         blending: THREE.CustomBlending,
         blendDstAlpha: THREE.OneFactor,
         transparent: originalMaterial.transparent,
-        alphaTest: 0.5,
+        alphaTest: 0,
         reflectivity: 0,
+      });
+      node.material = nonShaderMaterial;
+    } else if (
+      modulateType === cMaterialName.FFL_MODULATE_TYPE_SHAPE_BODY ||
+      modulateType === cMaterialName.FFL_MODULATE_TYPE_SHAPE_PANTS
+    ) {
+      const nonShaderMaterial = new THREE.MeshPhysicalMaterial({
+        color: originalMaterial.color,
+        side: originalMaterial.side,
+        map: originalMaterial.map,
+        blending: THREE.CustomBlending,
+        blendDstAlpha: THREE.OneFactor,
+        transparent: originalMaterial.transparent,
+        alphaTest: originalMaterial.alphaTest,
+        metalness: 1,
+        roughness: 1,
       });
       node.material = nonShaderMaterial;
     } else {

@@ -7,12 +7,11 @@ import CameraControls from "camera-controls";
 import Mii from "../external/mii-js/mii";
 import {
   MiiFavoriteColorLookupTable,
-  MiiFavoriteColorVec4Table,
+  MiiFavoriteColorVec3Table,
   MiiSwitchSkinColorSRGB,
   MiiSwitchSkinColorLinear,
   SwitchMiiColorTableLinear,
   SwitchMiiColorTableSRGB,
-  MiiFavoriteLinearColorLookupTable,
 } from "../constants/ColorTables";
 import {
   cMaterialName,
@@ -724,16 +723,20 @@ export class Mii3DScene {
           new THREE.Vector4(...this.getPantsColor());
 
       if (shaderSetting === "none" || this.shaderOverride) {
-        const lookupTable =
-          this.shaderType === ShaderType.Simple &&
-          this.simpleShaderLegacyColors === false
-            ? MiiFavoriteLinearColorLookupTable
-            : MiiFavoriteColorVec4Table;
-        (nBody.material as THREE.MeshBasicMaterial).color.set(
-          lookupTable[this.mii.favoriteColor][0],
-          lookupTable[this.mii.favoriteColor][1],
-          lookupTable[this.mii.favoriteColor][2]
-        );
+        if (this.simpleShaderLegacyColors === false) {
+          const lookupTable = MiiFavoriteColorLookupTable;
+          (nBody.material as THREE.MeshBasicMaterial).color.set(
+            lookupTable[this.mii.favoriteColor]
+          );
+        } else {
+          const lookupTable = MiiFavoriteColorVec3Table;
+          (nBody.material as THREE.MeshBasicMaterial).color.set(
+            lookupTable[this.mii.favoriteColor][0],
+            lookupTable[this.mii.favoriteColor][1],
+            lookupTable[this.mii.favoriteColor][2]
+          );
+        }
+
         (nLegs.material as THREE.MeshBasicMaterial).color.set(
           this.getPantsColor()[0],
           this.getPantsColor()[1],
@@ -904,6 +907,7 @@ export class Mii3DScene {
           const GLB = await this.#gltfLoader.loadAsync(
             tmpMii.studioUrl({
               ext: "glb",
+              resourceType: "very_high",
               miiName: this.mii.miiName,
               creatorName: this.mii.creatorName,
               miic: encodeURIComponent(this.mii.encode().toString("base64")),
@@ -944,12 +948,13 @@ export class Mii3DScene {
                   let m = o as THREE.Mesh;
                   const mat = m.material as THREE.MeshStandardMaterial;
 
-                  let tableToPullFrom = MiiFavoriteColorVec4Table;
+                  let tableToPullFrom = MiiFavoriteColorVec3Table;
                   if (shaderSetting === "none") {
-                    tableToPullFrom = MiiFavoriteLinearColorLookupTable;
+                    // bug: inaccurate colors
+                    tableToPullFrom = MiiFavoriteColorVec3Table;
 
                     if (this.simpleShaderLegacyColors === true) {
-                      tableToPullFrom = MiiFavoriteColorVec4Table;
+                      tableToPullFrom = MiiFavoriteColorVec3Table;
                     }
                   }
                   const tex = multiplyTexture(
@@ -975,7 +980,7 @@ export class Mii3DScene {
                     // ignore: 1,
                     cullMode: 0,
                     modulateColor:
-                      MiiFavoriteColorVec4Table[
+                      MiiFavoriteColorVec3Table[
                         this.mii.extHatColor !== 0
                           ? this.mii.extHatColor - 1
                           : this.mii.favoriteColor
