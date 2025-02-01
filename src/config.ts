@@ -63,7 +63,7 @@ export const Config = {
 
     <h3>NEW: v0.9.2 - Small Patch Update</h3>
     <ul style="display:flex;flex-direction:column;gap:8px;line-height:1.75rem">
-      <li style="color:var(--selection-color)">A LOT of new faces have shown up over the past few days, if you come from X/Twitter or Tumblr, say hi!</li>
+      <li style="color:var(--selection-color)">A LOT of new faces have shown up over the past few days, if you come from X/Twitter or YouTube, say hi!</li>
       <li>Some hat models have been improved! Beanie, cap and cat ears were properly fixed.</li>
       <li>2D renders now show hat textures!</li>
       <li>Some broken expressions (blank face, cat face, dog face) work now</li>
