@@ -329,7 +329,7 @@ const miiCreatePNID = async () => {
   Loader.show();
 
   let pnid = await fetch(
-    Config.dataFetch.pnidFetchURL(encodeURIComponent(input))
+    Config.apis.pnidFetchURL(encodeURIComponent(input))
   );
 
   Loader.hide();
@@ -349,7 +349,7 @@ const miiCreatePNID = async () => {
 };
 const miiCreateRandom = async () => {
   Loader.show();
-  let random = await fetch(Config.dataFetch.nnidRandomURL).then((j) =>
+  let random = await fetch(Config.apis.nnidRandomURL).then((j) =>
     j.json()
   );
   Loader.hide();

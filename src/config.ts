@@ -28,15 +28,16 @@ export const Config = {
     hatColorParam: newApiParams ? "headwearColor" : "hatColor",
     hatColorAdd: newApiParams ? -1 : 0,
   },
-  dataFetch: {
+  apis: {
     // For fetching data from various sources.
     nnidRandomURL: `${nnidFetchOrigin}/mii_data_random`,
     // Caller has to encodeURIComponent before passing:
     nnidFetchURL: (nnid: string) => `${nnidFetchOrigin}/mii_data/${nnid}`,
     pnidFetchURL: (pnid: string) =>
       `${nnidFetchOrigin}/mii_data/${pnid}?api_id=1`,
-    // Sentry error URL.
-    sentryURL: "ENTER_SENTRY_URL_HERE"
+    // Configure Sentry here.
+    useSentry: false,
+    sentryURL: "ENTER_SENTRY_URL_HERE",
   },
   mii: {
     scalingMode: "scaleApply",

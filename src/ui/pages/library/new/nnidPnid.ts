@@ -21,7 +21,7 @@ export const newFromNNID = async () => {
   Loader.show();
 
   let nnid = await fetch(
-    Config.dataFetch.nnidFetchURL(encodeURIComponent(input))
+    Config.apis.nnidFetchURL(encodeURIComponent(input))
   );
 
   const result = await nnid.json();
@@ -58,7 +58,7 @@ export const newFromPNID = async () => {
   Loader.show();
 
   let pnid = await fetch(
-    Config.dataFetch.pnidFetchURL(encodeURIComponent(input))
+    Config.apis.pnidFetchURL(encodeURIComponent(input))
   );
 
   Loader.hide();

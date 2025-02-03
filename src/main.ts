@@ -25,10 +25,12 @@ window.buffer = Buf;
 
 window.LazyLoad = new LazyLoad();
 
-Sentry.init({
-  dsn: Config.dataFetch.sentryURL,
-  tracesSampleRate: 0.01,
-});
+if (Config.apis.useSentry) {
+  Sentry.init({
+    dsn: Config.apis.sentryURL,
+    tracesSampleRate: 0.01,
+  });
+}
 
 langManager.getString("languages.en_US");
 setupUi();
