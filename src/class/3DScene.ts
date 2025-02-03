@@ -1100,8 +1100,7 @@ export class Mii3DScene {
           p.dispose();
         });
         this.particles = [];
-        this.animators
-          .keys()
+        Array.from(this.animators.keys())
           .filter((p) => p.startsWith("particle_"))
           .forEach((key) => {
             this.animators.delete(key);
