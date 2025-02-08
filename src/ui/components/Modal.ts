@@ -95,7 +95,9 @@ export default {
     }
 
     function closingCallback() {
-      x.qsa("a,button,div")!.forEach((a) => a!.attr({ disabled: true, tabindex: "-1" }));
+      x.qsa("a,button,div")!.forEach((a) =>
+        a!.attr({ disabled: true, tabindex: "-1" })
+      );
     }
 
     x.appendTo(parent);
@@ -153,13 +155,25 @@ export default {
         new Html("div").class("modal-selectable").appendTo("body");
         p = ".modal-selectable";
       }
-      this.modal(title, content, p, {
-        text: "OK",
-        callback: (_: any) => {
-          res(true);
-          Html.qs(".modal-selectable")?.cleanup();
+      this.modal(
+        title,
+        content,
+        p,
+        {
+          text: "OK",
+          callback: (_: any) => {
+            res(true);
+            Html.qs(".modal-selectable")?.cleanup();
+          },
         },
-      });
+        {
+          text: "Cancel",
+          callback: (_: any) => {
+            res(false);
+            Html.qs(".modal-selectable")?.cleanup();
+          },
+        }
+      );
     });
   },
   prompt: function (

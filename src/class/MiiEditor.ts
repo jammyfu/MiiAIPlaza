@@ -118,7 +118,9 @@ export class MiiEditor {
       if (s === "2d") {
         this.renderingMode = RenderMode.Canvas2DRenderer;
       } else if (s === "3d") {
-        this.renderingMode = RenderMode.Canvas3DScene;
+        if (Config.renderer.allow3DMode === true)
+          this.renderingMode = RenderMode.Canvas3DScene;
+        else this.renderingMode = RenderMode.Canvas2DRenderer;
       }
     });
 
@@ -194,6 +196,11 @@ export class MiiEditor {
         .style({ "z-index": "1" })
         .text(this.#renderModeText(nextRenderMode))
         .on("click", () => {
+          if (Config.renderer.allow3DMode === false)
+            return Modal.alert(
+              "You can't use this feature",
+              "Sorry, but you can't use this feature because 3D mode is disabled at the moment."
+            );
           renderModeToggle.text(this.#renderModeText(this.renderingMode));
           switch (this.renderingMode) {
             case RenderMode.Canvas2DRenderer:
@@ -408,6 +415,8 @@ export class MiiEditor {
     forceReloadHead: boolean = true,
     renderPart: RenderPart = RenderPart.Head
   ) {
+    if (Config.renderer.allow3DMode === false)
+      this.renderingMode = RenderMode.Canvas2DRenderer;
     // every "img" here should be changed to "canvas.renderer" for new 2d mode.
     switch (this.renderingMode) {
       case RenderMode.Canvas2DRenderer:

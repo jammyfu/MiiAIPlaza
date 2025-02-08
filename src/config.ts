@@ -28,6 +28,9 @@ export const Config = {
     hatTypeAdd: newApiParams ? 0 : 0,
     hatColorParam: newApiParams ? "headwearColor" : "hatColor",
     hatColorAdd: newApiParams ? -1 : 0,
+
+    // Enable/disable use of 3D mode in editor only
+    allow3DMode: true,
   },
   apis: {
     // For fetching data from various sources.
@@ -45,7 +48,7 @@ export const Config = {
     // ^^ scaleLimit, scaleLimitClampY, scaleApply
   },
   version: {
-    string: "v0.9.2",
+    string: "v0.9.3",
     name: "Patch Update",
 
     // ignore that I'm just writing HTML here
@@ -64,8 +67,13 @@ export const Config = {
       <p style="margin-bottom:0"><strong style="color:var(--error-color)">Please <a target="_blank" href="mailto:datkat21.yt@gmail.com">contact me</a> <small>(kat21)</small> if you have any feedback, feature requests, or bug reports.</strong></p>
       <small>(Some people are just not aware that kat21 made this app, not ariankordi. if you are one of those people you should know by now. Also this project is named "Mii Creator", not "Mii Creator Web," or any other "mii maker" thing. 🙂)</small>
     </div>
-
-    <h3>NEW: v0.9.2 - Small Patch Update</h3>
+    
+    <h3>NEW: v0.9.3 - Very Small Patch Update</h3>
+    <ul style="display:flex;flex-direction:column;gap:8px;line-height:1.75rem">
+      <li style="color:var(--error-color)">Temporarily disabled 3D mode in the editor to save on bandwidth while I try and work around a solution</li>
+      <li style="color:var(--selection-color)">A lot of people are coming from FlipZ's tweet but that's OK, just know that I (kat21) made this website because the credit wasn't very clear</li>
+    </ul>
+    <h3>v0.9.2 - Small Patch Update</h3>
     <ul style="display:flex;flex-direction:column;gap:8px;line-height:1.75rem">
       <li style="color:var(--selection-color)">A LOT of new faces have shown up over the past few days, if you come from X/Twitter or YouTube, say hi!</li>
       <li>Some hat models have been improved! Beanie, cap and cat ears were properly fixed.</li>
