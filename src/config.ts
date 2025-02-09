@@ -48,7 +48,7 @@ export const Config = {
     // ^^ scaleLimit, scaleLimitClampY, scaleApply
   },
   version: {
-    string: "v0.9.3",
+    string: "v0.9.3.1",
     name: "Patch Update",
 
     // ignore that I'm just writing HTML here
@@ -68,9 +68,13 @@ export const Config = {
       <small>(Some people are just not aware that kat21 made this app, not ariankordi. if you are one of those people you should know by now. Also this project is named "Mii Creator", not "Mii Creator Web," or any other "mii maker" thing. 🙂)</small>
     </div>
     
+    <h3>NEW: v0.9.3.1 - Extremely Small Patch Update</h3>
+    <ul style="display:flex;flex-direction:column;gap:8px;line-height:1.75rem">
+      <li>Testing bringing back 3D mode, let's see how the server performs...</li>
+    </ul>
     <h3>NEW: v0.9.3 - Very Small Patch Update</h3>
     <ul style="display:flex;flex-direction:column;gap:8px;line-height:1.75rem">
-      <li style="color:var(--error-color)">Temporarily disabled 3D mode in the editor to save on bandwidth while I try and work around a solution</li>
+      <li style="color:var(--error-color)"><s>Temporarily disabled 3D mode in the editor to save on bandwidth while I try and work around a solution</s></li>
       <li style="color:var(--selection-color)">A lot of people are coming from FlipZ's tweet but that's OK, just know that I (kat21) made this website because the credit wasn't very clear</li>
     </ul>
     <h3>v0.9.2 - Small Patch Update</h3>
