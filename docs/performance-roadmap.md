@@ -158,6 +158,7 @@ Risk:
 - [x] Phase 3.2k: Add profiling labels for QR export stages and total QR export time.
 - [x] Phase 3.2l: Add summary limiting and make table output default to total-time hotspot sorting.
 - [x] Phase 3.2m: Add category-level perf summaries to compare major pipelines at a glance.
+- [x] Phase 3.2n: Add percentage share to perf summaries for faster bottleneck attribution.
 - [ ] Phase 3.2: Revisit export/custom-render scene lifecycle using measured hotspots.
 
 ## Success Criteria
