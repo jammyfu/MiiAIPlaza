@@ -4,6 +4,18 @@
 
 Create and share Mii characters online with just a few clicks!
 
+## Upstream Reference
+
+This repository is based on the original [datkat21/mii-creator](https://github.com/datkat21/mii-creator) project.
+
+The current fork keeps the original project as the upstream reference and adds:
+
+- Local `ffl.js` rendering support for browser-side head generation
+- Local renderer stack scripts for app and renderer workflows
+- Performance roadmap and first-phase scene/render caching improvements
+
+Please keep upstream attribution intact when reusing or redistributing this fork.
+
 ## Credits
 
 - Uses a locally hosted version of the [mii-unsecure.ariankordi.net](https://mii-unsecure.ariankordi.net) [API](https://github.com/ariankordi/FFL-Testing/tree/renderer-server-prototype) by [ariankordi](https://github.com/ariankordi) used to generate 3D Mii heads and icons.
