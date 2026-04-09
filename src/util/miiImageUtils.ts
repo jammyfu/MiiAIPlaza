@@ -63,6 +63,26 @@ const waitForAnimationFrames = (frameCount: number = 2) =>
     requestAnimationFrame(step);
   });
 
+const canvasToBlob = (canvas: HTMLCanvasElement) =>
+  new Promise<Blob>((resolve, reject) => {
+    canvas.toBlob((blob) => {
+      if (!blob) {
+        reject(new Error("Failed to create PNG blob from render canvas."));
+        return;
+      }
+
+      resolve(blob);
+    });
+  });
+
+const loadImageFromSrc = (src: string, width: number, height: number) =>
+  new Promise<HTMLImageElement>((resolve, reject) => {
+    const image = new Image(width, height);
+    image.onload = () => resolve(image);
+    image.onerror = (error) => reject(error);
+    image.src = src;
+  });
+
 let sharedScreenshotHost: HTMLDivElement | undefined;
 
 const getSharedScreenshotHost = () => {
@@ -178,46 +198,39 @@ export const getMiiRender = async (
           await waitForAnimationFrames(2);
 
           const captureStart = performance.now();
-          if (useBlob)
-            renderer.domElement.toBlob((blob) => {
-              recordPerfTrace(
-                "getMiiRender.capture",
-                performance.now() - captureStart
-              );
-              const image = new Image(
+          let image: HTMLImageElement;
+          if (useBlob) {
+            const blob = await canvasToBlob(renderer.domElement);
+            recordPerfTrace(
+              "getMiiRender.capture",
+              performance.now() - captureStart
+            );
+            const url = URL.createObjectURL(blob);
+            try {
+              image = await loadImageFromSrc(
+                url,
                 renderer.domElement.width,
                 renderer.domElement.height
               );
-              image.src = URL.createObjectURL(blob!);
-              image.onload = () => {
-                recordPerfTrace(
-                  "getMiiRender.total",
-                  performance.now() - totalStart
-                );
-                resolve(image);
-                cleanup();
-              };
-            });
-          else {
+            } finally {
+              URL.revokeObjectURL(url);
+            }
+          } else {
             const url = renderer.domElement.toDataURL("png", 100);
             recordPerfTrace(
               "getMiiRender.capture",
               performance.now() - captureStart
             );
-            const image = new Image(
+            image = await loadImageFromSrc(
+              url,
               renderer.domElement.width,
               renderer.domElement.height
             );
-            image.src = url;
-            image.onload = () => {
-              recordPerfTrace(
-                "getMiiRender.total",
-                performance.now() - totalStart
-              );
-              resolve(image);
-              cleanup();
-            };
           }
+
+          recordPerfTrace("getMiiRender.total", performance.now() - totalStart);
+          resolve(image);
+          cleanup();
         } catch (error) {
           cleanup();
           reject(error);
