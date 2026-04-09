@@ -18,21 +18,23 @@ const ver3Format = supportedFormats.find(
 )!;
 
 const makeQrCodeImage = async (mii: string): Promise<HTMLImageElement> => {
-  let convertedVer3Data: Uint8Array, ver3QRData: Uint8Array | any[];
+  return getCachedImage(qrCodeImageCache, mii, async () => {
+    let convertedVer3Data: Uint8Array, ver3QRData: Uint8Array | any[];
 
-  const miiU8 = new Uint8Array(Buf.from(mii, "base64"));
+    const miiU8 = new Uint8Array(Buf.from(mii, "base64"));
 
-  convertedVer3Data = new Uint8Array(
-    convertDataToType(miiU8, ver3Format, ver3Format.className, true)
-  );
+    convertedVer3Data = new Uint8Array(
+      convertDataToType(miiU8, ver3Format, ver3Format.className, true)
+    );
 
-  ver3QRData = encryptAndEncodeVer3StoreDataToQRCodeFormat(convertedVer3Data);
-  // Append any data after the first 96 bytes (fixed by the function above)
-  ver3QRData = new Uint8Array([...ver3QRData, ...miiU8.subarray(96)]); // May or may not append nothing.
-  // ... after the encrypted portion (appending after that should still be safe to scan)
+    ver3QRData = encryptAndEncodeVer3StoreDataToQRCodeFormat(convertedVer3Data);
+    // Append any data after the first 96 bytes (fixed by the function above)
+    ver3QRData = new Uint8Array([...ver3QRData, ...miiU8.subarray(96)]); // May or may not append nothing.
+    // ... after the encrypted portion (appending after that should still be safe to scan)
 
-  const png = qrjs.generatePNG(ver3QRData, { margin: 0 });
-  return loadImageFromBlob(await (await fetch(png)).blob(), 431, 431);
+    const png = qrjs.generatePNG(ver3QRData, { margin: 0 });
+    return loadImageFromBlob(await (await fetch(png)).blob(), 431, 431);
+  });
 };
 
 export enum MiiCustomRenderType {
@@ -83,6 +85,27 @@ const loadImageFromBlob = async (blob: Blob, width: number, height: number) => {
   } finally {
     URL.revokeObjectURL(objectUrl);
   }
+};
+
+const qrCodeImageCache = new Map<string, Promise<HTMLImageElement>>();
+const backgroundImageCache = new Map<string, Promise<HTMLImageElement>>();
+
+const getCachedImage = (
+  cache: Map<string, Promise<HTMLImageElement>>,
+  key: string,
+  loader: () => Promise<HTMLImageElement>
+) => {
+  const cached = cache.get(key);
+  if (cached) {
+    return cached;
+  }
+
+  const pending = loader().catch((error) => {
+    cache.delete(key);
+    throw error;
+  });
+  cache.set(key, pending);
+  return pending;
 };
 
 let sharedScreenshotHost: HTMLDivElement | undefined;
@@ -243,13 +266,13 @@ export const getMiiRender = async (
 export const getBackground = async (
   isMiic: boolean
 ): Promise<HTMLImageElement> => {
-  let url: string = "";
-  if (isMiic) {
-    url = "./assets/images/bg_qr_miic.png";
-  } else {
-    url = "./assets/images/bg_qr_wiiu.png";
-  }
-  return loadImageFromBlob(await (await fetch(url)).blob(), 1280, 720);
+  const url = isMiic
+    ? "./assets/images/bg_qr_miic.png"
+    : "./assets/images/bg_qr_wiiu.png";
+
+  return getCachedImage(backgroundImageCache, url, async () =>
+    loadImageFromBlob(await (await fetch(url)).blob(), 1280, 720)
+  );
 };
 
 export function loadImage(url: string): Promise<HTMLImageElement> {
