@@ -76,8 +76,13 @@ export async function getHeadModel(
         convertStudioCharInfoToFFLiCharInfo(studioCharInfo)
       );
 
-      // update char model
-      updateCharModel(currentCharModel, newCharInfo, rendererRef, modelDesc);
+      // updateCharModel disposes the old model and returns a fresh CharModel
+      currentCharModel = updateCharModel(
+        currentCharModel,
+        newCharInfo,
+        rendererRef,
+        modelDesc
+      );
     } else {
       currentCharModel = createCharModel(
         dataU8,
@@ -87,9 +92,9 @@ export async function getHeadModel(
         getFFL(),
         false
       );
+      // Initialize textures for a newly created CharModel.
+      initCharModelTextures(currentCharModel, Mii3DScene.getRenderer());
     }
-    // Initialize textures for the new CharModel.
-    initCharModelTextures(currentCharModel, Mii3DScene.getRenderer());
   } catch (err) {
     currentCharModel = null;
     console.error("Error creating/updating CharModel:", err);
