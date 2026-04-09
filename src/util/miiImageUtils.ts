@@ -18,7 +18,7 @@ const ver3Format = supportedFormats.find(
 )!;
 
 const makeQrCodeImage = async (mii: string): Promise<HTMLImageElement> => {
-  return getCachedImage(qrCodeImageCache, mii, async () => {
+  return getCachedValue(qrCodeImageCache, mii, async () => {
     let convertedVer3Data: Uint8Array, ver3QRData: Uint8Array | any[];
 
     const miiU8 = new Uint8Array(Buf.from(mii, "base64"));
@@ -90,12 +90,13 @@ const loadImageFromBlob = async (blob: Blob, width: number, height: number) => {
 const remoteRenderImageCache = new Map<string, Promise<HTMLImageElement>>();
 const qrCodeImageCache = new Map<string, Promise<HTMLImageElement>>();
 const backgroundImageCache = new Map<string, Promise<HTMLImageElement>>();
+const qrCodeCanvasCache = new Map<string, Promise<string>>();
 
-const getCachedImage = (
-  cache: Map<string, Promise<HTMLImageElement>>,
+const getCachedValue = <T>(
+  cache: Map<string, Promise<T>>,
   key: string,
-  loader: () => Promise<HTMLImageElement>
-) => {
+  loader: () => Promise<T>
+): Promise<T> => {
   const cached = cache.get(key);
   if (cached) {
     return cached;
@@ -271,7 +272,7 @@ export const getBackground = async (
     ? "./assets/images/bg_qr_miic.png"
     : "./assets/images/bg_qr_wiiu.png";
 
-  return getCachedImage(backgroundImageCache, url, async () =>
+  return getCachedValue(backgroundImageCache, url, async () =>
     loadImageFromBlob(await (await fetch(url)).blob(), 1280, 720)
   );
 };
@@ -291,64 +292,70 @@ export function loadImage(url: string): Promise<HTMLImageElement> {
 }
 
 export function loadCachedImage(url: string): Promise<HTMLImageElement> {
-  return getCachedImage(remoteRenderImageCache, url, () => loadImage(url));
+  return getCachedValue(remoteRenderImageCache, url, () => loadImage(url));
 }
 
 export const QRCodeCanvas = async (
   mii: string,
   extendedColors: boolean = true
 ) => {
-  const miiData = new Mii(Buf.from(mii, "base64"));
-  const renderUrl = `${Config.renderer.renderFullBodyAltURL}&data=${encodeURIComponent(
-    miiData.encodeStudio().toString("hex")
-  )}&${Config.renderer.hatTypeParam}=${
-    miiData.extHatType + Config.renderer.hatTypeAdd
-  }&${Config.renderer.hatColorParam}=${
-    miiData.extHatColor + Config.renderer.hatColorAdd
-  }`;
-  const render = await loadCachedImage(renderUrl);
-  const qrCodeSource = await makeQrCodeImage(mii);
-  const background = await getBackground(extendedColors);
+  const cacheKey = `${extendedColors ? "miic" : "wiiu"}:${mii}`;
+  return getCachedValue(
+    qrCodeCanvasCache,
+    cacheKey,
+    async () => {
+      const miiData = new Mii(Buf.from(mii, "base64"));
+      const renderUrl = `${Config.renderer.renderFullBodyAltURL}&data=${encodeURIComponent(
+        miiData.encodeStudio().toString("hex")
+      )}&${Config.renderer.hatTypeParam}=${
+        miiData.extHatType + Config.renderer.hatTypeAdd
+      }&${Config.renderer.hatColorParam}=${
+        miiData.extHatColor + Config.renderer.hatColorAdd
+      }`;
+      const render = await loadCachedImage(renderUrl);
+      const qrCodeSource = await makeQrCodeImage(mii);
+      const background = await getBackground(extendedColors);
 
-  const canvas = document.createElement("canvas");
-  canvas.width = 1280;
-  canvas.height = 720;
-  const ctx = canvas.getContext("2d")!;
+      const canvas = document.createElement("canvas");
+      canvas.width = 1280;
+      canvas.height = 720;
+      const ctx = canvas.getContext("2d")!;
 
-  // background
-  ctx.drawImage(background, 0, 0);
-  // mark
-  ctx.font = '500 24px "NTLG", sans-serif';
-  ctx.textAlign = "left";
-  ctx.textBaseline = "top";
-  ctx.fillStyle = "#cccccc";
-  ctx.fillText(`${location.origin}`, 32, 667);
-  // version mark
-  ctx.font = '500 24px "NTLG", sans-serif';
-  ctx.textAlign = "right";
-  ctx.textBaseline = "top";
-  ctx.fillStyle = "#cccccc";
-  ctx.fillText(`Made with Mii Creator ${Config.version.string}`, 1248, 667);
-  ctx.drawImage(render, 54, -54, 714, 953);
-  // qr code container
-  ctx.fillStyle = "#ffffff";
-  ctx.beginPath();
-  ctx.roundRect(769, 79, 463, 463, [16, 16, 0, 0]);
-  ctx.fill();
-  ctx.drawImage(qrCodeSource, 797, 107, 408, 408);
-  // name container
-  ctx.fillStyle = "#707070";
-  ctx.beginPath();
-  ctx.roundRect(769, 542, 463, 99, [0, 0, 16, 16]);
-  ctx.fill();
-  // mii name
-  ctx.fillStyle = "#ffffff";
-  ctx.textAlign = "center";
-  ctx.textBaseline = "middle";
-  ctx.font = '500 38px "NTLG", sans-serif';
-  ctx.fillText(miiData.miiName, 1005, 591);
-  const canvasPngImage = canvas.toDataURL("png", 100);
-  return canvasPngImage;
+      // background
+      ctx.drawImage(background, 0, 0);
+      // mark
+      ctx.font = '500 24px "NTLG", sans-serif';
+      ctx.textAlign = "left";
+      ctx.textBaseline = "top";
+      ctx.fillStyle = "#cccccc";
+      ctx.fillText(`${location.origin}`, 32, 667);
+      // version mark
+      ctx.font = '500 24px "NTLG", sans-serif';
+      ctx.textAlign = "right";
+      ctx.textBaseline = "top";
+      ctx.fillStyle = "#cccccc";
+      ctx.fillText(`Made with Mii Creator ${Config.version.string}`, 1248, 667);
+      ctx.drawImage(render, 54, -54, 714, 953);
+      // qr code container
+      ctx.fillStyle = "#ffffff";
+      ctx.beginPath();
+      ctx.roundRect(769, 79, 463, 463, [16, 16, 0, 0]);
+      ctx.fill();
+      ctx.drawImage(qrCodeSource, 797, 107, 408, 408);
+      // name container
+      ctx.fillStyle = "#707070";
+      ctx.beginPath();
+      ctx.roundRect(769, 542, 463, 99, [0, 0, 16, 16]);
+      ctx.fill();
+      // mii name
+      ctx.fillStyle = "#ffffff";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.font = '500 38px "NTLG", sans-serif';
+      ctx.fillText(miiData.miiName, 1005, 591);
+      return canvas.toDataURL("png", 100);
+    }
+  );
 };
 
 // This recreates the html from the update changelog

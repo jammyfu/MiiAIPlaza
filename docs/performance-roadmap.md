@@ -152,6 +152,7 @@ Risk:
 - [x] Phase 3.2e: Reuse blob-to-image helpers for QR/background assets and clean object URLs consistently.
 - [x] Phase 3.2f: Cache QR and background image assets across the session.
 - [x] Phase 3.2g: Cache repeated full-body QR export renders by URL within the session.
+- [x] Phase 3.2h: Cache the final QR canvas export per session for repeated identical requests.
 - [ ] Phase 3.2: Revisit export/custom-render scene lifecycle using measured hotspots.
 
 ## Success Criteria
