@@ -48,6 +48,21 @@ export enum MiiCustomRenderType {
   Body,
 }
 
+const waitForAnimationFrames = (frameCount: number = 2) =>
+  new Promise<void>((resolve) => {
+    const step = () => {
+      if (frameCount <= 0) {
+        resolve();
+        return;
+      }
+
+      frameCount -= 1;
+      requestAnimationFrame(step);
+    };
+
+    requestAnimationFrame(step);
+  });
+
 export const getMiiRender = async (
   mii: Mii,
   type: MiiCustomRenderType,
@@ -116,12 +131,10 @@ export const getMiiRender = async (
           switch (type) {
             case MiiCustomRenderType.Head:
               // zoom in on head
-              setTimeout(() => {
-                scene.focusCamera(0, true, false);
-                ctl.dollyTo(50);
-                cam.fov = 15;
-                cam.updateProjectionMatrix();
-              }, 300);
+              scene.focusCamera(0, true, false);
+              ctl.dollyTo(50);
+              cam.fov = 15;
+              cam.updateProjectionMatrix();
               break;
             case MiiCustomRenderType.HeadOnly:
               // hide body from view
@@ -149,30 +162,11 @@ export const getMiiRender = async (
           parent.append(scene.getRendererElement());
 
           const renderer = scene.getRenderer();
-          setTimeout(() => {
-            const captureStart = performance.now();
-            if (useBlob)
-              renderer.domElement.toBlob((blob) => {
-                recordPerfTrace(
-                  "getMiiRender.capture",
-                  performance.now() - captureStart
-                );
-                const image = new Image(
-                  renderer.domElement.width,
-                  renderer.domElement.height
-                );
-                image.src = URL.createObjectURL(blob!);
-                image.onload = () => {
-                  recordPerfTrace(
-                    "getMiiRender.total",
-                    performance.now() - totalStart
-                  );
-                  resolve(image);
-                  cleanup();
-                };
-              });
-            else {
-              const url = renderer.domElement.toDataURL("png", 100);
+          await waitForAnimationFrames(2);
+
+          const captureStart = performance.now();
+          if (useBlob)
+            renderer.domElement.toBlob((blob) => {
               recordPerfTrace(
                 "getMiiRender.capture",
                 performance.now() - captureStart
@@ -181,7 +175,7 @@ export const getMiiRender = async (
                 renderer.domElement.width,
                 renderer.domElement.height
               );
-              image.src = url;
+              image.src = URL.createObjectURL(blob!);
               image.onload = () => {
                 recordPerfTrace(
                   "getMiiRender.total",
@@ -190,8 +184,27 @@ export const getMiiRender = async (
                 resolve(image);
                 cleanup();
               };
-            }
-          }, 500);
+            });
+          else {
+            const url = renderer.domElement.toDataURL("png", 100);
+            recordPerfTrace(
+              "getMiiRender.capture",
+              performance.now() - captureStart
+            );
+            const image = new Image(
+              renderer.domElement.width,
+              renderer.domElement.height
+            );
+            image.src = url;
+            image.onload = () => {
+              recordPerfTrace(
+                "getMiiRender.total",
+                performance.now() - totalStart
+              );
+              resolve(image);
+              cleanup();
+            };
+          }
         } catch (error) {
           cleanup();
           reject(error);
