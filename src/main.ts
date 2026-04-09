@@ -14,6 +14,11 @@ import {
 import type { FFLShaderMaterial } from "./external/ffl.js/FFLShaderMaterial.js";
 import type { LUTShaderMaterial } from "./external/ffl.js/LUTShaderMaterial.js";
 import type { FFLWorkerInitializeMessage, FFLWorkerMessage } from "./worker.js";
+import {
+  clearPerfTraceSummary,
+  getPerfTraceSummary,
+  isPerfTraceEnabled,
+} from "./util/PerfTrace.js";
 
 declare global {
   interface Window {
@@ -29,6 +34,8 @@ declare global {
     // New stuff
     FFLShaderMaterial: FFLShaderMaterial;
     LUTShaderMaterial: LUTShaderMaterial;
+    clearMiiPerfTraceSummary: typeof clearPerfTraceSummary;
+    getMiiPerfTraceSummary: typeof getPerfTraceSummary;
   }
 }
 
@@ -36,6 +43,14 @@ declare global {
 window.buffer = Buf;
 
 window.LazyLoad = new LazyLoad();
+window.getMiiPerfTraceSummary = getPerfTraceSummary;
+window.clearMiiPerfTraceSummary = clearPerfTraceSummary;
+
+if (isPerfTraceEnabled()) {
+  console.info(
+    "[perf] Profiling enabled. Use window.getMiiPerfTraceSummary() or window.clearMiiPerfTraceSummary()."
+  );
+}
 
 if (Config.apis.useSentry) {
   Sentry.init({

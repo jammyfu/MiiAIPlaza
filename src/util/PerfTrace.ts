@@ -1,6 +1,9 @@
 type PerfSample = {
   count: number;
   total: number;
+  last: number;
+  min: number;
+  max: number;
 };
 
 const perfSamples = new Map<string, PerfSample>();
@@ -27,14 +30,23 @@ export function isPerfTraceEnabled() {
 export function recordPerfTrace(label: string, durationMs: number) {
   if (!isPerfTraceEnabled()) return;
 
-  const existing = perfSamples.get(label) ?? { count: 0, total: 0 };
+  const existing = perfSamples.get(label) ?? {
+    count: 0,
+    total: 0,
+    last: 0,
+    min: Number.POSITIVE_INFINITY,
+    max: 0,
+  };
   existing.count += 1;
   existing.total += durationMs;
+  existing.last = durationMs;
+  existing.min = Math.min(existing.min, durationMs);
+  existing.max = Math.max(existing.max, durationMs);
   perfSamples.set(label, existing);
 
   const average = existing.total / existing.count;
   console.info(
-    `[perf] ${label}: ${durationMs.toFixed(1)}ms (avg ${average.toFixed(1)}ms over ${existing.count})`
+    `[perf] ${label}: ${durationMs.toFixed(1)}ms (avg ${average.toFixed(1)}ms, min ${existing.min.toFixed(1)}ms, max ${existing.max.toFixed(1)}ms over ${existing.count})`
   );
 }
 
@@ -52,6 +64,13 @@ export function getPerfTraceSummary() {
     label,
     count: sample.count,
     total: sample.total,
+    last: sample.last,
+    min: sample.min,
+    max: sample.max,
     average: sample.total / sample.count,
   }));
+}
+
+export function clearPerfTraceSummary() {
+  perfSamples.clear();
 }

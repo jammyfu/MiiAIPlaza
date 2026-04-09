@@ -153,6 +153,7 @@ Risk:
 - [x] Phase 3.2f: Cache QR and background image assets across the session.
 - [x] Phase 3.2g: Cache repeated full-body QR export renders by URL within the session.
 - [x] Phase 3.2h: Cache the final QR canvas export per session for repeated identical requests.
+- [x] Phase 3.2i: Improve perf summary output with min/max/last stats and console helpers.
 - [ ] Phase 3.2: Revisit export/custom-render scene lifecycle using measured hotspots.
 
 ## Success Criteria
@@ -176,3 +177,7 @@ Current labels:
 - `getMiiRender.updateMiiHead`
 - `getMiiRender.capture`
 - `getMiiRender.total`
+
+Console helpers:
+- `window.getMiiPerfTraceSummary()`
+- `window.clearMiiPerfTraceSummary()`
