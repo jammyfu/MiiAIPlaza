@@ -16,8 +16,10 @@ import type { LUTShaderMaterial } from "./external/ffl.js/LUTShaderMaterial.js";
 import type { FFLWorkerInitializeMessage, FFLWorkerMessage } from "./worker.js";
 import {
   clearPerfTraceSummary,
+  getPerfTraceCategorySummary,
   getPerfTraceSummary,
   isPerfTraceEnabled,
+  printPerfTraceCategorySummary,
   printPerfTraceSummary,
 } from "./util/PerfTrace.js";
 
@@ -36,7 +38,9 @@ declare global {
     FFLShaderMaterial: FFLShaderMaterial;
     LUTShaderMaterial: LUTShaderMaterial;
     clearMiiPerfTraceSummary: typeof clearPerfTraceSummary;
+    getMiiPerfTraceCategorySummary: typeof getPerfTraceCategorySummary;
     getMiiPerfTraceSummary: typeof getPerfTraceSummary;
+    printMiiPerfTraceCategorySummary: typeof printPerfTraceCategorySummary;
     printMiiPerfTraceSummary: typeof printPerfTraceSummary;
   }
 }
@@ -45,13 +49,15 @@ declare global {
 window.buffer = Buf;
 
 window.LazyLoad = new LazyLoad();
+window.getMiiPerfTraceCategorySummary = getPerfTraceCategorySummary;
 window.getMiiPerfTraceSummary = getPerfTraceSummary;
 window.clearMiiPerfTraceSummary = clearPerfTraceSummary;
+window.printMiiPerfTraceCategorySummary = printPerfTraceCategorySummary;
 window.printMiiPerfTraceSummary = printPerfTraceSummary;
 
 if (isPerfTraceEnabled()) {
   console.info(
-    "[perf] Profiling enabled. Use window.printMiiPerfTraceSummary('total', 10), window.getMiiPerfTraceSummary(), or window.clearMiiPerfTraceSummary()."
+    "[perf] Profiling enabled. Use window.printMiiPerfTraceSummary('total', 10), window.printMiiPerfTraceCategorySummary('total'), or window.clearMiiPerfTraceSummary()."
   );
 }
 

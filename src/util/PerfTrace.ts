@@ -16,6 +16,10 @@ export type PerfTraceSummaryEntry = {
   average: number;
 };
 
+export type PerfTraceCategorySummaryEntry = PerfTraceSummaryEntry & {
+  category: string;
+};
+
 export type PerfTraceSortKey =
   | "label"
   | "count"
@@ -117,6 +121,78 @@ export function printPerfTraceSummary(
 ) {
   const summary = getPerfTraceSummary(sortBy, limit).map((entry) => ({
     label: entry.label,
+    count: entry.count,
+    last: Number(entry.last.toFixed(1)),
+    min: Number(entry.min.toFixed(1)),
+    avg: Number(entry.average.toFixed(1)),
+    max: Number(entry.max.toFixed(1)),
+    total: Number(entry.total.toFixed(1)),
+  }));
+
+  console.table(summary);
+  return summary;
+}
+
+function getPerfTraceCategory(label: string) {
+  return label.split(".")[0] || label;
+}
+
+export function getPerfTraceCategorySummary(
+  sortBy: PerfTraceSortKey = "total",
+  limit?: number
+): PerfTraceCategorySummaryEntry[] {
+  const grouped = new Map<string, PerfSample>();
+
+  perfSamples.forEach((sample, label) => {
+    const category = getPerfTraceCategory(label);
+    const existing = grouped.get(category) ?? {
+      count: 0,
+      total: 0,
+      last: 0,
+      min: Number.POSITIVE_INFINITY,
+      max: 0,
+    };
+
+    existing.count += sample.count;
+    existing.total += sample.total;
+    existing.last = Math.max(existing.last, sample.last);
+    existing.min = Math.min(existing.min, sample.min);
+    existing.max = Math.max(existing.max, sample.max);
+    grouped.set(category, existing);
+  });
+
+  const summary = Array.from(grouped.entries())
+    .map(([category, sample]) => ({
+      category,
+      label: category,
+      count: sample.count,
+      total: sample.total,
+      last: sample.last,
+      min: sample.min,
+      max: sample.max,
+      average: sample.total / sample.count,
+    }))
+    .sort((a, b) => {
+      if (sortBy === "label") {
+        return a.category.localeCompare(b.category);
+      }
+
+      return b[sortBy] - a[sortBy];
+    });
+
+  if (limit === undefined) {
+    return summary;
+  }
+
+  return summary.slice(0, limit);
+}
+
+export function printPerfTraceCategorySummary(
+  sortBy: PerfTraceSortKey = "total",
+  limit?: number
+) {
+  const summary = getPerfTraceCategorySummary(sortBy, limit).map((entry) => ({
+    category: entry.category,
     count: entry.count,
     last: Number(entry.last.toFixed(1)),
     min: Number(entry.min.toFixed(1)),
