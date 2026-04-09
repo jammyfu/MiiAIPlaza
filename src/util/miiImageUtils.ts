@@ -63,6 +63,26 @@ const waitForAnimationFrames = (frameCount: number = 2) =>
     requestAnimationFrame(step);
   });
 
+let sharedScreenshotHost: HTMLDivElement | undefined;
+
+const getSharedScreenshotHost = () => {
+  if (sharedScreenshotHost?.isConnected) {
+    return sharedScreenshotHost;
+  }
+
+  const host = document.createElement("div");
+  host.style.width = "720px";
+  host.style.height = "720px";
+  host.style.opacity = "0";
+  host.style.pointerEvents = "none";
+  host.style.position = "fixed";
+  host.style.left = "-99999px";
+  host.style.top = "0";
+  document.body.append(host);
+  sharedScreenshotHost = host;
+  return host;
+};
+
 export const getMiiRender = async (
   mii: Mii,
   type: MiiCustomRenderType,
@@ -72,6 +92,7 @@ export const getMiiRender = async (
   return new Promise((resolve, reject) => {
     const totalStart = performance.now();
     let tmpMii = new Mii(mii.encode());
+    const parent = getSharedScreenshotHost();
 
     if (useExtendedColors === false) {
       tmpMii.trueEyeColor = tmpMii.fflEyeColor;
@@ -94,18 +115,10 @@ export const getMiiRender = async (
       tmpMii.extHatType = 0;
     }
 
-    let parent = new Html("div")
-      .style({
-        width: "720px",
-        height: "720px",
-        opacity: "0",
-        // position: "fixed",
-      })
-      .appendTo("body");
-    const scene = new Mii3DScene(tmpMii, parent.elm, SetupType.Screenshot);
+    const scene = new Mii3DScene(tmpMii, parent, SetupType.Screenshot);
     const cleanup = () => {
       scene.shutdown();
-      parent.cleanup();
+      scene.getRendererElement().remove();
     };
     scene
       .init()

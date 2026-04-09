@@ -147,6 +147,7 @@ Risk:
 - [x] Phase 3.1: Add opt-in profiling for scene init, body/head refresh, and export capture.
 - [x] Phase 3.2a: Remove redundant body refresh from `getMiiRender()` export flow.
 - [x] Phase 3.2b: Replace fixed export delays with frame-based capture waits.
+- [x] Phase 3.2c: Reuse a shared hidden screenshot host instead of recreating DOM containers.
 - [ ] Phase 3.2: Revisit export/custom-render scene lifecycle using measured hotspots.
 
 ## Success Criteria
