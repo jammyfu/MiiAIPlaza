@@ -50,7 +50,7 @@ export class MusicManager {
     if (this.theme === theme) return;
     this.theme = theme;
 
-    console.error("initMusic()", theme, document.documentElement.dataset.theme);
+    console.debug("initMusic()", theme, document.documentElement.dataset.theme);
 
     if (theme === "wiiu") {
       this.setVolume(0.65);

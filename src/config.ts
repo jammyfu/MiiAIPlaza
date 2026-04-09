@@ -1,12 +1,87 @@
 // Configuration file used client-side.
 
 // Settings relating to local rendering.
-const useRendererServer = true; // Allow use of the renderer server (legacy rendering)
-const fflResourcePath = "FFLResHigh.dat"; // Configure the path for where the resource file is located.
+const fflResourcePath = "/FFLResHigh.dat"; // Resource file for the browser-side ffl.js renderer.
+
+const publicRendererBaseURL = "https://mii-unsecure.ariankordi.net/miis/image";
+const publicApiOrigin = "https://mii-unsecure.ariankordi.net";
+
+function getLocalRendererBaseURL() {
+  if (typeof location === "undefined") {
+    return "http://127.0.0.1:5000/miis/image";
+  }
+
+  const search = new URLSearchParams(location.search);
+  const requestedPort = search.get("rendererPort") || "5000";
+
+  return `http://127.0.0.1:${requestedPort}/miis/image`;
+}
+
+function getRendererMode(): "auto" | "local" | "remote" {
+  if (typeof location === "undefined") return "auto";
+
+  const search = new URLSearchParams(location.search);
+  const requestedMode = search.get("renderer");
+  if (requestedMode === "local" || requestedMode === "remote") {
+    return requestedMode;
+  }
+
+  return "auto";
+}
+
+function getRendererBackendMode(): "auto" | "server" | "ffljs" {
+  if (typeof location === "undefined") return "auto";
+
+  const search = new URLSearchParams(location.search);
+  const requestedBackend = search.get("rendererBackend");
+  if (requestedBackend === "server" || requestedBackend === "ffljs") {
+    return requestedBackend;
+  }
+
+  return "auto";
+}
+
+function isLocalHost() {
+  if (typeof location === "undefined") return false;
+
+  return (
+    location.hostname === "localhost" ||
+    location.hostname === "127.0.0.1" ||
+    location.hostname === "[::1]"
+  );
+}
+
+function resolveRendererBaseURL() {
+  const mode = getRendererMode();
+
+  if (mode === "remote") return publicRendererBaseURL;
+  if (mode === "local") return getLocalRendererBaseURL();
+
+  if (isLocalHost()) {
+    return getLocalRendererBaseURL();
+  }
+
+  return publicRendererBaseURL;
+}
+
+function resolveRendererBackend() {
+  const backend = getRendererBackendMode();
+
+  if (backend === "server" || backend === "ffljs") {
+    return backend;
+  }
+
+  if (isLocalHost()) {
+    return "ffljs";
+  }
+
+  return "server";
+}
 
 // Instance of FFL-Testing/Mii Studio API compatible renderer.
-// const baseURL = "http://localhost:5000/miis/image"; // <-- Uncomment this when using local FFL-testing for development
-const baseURL = "https://mii-renderer.nxw.pw/miis/image"; // <-- Comment this when committing for prod
+const baseURL = resolveRendererBaseURL();
+const rendererBackend = resolveRendererBackend();
+const useRendererServer = rendererBackend === "server";
 // ^^ image.png, image.glb
 const newApiParams = true;
 // false if using FFL-Testing-with-hats
@@ -14,7 +89,7 @@ const newApiParams = true;
 
 // Origin used for NNID, PNID, and random NNID fetch.
 // Details: https://github.com/ariankordi/nwf-mii-cemu-toy/blob/ffl-renderer-proto-integrate/README.md
-const nnidFetchOrigin = "https://mii-unsecure.ariankordi.net";
+const nnidFetchOrigin = publicApiOrigin;
 
 export const Config = {
   renderer: {

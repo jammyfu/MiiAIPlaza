@@ -3,6 +3,22 @@ import Mii from "../external/mii-js/mii";
 import * as THREE from "three";
 import { RandomInt } from "./Numbers";
 import { cMaterialName } from "../class/3d/shader/fflShaderConst";
+import {
+  CharModel,
+  convertStudioCharInfoToFFLiCharInfo,
+  createCharModel,
+  FFLCharModelDesc,
+  FFLCharModelDescDefault,
+  FFLiCharInfo,
+  FFLModelFlag,
+  initCharModelTextures,
+  setMaskTextureHook,
+  StudioCharInfo,
+  updateCharModel,
+} from "../external/ffl.js/ffl";
+import { getFFL } from "../main";
+import { getTempRenderer } from "../ui/pages/Library";
+import type { Mii3DScene } from "../class/3DScene";
 
 export type GLTFLike = {
   animations: any[];
@@ -14,23 +30,74 @@ export type GLTFLike = {
   userData: any;
 };
 
-export async function getHeadModel(mii: Mii): Promise<GLTF> {
+function wait(time: number) {
+  return new Promise<void>((resolve) => {
+    setTimeout(() => {
+      resolve();
+    }, time);
+  });
+}
+
+export type ModelFlag =
+  | "NORMAL"
+  | "HAT"
+  | "FACE_ONLY"
+  | "FLATTEN_NOSE"
+  | "NEW_EXPRESSIONS"
+  | "NEW_MASK_ONLY";
+
+export async function getHeadModel(
+  mii: Mii,
+  Mii3DScene: Mii3DScene,
+  modelFlag: ModelFlag,
+  charModelRef?: CharModel,
+  rendererRef?: THREE.WebGLRenderer,
+  descOrExpFlag?: Object | any[] | Uint32Array | null
+): Promise<GLTF> {
   // In the future, this could be hooked up to a custom rendering library (FFL under WASM or a custom asset loader)
   // For now, this will just return a cube with some FFL shader properties to test if it's working.
-  const geometry = new THREE.BoxGeometry(45, 45, 45);
-  const material = new THREE.MeshBasicMaterial({
-    color: 0xff0000,
-  });
-  const mesh = new THREE.Mesh(geometry, material);
-  mesh.position.set(0, 25, 0);
 
-  // Boilerplate data for use with the shader
-  mesh.geometry.userData = {
-    cullMode: 1,
-    modulateType: cMaterialName.FFL_MODULATE_TYPE_SHAPE_FACELINE,
-    modulateColor: [1, 0, 0, 1],
-    modulateMode: 0,
-  };
+  const dataU8 = mii.encodeStudio();
+
+  const modelDesc = FFLCharModelDescDefault;
+  modelDesc.resolution = 512;
+  modelDesc.allExpressionFlag = new Uint32Array([1, 0, 0]);
+  modelDesc.modelFlag = FFLModelFlag[modelFlag];
+
+  let currentCharModel: CharModel | null;
+
+  try {
+    if (charModelRef) {
+      if (!rendererRef)
+        throw new Error("Missing renderer when trying to update CharModel");
+
+      currentCharModel = charModelRef;
+
+      // Create new charinfo data
+      const studioCharInfo = StudioCharInfo.unpack(dataU8);
+      const newCharInfo = FFLiCharInfo.pack(
+        convertStudioCharInfoToFFLiCharInfo(studioCharInfo)
+      );
+
+      // update char model
+      updateCharModel(currentCharModel, newCharInfo, rendererRef, modelDesc);
+    } else {
+      currentCharModel = createCharModel(
+        dataU8,
+        modelDesc,
+        window.LUTShaderMaterial,
+        // window.FFLShaderMaterial,
+        getFFL(),
+        false
+      );
+    }
+    // Initialize textures for the new CharModel.
+    initCharModelTextures(currentCharModel, Mii3DScene.getRenderer());
+  } catch (err) {
+    currentCharModel = null;
+    console.error("Error creating/updating CharModel:", err);
+    throw err;
+  }
 
   const asset = {
     extras: {
@@ -42,7 +109,7 @@ export async function getHeadModel(mii: Mii): Promise<GLTF> {
 
   let scene = new THREE.Group();
 
-  scene.add(mesh);
+  scene.add(currentCharModel.meshes);
 
   // GLTF-like object so that the code can still handle it sort of like one
   return {
@@ -53,5 +120,55 @@ export async function getHeadModel(mii: Mii): Promise<GLTF> {
     scene,
     scenes: [scene],
     userData: {},
+    CharModel: currentCharModel,
   } as GLTFLike as GLTF;
+}
+
+export type MaskResult = {
+  model: CharModel;
+  img: string;
+};
+
+export async function getMaskTex(
+  mii: Mii,
+  Mii3DScene: Mii3DScene
+): Promise<MaskResult> {
+  // In the future, this could be hooked up to a custom rendering library (FFL under WASM or a custom asset loader)
+  // For now, this will just return a cube with some FFL shader properties to test if it's working.
+
+  const dataU8 = mii.encodeStudio();
+
+  const modelDesc = FFLCharModelDescDefault;
+  modelDesc.resolution = 512;
+  modelDesc.allExpressionFlag = new Uint32Array([1, 0, 0]);
+
+  let currentCharModel: CharModel | null;
+
+  var img = "";
+
+  try {
+    currentCharModel = createCharModel(
+      dataU8,
+      modelDesc,
+      window.LUTShaderMaterial,
+      // window.FFLShaderMaterial,
+      getFFL(),
+      false
+    );
+    
+    // weird workaround to promisify the texture outcome?
+    img = await new Promise((resolve) => {
+      setMaskTextureHook((dataURL: any) => {
+        resolve(dataURL.result);
+      });
+      // Initialize textures for the new CharModel.
+      initCharModelTextures(currentCharModel!, Mii3DScene.getRenderer());
+    });
+  } catch (err) {
+    currentCharModel = null;
+    console.error("Error creating/updating CharModel:", err);
+    throw err;
+  }
+
+  return { img, model: currentCharModel };
 }

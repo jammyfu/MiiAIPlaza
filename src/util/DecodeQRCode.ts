@@ -87,7 +87,7 @@ function isBase64(str: string) {
 }
 
 // CRC16 and CRC32 utilities
-function crc16(data: Uint8Array<ArrayBuffer>) {
+function crc16(data: Uint8Array) {
   let crc = 0xffff;
   for (let byte of data) {
     crc ^= byte << 8;
@@ -123,7 +123,7 @@ function generateCrc32CksumTable() {
 generateCrc32CksumTable();
 
 // CRC-32/CKSUM function
-function crc32(input: string | any[] | Uint8Array<ArrayBuffer>) {
+function crc32(input: string | any[] | Uint8Array) {
   let crc = 0x00000000; // Initial value for CRC-32/CKSUM
   for (let i = 0; i < input.length; i++) {
     const byte = (input[i] ^ (crc >>> 24)) & 0xff;
@@ -133,9 +133,7 @@ function crc32(input: string | any[] | Uint8Array<ArrayBuffer>) {
 }
 
 // AES-CCM Decryption (using private ctrMode function)
-function decryptAesCcm(
-  encryptedData: string | any[] | Uint8Array<ArrayBuffer>
-) {
+function decryptAesCcm(encryptedData: string | any[] | Uint8Array) {
   if (encryptedData.length < 112) {
     throw new Error(
       "Mii QR codes should be 112 or more bytes long, yours is " +
@@ -172,8 +170,8 @@ function decryptAesCcm(
 
 // AES-CTR Decryption (for extra data)
 async function decryptAesCtr(
-  encryptedData: Uint8Array<ArrayBuffer>,
-  iv: Uint8Array<ArrayBuffer>
+  encryptedData: Uint8Array,
+  iv: Uint8Array
 ) {
   // Calls to SubtleCr*pto (window.cr*pto.subtle):
   const key = await sc.importKey(
@@ -186,7 +184,7 @@ async function decryptAesCtr(
   const decrypted = await sc.decrypt(
     { name: "AES-CTR", counter: iv, length: 128 },
     key,
-    encryptedData.buffer
+    encryptedData
   );
   return new Uint8Array(decrypted);
 }

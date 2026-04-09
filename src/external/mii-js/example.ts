@@ -1,4 +1,5 @@
 import Mii from "./mii";
+import { Buffer } from "../../../node_modules/buffer/index.js";
 
 // Parse Mii data
 const miiData =

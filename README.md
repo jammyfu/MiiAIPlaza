@@ -49,3 +49,56 @@ Thanks to [Timimimi](https://github.com/Timiimiimii) for creating the new hat mo
 2. Clone this repository, and run the `bun i` command to install dependencies.
 3. In one terminal, run `bun build-ts` (if this doesn't work, try running `bun build.ts` to run the file), and in another, run `bun run serve`. If that doesn't work, try `bunx serve -l 3000 -C ./public`. (There is also an optional Go server if you want to use that over the bun server. Both seem to have a strange issue on Windows where you have to wait 5 seconds before you are allowed to refresh the page..)
 4. Any changes you make should log in the build-ts terminal, and check the server on the second terminal to find the port. Live server is not advised when using my build script because it sometimes can refresh too much.
+
+## Local renderer stack
+
+This repo now supports two local rendering modes:
+
+- Browser-local `ffl.js` rendering, which is now the default on `localhost` and `127.0.0.1`
+- Native local renderer server mode, which keeps using the `/miis/*` HTTP API
+
+Native prerequisites on macOS:
+
+- `brew install cmake pkg-config glfw go`
+
+1. Run `./scripts/setup-local-renderer.sh`
+2. Run `./scripts/start-local-app.sh`
+3. Open [http://127.0.0.1:3000](http://127.0.0.1:3000)
+
+`setup-local-renderer.sh` now also copies `FFLResHigh.dat` into `public/FFLResHigh.dat`, which the browser-side `ffl.js` renderer needs.
+`start-local-app.sh` will automatically prepare that resource if it is missing, and it now waits for the main frontend bundles before reporting ready.
+
+If you want the native renderer server too:
+
+1. Run `./scripts/start-local-renderer.sh`
+2. Open [http://127.0.0.1:3000/?rendererBackend=server](http://127.0.0.1:3000/?rendererBackend=server)
+
+Or run everything together:
+
+- `./scripts/start-local-stack.sh`
+
+Stop the stack:
+
+- `./scripts/stop-local-stack.sh`
+
+Check stack status:
+
+- `./scripts/status-local-stack.sh`
+
+When the app is served from `localhost` or `127.0.0.1`, it now defaults to browser-local `ffl.js` rendering.
+
+Useful overrides:
+
+- `MII_RENDERER_BACKEND=ffljs` to run only the browser-local renderer path
+- `MII_RENDERER_BACKEND=server` to run the native renderer server and open the app in server mode
+- `MII_RENDERER_BACKEND=both` to run both local modes at once
+- `MII_RENDERER_REPO=/absolute/path/to/FFL-Testing-with-hats`
+- `MII_RENDERER_PORT=5001` and open `http://127.0.0.1:3000/?rendererPort=5001`
+- `MII_APP_PORT=3001` to serve the frontend on another local port
+- `MII_RENDERER_UPSTREAM_PORT=12347` to change the native renderer TCP port
+- `?renderer=remote` to force the public renderer even on localhost
+- `?renderer=local` to force the local renderer URL
+- `?rendererBackend=ffljs` to force browser-local rendering
+- `?rendererBackend=server` to force the local or remote `/miis/*` renderer path
+
+If you omit the port env vars when using `start-local-stack.sh`, the script now auto-picks free ports and writes them to `.local-stack/stack.env`.

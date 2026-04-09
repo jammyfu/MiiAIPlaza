@@ -6,15 +6,15 @@
  * @returns void
  */
 export async function compile(
-  filePath: string,
+  filePaths: string[],
   outputDir: string
 ): Promise<any> {
   let output = (await Bun.build({
-    entrypoints: [filePath],
+    entrypoints: filePaths,
     outdir: outputDir,
     splitting: false,
     emitDCEAnnotations: true,
-    sourcemap: "linked",
+    sourcemap: "none",
     minify: {
       identifiers: true,
       syntax: true,
@@ -38,8 +38,10 @@ import type { BuildOutput } from "bun";
 
 async function build() {
   try {
-    await compile("./src/main.ts", "./public/dist/");
-    await compile("./src/api.ts", "./public/dist/");
+    await compile(
+      ["./src/main.ts", "./src/api.ts", "./src/worker.ts"],
+      "./public/dist/"
+    );
   } catch (e) {
     console.log(e);
   }

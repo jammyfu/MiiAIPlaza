@@ -6,6 +6,14 @@ import LazyLoad, { type ILazyLoadInstance } from "vanilla-lazyload";
 import { langManager } from "./l10n/manager";
 import * as Sentry from "@sentry/browser";
 import { Config } from "./config";
+import Modal, { buttonsOkCancel, closeModal } from "./ui/components/Modal";
+import {
+  initializeFFLWithResource,
+  loadBodyModels,
+} from "./external/ffl.js/ffl.js";
+import type { FFLShaderMaterial } from "./external/ffl.js/FFLShaderMaterial.js";
+import type { LUTShaderMaterial } from "./external/ffl.js/LUTShaderMaterial.js";
+import type { FFLWorkerInitializeMessage, FFLWorkerMessage } from "./worker.js";
 
 declare global {
   interface Window {
@@ -17,6 +25,10 @@ declare global {
     Mii: any;
     mii: Mii;
     sentryOnLoad: any;
+
+    // New stuff
+    FFLShaderMaterial: FFLShaderMaterial;
+    LUTShaderMaterial: LUTShaderMaterial;
   }
 }
 
@@ -30,6 +42,100 @@ if (Config.apis.useSentry) {
     dsn: Config.apis.sentryURL,
     tracesSampleRate: 0.01,
   });
+}
+
+// Make the theme ready before settings is initialized
+document.documentElement.dataset.theme = "default";
+
+let FFL: any, FFLWorker: Worker | undefined;
+export const getFFL = () => FFL;
+export const getFFLWorker = () => FFLWorker;
+export const getFFLWorkerExists = () => FFLWorker !== undefined;
+export const getFFLWorkerMakeIcon = (data: Uint8Array, view: string) => {
+  if (FFLWorker === undefined)
+    throw new Error("FFL worker told to make icon, but it wasn't initialized");
+
+  return new Promise((resolve, reject) => {
+    sendMessageToWorker({
+      type: "MakeIcon",
+      data,
+      view,
+    } as FFLWorkerMessage)
+      .then((resp) => resolve(resp))
+      .catch((err) => reject(err));
+  });
+};
+let sendMessageToWorker: (data: any) => Promise<any>;
+
+// Depending on config, load FFL.js
+if (Config.renderer.useRendererServer === false) {
+  var m = Modal.modal(
+    "Notice",
+    "Mii Creator is loading assets, please wait..."
+  );
+
+  FFL = (await import("./external/ffl.js/ffl-emscripten.js")).default
+    .Module as any;
+
+  await loadBodyModels();
+  await initializeFFLWithResource(Config.renderer.fflResourcePath, FFL);
+
+  // Detect and use Web Workers/OffscreenCanvas if available, to optimize icon generation
+  if (window.Worker) {
+    if (window.OffscreenCanvas) {
+      const tempOffscreenCanvas = document.createElement("canvas");
+      const offscreenCanvas = tempOffscreenCanvas.transferControlToOffscreen();
+      FFLWorker = new Worker("./dist/worker.js", { type: "module" });
+
+      sendMessageToWorker = (data: any) => {
+        return new Promise((resolve, reject) => {
+          const requestId = Math.random().toString(36).substring(7);
+
+          function handleMessage(event: MessageEvent) {
+            const { id, result, error } = event.data;
+            if (id === requestId) {
+              FFLWorker!.removeEventListener("message", handleMessage);
+              error ? reject(error) : resolve(result);
+            }
+          }
+
+          FFLWorker!.addEventListener("message", handleMessage);
+          FFLWorker!.postMessage({ id: requestId, ...data });
+        });
+      };
+
+      FFLWorker.postMessage(
+        {
+          type: "Init",
+          resourcePath: Config.renderer.fflResourcePath,
+          offscreenCanvas,
+        } as FFLWorkerInitializeMessage,
+        [offscreenCanvas]
+      );
+      await new Promise<void>((resolve) => {
+        FFLWorker!.onmessage = (e) => {
+          if (e.data.ready) {
+            resolve();
+          }
+        };
+      });
+    } else {
+      Modal.modal(
+        "Notice",
+        "Your browser doesn't support OffscreenCanvas, so Mii Creator may experience lag.",
+        "body",
+        ...buttonsOkCancel
+      );
+    }
+  } else {
+    Modal.modal(
+      "Notice",
+      "Your browser doesn't support Web Workers, so Mii Creator may experience lag.",
+      "body",
+      ...buttonsOkCancel
+    );
+  }
+  closeModal(m);
 }
 
 langManager.getString("languages.en_US");

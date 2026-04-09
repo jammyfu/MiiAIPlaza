@@ -569,10 +569,10 @@ h6 {
 }
 @keyframes spinTranslated {
   from {
-    transform: translate(-50%, -50%) rotate(0deg);
+    transform: rotate(0deg);
   }
   to {
-    transform: translate(-50%, -50%) rotate(360deg);
+    transform: rotate(360deg);
   }
 }
 @keyframes spinInPlaceAndCry {
@@ -625,7 +625,6 @@ h6 {
   border: 2px solid var(--stroke);
   border-radius: 8px;
   min-width: 200px;
-  min-height: 140px;
   max-height: 440px;
   overflow: clip;
   animation: shortSlideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1);
@@ -674,7 +673,8 @@ h6 {
   text-align: center;
 }
 .modal.random-mii-grid .modal-content {
-  width: 100%;
+  max-height: 720px;
+  width: 1280px;
 }
 .modal.random-mii-grid .modal-content .modal-body .random-mii-container {
   display: grid;
@@ -752,6 +752,12 @@ button:focus {
   transition: opacity 0.5s linear;
   opacity: 0.5;
   pointer-events: none;
+}
+
+.gender-select-btn {
+  flex-direction: column;
+  gap: 0;
+  font-size: 20px;
 }
 
 video {
@@ -836,12 +842,16 @@ select[type=checkbox]:checked {
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 52px;
-  height: 52px;
+  width: 100%;
+  height: 100%;
   pointer-events: none;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(3px);
 }
 .loader.active {
   opacity: 1;
+}
+.loader.active svg {
   animation: spinTranslated 0.5s linear infinite;
 }
 
@@ -947,6 +957,7 @@ select[type=checkbox]:checked {
   justify-content: center;
   align-items: center;
   position: relative;
+  overflow: hidden;
 }
 .ui-base .mii-holder .render-mode-toggle {
   position: absolute;
@@ -955,8 +966,8 @@ select[type=checkbox]:checked {
 }
 .ui-base .mii-holder img,
 .ui-base .mii-holder canvas {
-  width: 100%;
-  height: 100%;
+  width: 100% !important;
+  height: 100% !important;
   object-fit: contain;
   overflow: hidden;
   transition: opacity 0.5s cubic-bezier(0.215, 0.61, 0.355, 1);
@@ -1151,6 +1162,16 @@ select[type=checkbox]:checked {
   height: calc(100% - 8px - 4px);
   background-color: var(--color);
   border: 2px solid var(--hover);
+}
+@media screen and (min-width: 540px) {
+  .tab-content .feature-set-group .feature-item {
+    min-width: 68px;
+    min-height: 68px;
+  }
+  .tab-content .feature-set-group .feature-item svg {
+    width: 64px;
+    height: 64px;
+  }
 }
 
 @media screen and (prefers-color-scheme: dark) {

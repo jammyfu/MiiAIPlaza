@@ -2,9 +2,8 @@ import localforage from "localforage";
 import { getMusicManager } from "../class/audio/MusicManager";
 import {
   getSoundManager,
-  setupSoundManager,
 } from "../class/audio/SoundManager";
-import Modal from "./components/Modal";
+import Modal, { buttonsOkCancel } from "./components/Modal";
 import { Library } from "./pages/Library";
 import Mii from "../external/mii-js/mii";
 import { MiiEditor } from "../class/MiiEditor";
@@ -25,10 +24,16 @@ import { customRender } from "./pages/library/render/customRender";
 
 export async function setupUi() {
   let mm = getMusicManager();
+  getSoundManager();
 
   updateSettings(true);
 
   displayUpdateNotice();
+
+  if (navigator.userAgent.includes("Firefox") && sessionStorage.getItem("seen-firefox-notice") === null) {
+    sessionStorage.setItem("seen-firefox-notice", "yes");
+    Modal.modal("Notice", "You're using Mii Creator under Firefox. The Firefox browser may have slowdowns.", "body", ...buttonsOkCancel)
+  }
 
   // for U theme
   let state: "main" | "edit" = "main";
@@ -71,7 +76,7 @@ export async function setupUi() {
   }
 
   mm.initMusic();
-  setupSoundManager();
+
 
   if (location.search !== "") {
     const searchParams = new URLSearchParams(location.search);
