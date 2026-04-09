@@ -6,6 +6,25 @@ type PerfSample = {
   max: number;
 };
 
+export type PerfTraceSummaryEntry = {
+  label: string;
+  count: number;
+  total: number;
+  last: number;
+  min: number;
+  max: number;
+  average: number;
+};
+
+export type PerfTraceSortKey =
+  | "label"
+  | "count"
+  | "total"
+  | "last"
+  | "min"
+  | "max"
+  | "average";
+
 const perfSamples = new Map<string, PerfSample>();
 
 function hasLocationSearchFlag(flag: string) {
@@ -59,8 +78,11 @@ export async function tracePerf<T>(label: string, fn: () => Promise<T> | T) {
   }
 }
 
-export function getPerfTraceSummary() {
-  return Array.from(perfSamples.entries()).map(([label, sample]) => ({
+export function getPerfTraceSummary(
+  sortBy: PerfTraceSortKey = "average"
+): PerfTraceSummaryEntry[] {
+  return Array.from(perfSamples.entries())
+    .map(([label, sample]) => ({
     label,
     count: sample.count,
     total: sample.total,
@@ -68,9 +90,31 @@ export function getPerfTraceSummary() {
     min: sample.min,
     max: sample.max,
     average: sample.total / sample.count,
-  }));
+    }))
+    .sort((a, b) => {
+      if (sortBy === "label") {
+        return a.label.localeCompare(b.label);
+      }
+
+      return b[sortBy] - a[sortBy];
+    });
 }
 
 export function clearPerfTraceSummary() {
   perfSamples.clear();
+}
+
+export function printPerfTraceSummary(sortBy: PerfTraceSortKey = "average") {
+  const summary = getPerfTraceSummary(sortBy).map((entry) => ({
+    label: entry.label,
+    count: entry.count,
+    last: Number(entry.last.toFixed(1)),
+    min: Number(entry.min.toFixed(1)),
+    avg: Number(entry.average.toFixed(1)),
+    max: Number(entry.max.toFixed(1)),
+    total: Number(entry.total.toFixed(1)),
+  }));
+
+  console.table(summary);
+  return summary;
 }

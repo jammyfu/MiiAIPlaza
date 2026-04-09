@@ -18,6 +18,7 @@ import {
   clearPerfTraceSummary,
   getPerfTraceSummary,
   isPerfTraceEnabled,
+  printPerfTraceSummary,
 } from "./util/PerfTrace.js";
 
 declare global {
@@ -36,6 +37,7 @@ declare global {
     LUTShaderMaterial: LUTShaderMaterial;
     clearMiiPerfTraceSummary: typeof clearPerfTraceSummary;
     getMiiPerfTraceSummary: typeof getPerfTraceSummary;
+    printMiiPerfTraceSummary: typeof printPerfTraceSummary;
   }
 }
 
@@ -45,10 +47,11 @@ window.buffer = Buf;
 window.LazyLoad = new LazyLoad();
 window.getMiiPerfTraceSummary = getPerfTraceSummary;
 window.clearMiiPerfTraceSummary = clearPerfTraceSummary;
+window.printMiiPerfTraceSummary = printPerfTraceSummary;
 
 if (isPerfTraceEnabled()) {
   console.info(
-    "[perf] Profiling enabled. Use window.getMiiPerfTraceSummary() or window.clearMiiPerfTraceSummary()."
+    "[perf] Profiling enabled. Use window.printMiiPerfTraceSummary(), window.getMiiPerfTraceSummary(), or window.clearMiiPerfTraceSummary()."
   );
 }
 
