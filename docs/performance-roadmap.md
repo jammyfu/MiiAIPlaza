@@ -145,6 +145,7 @@ Risk:
 - [x] Phase 2.1: Cache face mask generation.
 - [x] Phase 2.2: Cache library icons.
 - [x] Phase 3.1: Add opt-in profiling for scene init, body/head refresh, and export capture.
+- [x] Phase 3.2a: Remove redundant body refresh from `getMiiRender()` export flow.
 - [ ] Phase 3.2: Revisit export/custom-render scene lifecycle using measured hotspots.
 
 ## Success Criteria
@@ -165,7 +166,6 @@ Current labels:
 - `Mii3DScene.init`
 - `Mii3DScene.updateBody`
 - `Mii3DScene.updateMiiHead`
-- `getMiiRender.updateBody`
 - `getMiiRender.updateMiiHead`
 - `getMiiRender.capture`
 - `getMiiRender.total`

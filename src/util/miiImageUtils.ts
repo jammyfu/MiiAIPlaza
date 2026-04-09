@@ -88,11 +88,16 @@ export const getMiiRender = async (
       })
       .appendTo("body");
     const scene = new Mii3DScene(tmpMii, parent.elm, SetupType.Screenshot);
+    const cleanup = () => {
+      scene.shutdown();
+      parent.cleanup();
+    };
     scene
       .init()
       .then(async () => {
         try {
-          await tracePerf("getMiiRender.updateBody", () => scene.updateBody());
+          // updateMiiHead() already refreshes body state before returning,
+          // so calling updateBody() here would duplicate the export work.
           await tracePerf("getMiiRender.updateMiiHead", () =>
             scene.updateMiiHead()
           );
@@ -163,8 +168,7 @@ export const getMiiRender = async (
                     performance.now() - totalStart
                   );
                   resolve(image);
-                  scene.shutdown();
-                  parent.cleanup();
+                  cleanup();
                 };
               });
             else {
@@ -184,20 +188,17 @@ export const getMiiRender = async (
                   performance.now() - totalStart
                 );
                 resolve(image);
-                scene.shutdown();
-                parent.cleanup();
+                cleanup();
               };
             }
           }, 500);
         } catch (error) {
-          scene.shutdown();
-          parent.cleanup();
+          cleanup();
           reject(error);
         }
       })
       .catch((error) => {
-        scene.shutdown();
-        parent.cleanup();
+        cleanup();
         reject(error);
       });
   });
