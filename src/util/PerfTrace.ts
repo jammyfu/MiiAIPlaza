@@ -79,17 +79,18 @@ export async function tracePerf<T>(label: string, fn: () => Promise<T> | T) {
 }
 
 export function getPerfTraceSummary(
-  sortBy: PerfTraceSortKey = "average"
+  sortBy: PerfTraceSortKey = "average",
+  limit?: number
 ): PerfTraceSummaryEntry[] {
-  return Array.from(perfSamples.entries())
+  const summary = Array.from(perfSamples.entries())
     .map(([label, sample]) => ({
-    label,
-    count: sample.count,
-    total: sample.total,
-    last: sample.last,
-    min: sample.min,
-    max: sample.max,
-    average: sample.total / sample.count,
+      label,
+      count: sample.count,
+      total: sample.total,
+      last: sample.last,
+      min: sample.min,
+      max: sample.max,
+      average: sample.total / sample.count,
     }))
     .sort((a, b) => {
       if (sortBy === "label") {
@@ -98,14 +99,23 @@ export function getPerfTraceSummary(
 
       return b[sortBy] - a[sortBy];
     });
+
+  if (limit === undefined) {
+    return summary;
+  }
+
+  return summary.slice(0, limit);
 }
 
 export function clearPerfTraceSummary() {
   perfSamples.clear();
 }
 
-export function printPerfTraceSummary(sortBy: PerfTraceSortKey = "average") {
-  const summary = getPerfTraceSummary(sortBy).map((entry) => ({
+export function printPerfTraceSummary(
+  sortBy: PerfTraceSortKey = "total",
+  limit?: number
+) {
+  const summary = getPerfTraceSummary(sortBy, limit).map((entry) => ({
     label: entry.label,
     count: entry.count,
     last: Number(entry.last.toFixed(1)),

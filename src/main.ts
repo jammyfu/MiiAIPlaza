@@ -51,7 +51,7 @@ window.printMiiPerfTraceSummary = printPerfTraceSummary;
 
 if (isPerfTraceEnabled()) {
   console.info(
-    "[perf] Profiling enabled. Use window.printMiiPerfTraceSummary(), window.getMiiPerfTraceSummary(), or window.clearMiiPerfTraceSummary()."
+    "[perf] Profiling enabled. Use window.printMiiPerfTraceSummary('total', 10), window.getMiiPerfTraceSummary(), or window.clearMiiPerfTraceSummary()."
   );
 }
 
