@@ -304,6 +304,7 @@ export const QRCodeCanvas = async (
     qrCodeCanvasCache,
     cacheKey,
     async () => {
+      const totalStart = performance.now();
       const miiData = new Mii(Buf.from(mii, "base64"));
       const renderUrl = `${Config.renderer.renderFullBodyAltURL}&data=${encodeURIComponent(
         miiData.encodeStudio().toString("hex")
@@ -312,48 +313,62 @@ export const QRCodeCanvas = async (
       }&${Config.renderer.hatColorParam}=${
         miiData.extHatColor + Config.renderer.hatColorAdd
       }`;
-      const render = await loadCachedImage(renderUrl);
-      const qrCodeSource = await makeQrCodeImage(mii);
-      const background = await getBackground(extendedColors);
+      const render = await tracePerf("QRCodeCanvas.renderImage", () =>
+        loadCachedImage(renderUrl)
+      );
+      const qrCodeSource = await tracePerf("QRCodeCanvas.qrImage", () =>
+        makeQrCodeImage(mii)
+      );
+      const background = await tracePerf("QRCodeCanvas.background", () =>
+        getBackground(extendedColors)
+      );
 
-      const canvas = document.createElement("canvas");
-      canvas.width = 1280;
-      canvas.height = 720;
-      const ctx = canvas.getContext("2d")!;
+      const result = await tracePerf("QRCodeCanvas.compose", async () => {
+        const canvas = document.createElement("canvas");
+        canvas.width = 1280;
+        canvas.height = 720;
+        const ctx = canvas.getContext("2d")!;
 
-      // background
-      ctx.drawImage(background, 0, 0);
-      // mark
-      ctx.font = '500 24px "NTLG", sans-serif';
-      ctx.textAlign = "left";
-      ctx.textBaseline = "top";
-      ctx.fillStyle = "#cccccc";
-      ctx.fillText(`${location.origin}`, 32, 667);
-      // version mark
-      ctx.font = '500 24px "NTLG", sans-serif';
-      ctx.textAlign = "right";
-      ctx.textBaseline = "top";
-      ctx.fillStyle = "#cccccc";
-      ctx.fillText(`Made with Mii Creator ${Config.version.string}`, 1248, 667);
-      ctx.drawImage(render, 54, -54, 714, 953);
-      // qr code container
-      ctx.fillStyle = "#ffffff";
-      ctx.beginPath();
-      ctx.roundRect(769, 79, 463, 463, [16, 16, 0, 0]);
-      ctx.fill();
-      ctx.drawImage(qrCodeSource, 797, 107, 408, 408);
-      // name container
-      ctx.fillStyle = "#707070";
-      ctx.beginPath();
-      ctx.roundRect(769, 542, 463, 99, [0, 0, 16, 16]);
-      ctx.fill();
-      // mii name
-      ctx.fillStyle = "#ffffff";
-      ctx.textAlign = "center";
-      ctx.textBaseline = "middle";
-      ctx.font = '500 38px "NTLG", sans-serif';
-      ctx.fillText(miiData.miiName, 1005, 591);
-      return canvas.toDataURL("png", 100);
+        // background
+        ctx.drawImage(background, 0, 0);
+        // mark
+        ctx.font = '500 24px "NTLG", sans-serif';
+        ctx.textAlign = "left";
+        ctx.textBaseline = "top";
+        ctx.fillStyle = "#cccccc";
+        ctx.fillText(`${location.origin}`, 32, 667);
+        // version mark
+        ctx.font = '500 24px "NTLG", sans-serif';
+        ctx.textAlign = "right";
+        ctx.textBaseline = "top";
+        ctx.fillStyle = "#cccccc";
+        ctx.fillText(
+          `Made with Mii Creator ${Config.version.string}`,
+          1248,
+          667
+        );
+        ctx.drawImage(render, 54, -54, 714, 953);
+        // qr code container
+        ctx.fillStyle = "#ffffff";
+        ctx.beginPath();
+        ctx.roundRect(769, 79, 463, 463, [16, 16, 0, 0]);
+        ctx.fill();
+        ctx.drawImage(qrCodeSource, 797, 107, 408, 408);
+        // name container
+        ctx.fillStyle = "#707070";
+        ctx.beginPath();
+        ctx.roundRect(769, 542, 463, 99, [0, 0, 16, 16]);
+        ctx.fill();
+        // mii name
+        ctx.fillStyle = "#ffffff";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.font = '500 38px "NTLG", sans-serif';
+        ctx.fillText(miiData.miiName, 1005, 591);
+        return canvas.toDataURL("png", 100);
+      });
+      recordPerfTrace("QRCodeCanvas.total", performance.now() - totalStart);
+      return result;
     }
   );
 };
