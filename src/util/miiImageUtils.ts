@@ -11,6 +11,7 @@ import Html from "@datkat21/html";
 import { Vector3 } from "three";
 import { AddButtonSounds } from "./AddButtonSounds.js";
 import { Config } from "../config.js";
+import { recordPerfTrace, tracePerf } from "./PerfTrace.js";
 
 const ver3Format = supportedFormats.find(
   (f) => f.className === "Gen2Wiiu3dsMiitomo"
@@ -54,6 +55,7 @@ export const getMiiRender = async (
   useBlob: boolean = true
 ): Promise<HTMLImageElement> => {
   return new Promise((resolve, reject) => {
+    const totalStart = performance.now();
     let tmpMii = new Mii(mii.encode());
 
     if (useExtendedColors === false) {
@@ -86,87 +88,118 @@ export const getMiiRender = async (
       })
       .appendTo("body");
     const scene = new Mii3DScene(tmpMii, parent.elm, SetupType.Screenshot);
-    scene.init().then(async () => {
-      await scene.updateBody();
-      await scene.updateMiiHead();
-      // swap pose for render
-      scene.anim.forEach((a) => {
-        a.timeScale = 0;
-        // a.stop();
-        // a.reset();
-      });
-      scene.swapAnimation("Pose.01");
-
-      let scn = scene.getScene()!,
-        cam = scene.getCamera()!,
-        ctl = scene.getControls()!,
-        pos = new Vector3();
-      switch (type) {
-        case MiiCustomRenderType.Head:
-          // zoom in on head
-          setTimeout(() => {
-            scene.focusCamera(0, true, false);
-            ctl.dollyTo(50);
-            cam.fov = 15;
-            cam.updateProjectionMatrix();
-          }, 300);
-          break;
-        case MiiCustomRenderType.HeadOnly:
-          // hide body from view
-          scn.getObjectByName("body_m")!.visible = false;
-          scn.getObjectByName("hands_m")!.visible = false;
-          scn.getObjectByName("legs_m")!.visible = false;
-          scn.getObjectByName("body_f")!.visible = false;
-          scn.getObjectByName("hands_f")!.visible = false;
-          scn.getObjectByName("legs_f")!.visible = false;
-          // Get the bounding box of the object
-          scene.focusCamera(CameraPosition.MiiHead, true, false);
-          ctl.dollyTo(40);
-          cam.fov = 15;
-          cam.updateProjectionMatrix();
-          break;
-        case MiiCustomRenderType.Body:
-          // default screenshot camera position
-          scene.focusCamera(CameraPosition.MiiFullBody, true, false);
-          ctl.dollyTo(90, false);
-          cam.fov = 15;
-          cam.updateProjectionMatrix();
-          break;
-      }
-
-      parent.append(scene.getRendererElement());
-
-      const renderer = scene.getRenderer();
-      setTimeout(() => {
-        if (useBlob)
-          renderer.domElement.toBlob((blob) => {
-            const image = new Image(
-              renderer.domElement.width,
-              renderer.domElement.height
-            );
-            image.src = URL.createObjectURL(blob!);
-            console.log("Temporary render URL:", image.src);
-            image.onload = () => {
-              resolve(image);
-              scene.shutdown();
-              parent.cleanup();
-            };
-          });
-        else {
-          const url = renderer.domElement.toDataURL("png", 100);
-          const image = new Image(
-            renderer.domElement.width,
-            renderer.domElement.height
+    scene
+      .init()
+      .then(async () => {
+        try {
+          await tracePerf("getMiiRender.updateBody", () => scene.updateBody());
+          await tracePerf("getMiiRender.updateMiiHead", () =>
+            scene.updateMiiHead()
           );
-          image.src = url;
-          image.onload = () => {
-            resolve(image);
-            scene.shutdown();
-            parent.cleanup();
-          };
+          // swap pose for render
+          scene.anim.forEach((a) => {
+            a.timeScale = 0;
+            // a.stop();
+            // a.reset();
+          });
+          scene.swapAnimation("Pose.01");
+
+          let scn = scene.getScene()!,
+            cam = scene.getCamera()!,
+            ctl = scene.getControls()!,
+            pos = new Vector3();
+          switch (type) {
+            case MiiCustomRenderType.Head:
+              // zoom in on head
+              setTimeout(() => {
+                scene.focusCamera(0, true, false);
+                ctl.dollyTo(50);
+                cam.fov = 15;
+                cam.updateProjectionMatrix();
+              }, 300);
+              break;
+            case MiiCustomRenderType.HeadOnly:
+              // hide body from view
+              scn.getObjectByName("body_m")!.visible = false;
+              scn.getObjectByName("hands_m")!.visible = false;
+              scn.getObjectByName("legs_m")!.visible = false;
+              scn.getObjectByName("body_f")!.visible = false;
+              scn.getObjectByName("hands_f")!.visible = false;
+              scn.getObjectByName("legs_f")!.visible = false;
+              // Get the bounding box of the object
+              scene.focusCamera(CameraPosition.MiiHead, true, false);
+              ctl.dollyTo(40);
+              cam.fov = 15;
+              cam.updateProjectionMatrix();
+              break;
+            case MiiCustomRenderType.Body:
+              // default screenshot camera position
+              scene.focusCamera(CameraPosition.MiiFullBody, true, false);
+              ctl.dollyTo(90, false);
+              cam.fov = 15;
+              cam.updateProjectionMatrix();
+              break;
+          }
+
+          parent.append(scene.getRendererElement());
+
+          const renderer = scene.getRenderer();
+          setTimeout(() => {
+            const captureStart = performance.now();
+            if (useBlob)
+              renderer.domElement.toBlob((blob) => {
+                recordPerfTrace(
+                  "getMiiRender.capture",
+                  performance.now() - captureStart
+                );
+                const image = new Image(
+                  renderer.domElement.width,
+                  renderer.domElement.height
+                );
+                image.src = URL.createObjectURL(blob!);
+                image.onload = () => {
+                  recordPerfTrace(
+                    "getMiiRender.total",
+                    performance.now() - totalStart
+                  );
+                  resolve(image);
+                  scene.shutdown();
+                  parent.cleanup();
+                };
+              });
+            else {
+              const url = renderer.domElement.toDataURL("png", 100);
+              recordPerfTrace(
+                "getMiiRender.capture",
+                performance.now() - captureStart
+              );
+              const image = new Image(
+                renderer.domElement.width,
+                renderer.domElement.height
+              );
+              image.src = url;
+              image.onload = () => {
+                recordPerfTrace(
+                  "getMiiRender.total",
+                  performance.now() - totalStart
+                );
+                resolve(image);
+                scene.shutdown();
+                parent.cleanup();
+              };
+            }
+          }, 500);
+        } catch (error) {
+          scene.shutdown();
+          parent.cleanup();
+          reject(error);
         }
-      }, 500);
-    });
+      })
+      .catch((error) => {
+        scene.shutdown();
+        parent.cleanup();
+        reject(error);
+      });
   });
 };
 

@@ -37,6 +37,7 @@ import { traverseAddShader, traverseMesh } from "./3d/shader/ShaderUtils";
 import { getSetting } from "../util/SettingsHelper";
 import { ShaderType } from "../constants/BodyShaderTypes";
 import { getHeadModel, getMaskTex, type ModelFlag } from "../util/MiiRendering";
+import { recordPerfTrace } from "../util/PerfTrace";
 import type { CharModel } from "../external/ffl.js/ffl";
 import { LUTShaderMaterial } from "../external/ffl.js/LUTShaderMaterial";
 import { FFLShaderMaterial } from "../external/ffl.js/FFLShaderMaterial";
@@ -381,22 +382,27 @@ export class Mii3DScene {
     return needResize;
   }
   async init() {
+    const start = performance.now();
     if (this.ready) return;
-    this.ready = false;
-    this.getRendererElement().style.opacity = "0";
-    await this.#addBody();
-    this.swapAnimation("Wait", true);
-    await this.#loadHatModels();
-    //await this.updateMiiHead();
-    // ^^ will happen on first render()
-    this.ready = true;
-    if (this.setupType === SetupType.Screenshot) {
-      this.#initCallback && this.#initCallback(this.#renderer);
-    } else {
-      // weird hacky fix to correct the camera position at startup
-      setTimeout(() => {
-        this.focusCamera(CameraPosition.MiiHead, true, false);
-      }, 500);
+    try {
+      this.ready = false;
+      this.getRendererElement().style.opacity = "0";
+      await this.#addBody();
+      this.swapAnimation("Wait", true);
+      await this.#loadHatModels();
+      //await this.updateMiiHead();
+      // ^^ will happen on first render()
+      this.ready = true;
+      if (this.setupType === SetupType.Screenshot) {
+        this.#initCallback && this.#initCallback(this.#renderer);
+      } else {
+        // weird hacky fix to correct the camera position at startup
+        setTimeout(() => {
+          this.focusCamera(CameraPosition.MiiHead, true, false);
+        }, 500);
+      }
+    } finally {
+      recordPerfTrace("Mii3DScene.init", performance.now() - start);
     }
   }
   getRendererElement() {
@@ -581,58 +587,59 @@ export class Mii3DScene {
     return useLinearColors ? cPantsColorGrayLinear : cPantsColorGray;
   }
   async updateBody(force?: boolean) {
+    const start = performance.now();
     if (!this.ready) return;
+    try {
+      this.type = this.mii.gender === 0 ? "m" : "f";
 
-    this.type = this.mii.gender === 0 ? "m" : "f";
+      const bodyM = this.#scene.getObjectByName("m-body-root");
+      const bodyF = this.#scene.getObjectByName("f-body-root");
+      if (!bodyM) return;
+      if (!bodyF) return;
 
-    const bodyM = this.#scene.getObjectByName("m-body-root");
-    const bodyF = this.#scene.getObjectByName("f-body-root");
-    if (!bodyM) return;
-    if (!bodyF) return;
+      const build = this.mii.build;
+      const height = this.mii.height;
 
-    const build = this.mii.build;
-    const height = this.mii.height;
+      // Ported from FFL-Testing
+      let scaleFactors = { x: 0, y: 0, z: 0 };
+      // Note that 1.0 scale roughly
+      // translates to 82 build/83 height.
 
-    // Ported from FFL-Testing
-    let scaleFactors = { x: 0, y: 0, z: 0 };
-    // Note that 1.0 scale roughly
-    // translates to 82 build/83 height.
+      switch (Config.mii.scalingMode) {
+        case "scaleLimit": // Limits scale to hide pants.
+          // NOTE: even in wii u mii maker this still shows a few
+          // pixels of the pants, but here without proper body scaling
+          // this won't actually let you get away w/o pants
+          let heightFactor = height / 128.0;
+          scaleFactors.y = heightFactor * 0.55 + 0.6;
+          scaleFactors.x = heightFactor * 0.3 + 0.6;
+          scaleFactors.x =
+            (heightFactor * 0.6 + 0.8 - scaleFactors.x) * (build / 128.0) +
+            scaleFactors.x;
+          break;
+        case "scaleLimitClampY": // Same as above but clamps Y.
+          heightFactor = height / 128.0;
+          scaleFactors.y = heightFactor * 0.55 + 0.6;
+          scaleFactors.x = heightFactor * 0.3 + 0.6;
+          scaleFactors.x =
+            (heightFactor * 0.6 + 0.8 - scaleFactors.x) * (build / 128.0) +
+            scaleFactors.x;
+          // Limit Y scale.
+          scaleFactors.y = Math.min(scaleFactors.y, 1.0);
+          break;
+        case "scaleApply": // Scale seen on Wii U/Switch.
+          // 0.47 / 128.0 = 0.003671875
+          scaleFactors.x =
+            (build * (height * 0.003671875 + 0.4)) / 128.0 +
+            // 0.23 / 128.0 = 0.001796875
+            height * 0.001796875 +
+            0.4;
+          // 0.77 / 128.0 = 0.006015625
+          scaleFactors.y = height * 0.006015625 + 0.5;
+          break;
+      }
 
-    switch (Config.mii.scalingMode) {
-      case "scaleLimit": // Limits scale to hide pants.
-        // NOTE: even in wii u mii maker this still shows a few
-        // pixels of the pants, but here without proper body scaling
-        // this won't actually let you get away w/o pants
-        let heightFactor = height / 128.0;
-        scaleFactors.y = heightFactor * 0.55 + 0.6;
-        scaleFactors.x = heightFactor * 0.3 + 0.6;
-        scaleFactors.x =
-          (heightFactor * 0.6 + 0.8 - scaleFactors.x) * (build / 128.0) +
-          scaleFactors.x;
-        break;
-      case "scaleLimitClampY": // Same as above but clamps Y.
-        heightFactor = height / 128.0;
-        scaleFactors.y = heightFactor * 0.55 + 0.6;
-        scaleFactors.x = heightFactor * 0.3 + 0.6;
-        scaleFactors.x =
-          (heightFactor * 0.6 + 0.8 - scaleFactors.x) * (build / 128.0) +
-          scaleFactors.x;
-        // Limit Y scale.
-        scaleFactors.y = Math.min(scaleFactors.y, 1.0);
-        break;
-      case "scaleApply": // Scale seen on Wii U/Switch.
-        // 0.47 / 128.0 = 0.003671875
-        scaleFactors.x =
-          (build * (height * 0.003671875 + 0.4)) / 128.0 +
-          // 0.23 / 128.0 = 0.001796875
-          height * 0.001796875 +
-          0.4;
-        // 0.77 / 128.0 = 0.006015625
-        scaleFactors.y = height * 0.006015625 + 0.5;
-        break;
-    }
-
-    scaleFactors.z = scaleFactors.x;
+      scaleFactors.z = scaleFactors.x;
 
     // @ts-expect-error debug
     window.scaleFactors = scaleFactors;
@@ -905,11 +912,14 @@ export class Mii3DScene {
         break;
     }
 
-    // Update camera smoothly when body scaling is changed in the editor
-    if (force)
-      requestAnimationFrame(() => {
-        this.focusCamera(this.currentPosition, true, true, false);
-      });
+      // Update camera smoothly when body scaling is changed in the editor
+      if (force)
+        requestAnimationFrame(() => {
+          this.focusCamera(this.currentPosition, true, true, false);
+        });
+    } finally {
+      recordPerfTrace("Mii3DScene.updateBody", performance.now() - start);
+    }
   }
   debugGetScene() {
     return this.#scene;
@@ -926,246 +936,252 @@ export class Mii3DScene {
     }
   }
   async updateMiiHead(renderPart: RenderPart = RenderPart.Head) {
+    const start = performance.now();
     let head = this.#scene.getObjectsByProperty("name", "MiiHead");
-
-    switch (renderPart) {
-      case RenderPart.Head:
-        const canReuseLocalCharModel =
-          Config.renderer.useRendererServer === false &&
-          this.#pastCharModel !== undefined;
-        if (head.length > 0) {
-          head.forEach((h) => {
-            // Dispose of old head materials
-            h.traverse((c) => {
-              let child = c as THREE.Mesh;
-              if (child.isMesh) {
-                if (!canReuseLocalCharModel) {
-                  child.geometry.dispose();
-                  const mat = child.material as THREE.MeshBasicMaterial;
-                  if (mat.map) mat.map.dispose();
-                  mat.dispose();
-                }
-              }
-            });
-          });
-        }
-
-        try {
-          // CUSTOM APP-SPECIFIC DATA
-          let favoriteColor: number = this.mii.favoriteColor;
-          // console.log("fav color:", favoriteColor);
-
-          const tmpMii = new Mii(this.mii.encode());
-          if (this.mii.extHatColor !== 0) {
-            tmpMii.favoriteColor = this.mii.extHatColor - 1;
-          }
-          let params: Record<string, string> = {};
-          if (this.mii.extHatType !== 0) {
-            // Custom hat model types
-            switch (HatTypeList[this.mii.extHatType]) {
-              case HatType.HAT:
-                params["modelType"] = "hat";
-                break;
-              case HatType.FACE_ONLY:
-                params["modelType"] = "face_only";
-                break;
-              case HatType.BALD:
-                // BALD HAIR!!!
-                tmpMii.hairType = 30;
-                break;
-            }
-          }
-          params["verifyCharInfo"] = "0";
-          let GLB: GLTF;
-          if (Config.renderer.useRendererServer) {
-            GLB = await this.#gltfLoader.loadAsync(
-              tmpMii.studioUrl({
-                ext: "glb",
-                texResolution: "512",
-                miiName: this.mii.miiName,
-                creatorName: this.mii.creatorName,
-                miic: encodeURIComponent(this.mii.encode().toString("base64")),
-                ...params
-              } as unknown as any)
-            );
-          } else {
-            let modelType: ModelFlag = "NORMAL";
-
-            switch (params.modelType) {
-              case "hat":
-                modelType = "HAT";
-                break;
-              case "face_only":
-                modelType = "FACE_ONLY";
-                break;
-            }
-
-            GLB = await getHeadModel(
-              tmpMii,
-              this,
-              modelType,
-              this.#pastCharModel,
-              this.#renderer
-            );
-          }
-          this.mii.favoriteColor = favoriteColor;
-
-          GLB.scene.name = "MiiHead";
-          // head is no longer attached to head bone physically, no more need to offset rotation
-          // GLB.scene.rotation.set(-Math.PI / 2, 0, 0);
-          GLB.scene.scale.set(0.12, 0.12, 0.12);
-
-          // enable shader on head
-          this.#scene.remove(...head);
-          // hack to force remove head anyways
-          this.#scene.getObjectsByProperty("name", "MiiHead").forEach((obj) => {
-            obj.parent!.remove(obj);
-          });
-
-          if (Config.renderer.useRendererServer)
-            traverseAddShader(GLB.scene, this.mii);
-          else {
-            this.#pastCharModel = (GLB as any).CharModel;
-          }
-
-          const body = this.#scene.getObjectByName(this.type)!;
-
-          let headBone = body.getObjectByName("head") as THREE.Bone;
-          if (headBone === undefined)
-            headBone = body.getObjectByName("Head") as THREE.Bone;
-
-          if (!headBone) return;
-          headBone.updateMatrixWorld(true);
-
-          // Extract the position and rotation from the matrix
-          const position = new THREE.Vector3();
-          const quaternion = new THREE.Quaternion();
-          const scale = new THREE.Vector3();
-
-          headBone.matrixWorld.decompose(position, quaternion, scale);
-          if (GLB.scene) {
-            // Set the head model's position and rotation
-            GLB.scene.position.copy(position);
-            GLB.scene.setRotationFromQuaternion(quaternion);
-            // GLB.scene.rotation.x -= Math.PI / 2;
-          }
-
-          const bodyModelType = this.bodyModel;
-          this.#scene.add(GLB.scene);
-
-          // Hacky fix for head being snapped in the wrong direction for 1 frame
-          if (bodyModelType === "miitomo") {
-            GLB.scene.rotation.z -= Math.PI / 2;
-          }
-
-          try {
-            if (this.mii.extHatType !== 0) {
-              let hatModel =
-                this.hatModels[this.mii.extHatType].scene.clone(true);
-
-              hatModel.name = "HatScene";
-              // hatModel.scene.renderOrder = -1;
-              let i = 0;
-              if (GLB.asset.extras.partsTransform.hatTranslate) {
-                const [x, y, z] = GLB.asset.extras.partsTransform.hatTranslate;
-                const vec = new THREE.Vector3(x, y, z);
-                hatModel.position.add(vec);
-              }
-              let shaderSetting = await getSetting("shaderType");
-              hatModel.traverse((o: any) => {
-                // "HatRoot" would be the name of the parent object to the hat if it is an armature
-                if (o.name === "HatScene" || o.name === "HatRoot") return;
-
-                if ((o as THREE.Mesh).isMesh) {
-                  let m = o as THREE.Mesh;
-                  const mat = m.material as THREE.MeshStandardMaterial;
-
-                  let tableToPullFrom = MiiFavoriteColorVec3Table;
-                  if (shaderSetting === "none") {
-                    // bug: inaccurate colors
-                    tableToPullFrom = MiiFavoriteColorVec3Table;
-
-                    if (this.simpleShaderLegacyColors === true) {
-                      tableToPullFrom = MiiFavoriteColorVec3Table;
-                    }
-                  }
-                  // const tex = multiplyTexture(
-                  //   mat.map!,
-                  //   tableToPullFrom[
-                  //     this.mii.extHatColor !== 0
-                  //       ? this.mii.extHatColor - 1
-                  //       : this.mii.favoriteColor
-                  //   ]
-                  // );
-                  // VERY HACKY SET HAT TEXTURE
-                  // setTimeout(() => {
-                  // (
-                  //   m.material as THREE.ShaderMaterial
-                  // ).uniforms.s_texture.value = tex;
-                  // }, 16.66);
-                  m.material = new THREE.MeshBasicMaterial({
-                    color: 0xffffff,
-                    map: mat.map!
-                  });
-                  m.material.needsUpdate = true;
-                  m.geometry.userData = {
-                    // ignore: 1,
-                    cullMode: 0,
-                    modulateColor:
-                      MiiFavoriteColorVec3Table[
-                        this.mii.extHatColor !== 0
-                          ? this.mii.extHatColor - 1
-                          : this.mii.favoriteColor
-                      ],
-                    modulateMode: 5, //5,
-                    modulateType: 5 //5,
-                  };
-
-                  i++;
-
-                  if (Config.renderer.useRendererServer === false) {
-                    // apply shader material!
-                    // var mc = m.geometry.userData["modulateColor"];
-                    traverseMesh(m, this.mii);
-                    // m.material = new LUTShaderMaterial({
-                    //   modulateMode: 0,
-                    //   modulateType: 5,
-                    //   modulateColor: [mc[0], mc[1], mc[2], 1],
-                    //   map: tex,
-                    // });
+    try {
+      switch (renderPart) {
+        case RenderPart.Head:
+          const canReuseLocalCharModel =
+            Config.renderer.useRendererServer === false &&
+            this.#pastCharModel !== undefined;
+          if (head.length > 0) {
+            head.forEach((h) => {
+              // Dispose of old head materials
+              h.traverse((c) => {
+                let child = c as THREE.Mesh;
+                if (child.isMesh) {
+                  if (!canReuseLocalCharModel) {
+                    child.geometry.dispose();
+                    const mat = child.material as THREE.MeshBasicMaterial;
+                    if (mat.map) mat.map.dispose();
+                    mat.dispose();
                   }
                 }
               });
+            });
+          }
 
-              GLB.scene.add(hatModel);
+          try {
+            // CUSTOM APP-SPECIFIC DATA
+            let favoriteColor: number = this.mii.favoriteColor;
+            // console.log("fav color:", favoriteColor);
+
+            const tmpMii = new Mii(this.mii.encode());
+            if (this.mii.extHatColor !== 0) {
+              tmpMii.favoriteColor = this.mii.extHatColor - 1;
+            }
+            let params: Record<string, string> = {};
+            if (this.mii.extHatType !== 0) {
+              // Custom hat model types
+              switch (HatTypeList[this.mii.extHatType]) {
+                case HatType.HAT:
+                  params["modelType"] = "hat";
+                  break;
+                case HatType.FACE_ONLY:
+                  params["modelType"] = "face_only";
+                  break;
+                case HatType.BALD:
+                  // BALD HAIR!!!
+                  tmpMii.hairType = 30;
+                  break;
+              }
+            }
+            params["verifyCharInfo"] = "0";
+            let GLB: GLTF;
+            if (Config.renderer.useRendererServer) {
+              GLB = await this.#gltfLoader.loadAsync(
+                tmpMii.studioUrl({
+                  ext: "glb",
+                  texResolution: "512",
+                  miiName: this.mii.miiName,
+                  creatorName: this.mii.creatorName,
+                  miic: encodeURIComponent(this.mii.encode().toString("base64")),
+                  ...params
+                } as unknown as any)
+              );
+            } else {
+              let modelType: ModelFlag = "NORMAL";
+
+              switch (params.modelType) {
+                case "hat":
+                  modelType = "HAT";
+                  break;
+                case "face_only":
+                  modelType = "FACE_ONLY";
+                  break;
+              }
+
+              GLB = await getHeadModel(
+                tmpMii,
+                this,
+                modelType,
+                this.#pastCharModel,
+                this.#renderer
+              );
+            }
+            this.mii.favoriteColor = favoriteColor;
+
+            GLB.scene.name = "MiiHead";
+            // head is no longer attached to head bone physically, no more need to offset rotation
+            // GLB.scene.rotation.set(-Math.PI / 2, 0, 0);
+            GLB.scene.scale.set(0.12, 0.12, 0.12);
+
+            // enable shader on head
+            this.#scene.remove(...head);
+            // hack to force remove head anyways
+            this.#scene
+              .getObjectsByProperty("name", "MiiHead")
+              .forEach((obj) => {
+                obj.parent!.remove(obj);
+              });
+
+            if (Config.renderer.useRendererServer)
+              traverseAddShader(GLB.scene, this.mii);
+            else {
+              this.#pastCharModel = (GLB as any).CharModel;
+            }
+
+            const body = this.#scene.getObjectByName(this.type)!;
+
+            let headBone = body.getObjectByName("head") as THREE.Bone;
+            if (headBone === undefined)
+              headBone = body.getObjectByName("Head") as THREE.Bone;
+
+            if (!headBone) return;
+            headBone.updateMatrixWorld(true);
+
+            // Extract the position and rotation from the matrix
+            const position = new THREE.Vector3();
+            const quaternion = new THREE.Quaternion();
+            const scale = new THREE.Vector3();
+
+            headBone.matrixWorld.decompose(position, quaternion, scale);
+            if (GLB.scene) {
+              // Set the head model's position and rotation
+              GLB.scene.position.copy(position);
+              GLB.scene.setRotationFromQuaternion(quaternion);
+              // GLB.scene.rotation.x -= Math.PI / 2;
+            }
+
+            const bodyModelType = this.bodyModel;
+            this.#scene.add(GLB.scene);
+
+            // Hacky fix for head being snapped in the wrong direction for 1 frame
+            if (bodyModelType === "miitomo") {
+              GLB.scene.rotation.z -= Math.PI / 2;
+            }
+
+            try {
+              if (this.mii.extHatType !== 0) {
+                let hatModel =
+                  this.hatModels[this.mii.extHatType].scene.clone(true);
+
+                hatModel.name = "HatScene";
+                // hatModel.scene.renderOrder = -1;
+                let i = 0;
+                if (GLB.asset.extras.partsTransform.hatTranslate) {
+                  const [x, y, z] = GLB.asset.extras.partsTransform.hatTranslate;
+                  const vec = new THREE.Vector3(x, y, z);
+                  hatModel.position.add(vec);
+                }
+                let shaderSetting = await getSetting("shaderType");
+                hatModel.traverse((o: any) => {
+                  // "HatRoot" would be the name of the parent object to the hat if it is an armature
+                  if (o.name === "HatScene" || o.name === "HatRoot") return;
+
+                  if ((o as THREE.Mesh).isMesh) {
+                    let m = o as THREE.Mesh;
+                    const mat = m.material as THREE.MeshStandardMaterial;
+
+                    let tableToPullFrom = MiiFavoriteColorVec3Table;
+                    if (shaderSetting === "none") {
+                      // bug: inaccurate colors
+                      tableToPullFrom = MiiFavoriteColorVec3Table;
+
+                      if (this.simpleShaderLegacyColors === true) {
+                        tableToPullFrom = MiiFavoriteColorVec3Table;
+                      }
+                    }
+                    // const tex = multiplyTexture(
+                    //   mat.map!,
+                    //   tableToPullFrom[
+                    //     this.mii.extHatColor !== 0
+                    //       ? this.mii.extHatColor - 1
+                    //       : this.mii.favoriteColor
+                    //   ]
+                    // );
+                    // VERY HACKY SET HAT TEXTURE
+                    // setTimeout(() => {
+                    // (
+                    //   m.material as THREE.ShaderMaterial
+                    // ).uniforms.s_texture.value = tex;
+                    // }, 16.66);
+                    m.material = new THREE.MeshBasicMaterial({
+                      color: 0xffffff,
+                      map: mat.map!
+                    });
+                    m.material.needsUpdate = true;
+                    m.geometry.userData = {
+                      // ignore: 1,
+                      cullMode: 0,
+                      modulateColor:
+                        MiiFavoriteColorVec3Table[
+                          this.mii.extHatColor !== 0
+                            ? this.mii.extHatColor - 1
+                            : this.mii.favoriteColor
+                        ],
+                      modulateMode: 5, //5,
+                      modulateType: 5 //5,
+                    };
+
+                    i++;
+
+                    if (Config.renderer.useRendererServer === false) {
+                      // apply shader material!
+                      // var mc = m.geometry.userData["modulateColor"];
+                      traverseMesh(m, this.mii);
+                      // m.material = new LUTShaderMaterial({
+                      //   modulateMode: 0,
+                      //   modulateType: 5,
+                      //   modulateColor: [mc[0], mc[1], mc[2], 1],
+                      //   map: tex,
+                      // });
+                    }
+                  }
+                });
+
+                GLB.scene.add(hatModel);
+              }
+            } catch (e) {
+              console.error(
+                "Hat type resulted in an error, but we're not going to let that stop the head from rendering!",
+                e
+              );
             }
           } catch (e) {
-            console.error(
-              "Hat type resulted in an error, but we're not going to let that stop the head from rendering!",
-              e
-            );
+            console.error(e);
           }
-        } catch (e) {
-          console.error(e);
-        }
-        break;
-      case RenderPart.Face:
-        if (head.length > 0) {
-          head.forEach((h) => {
-            this.traverseAddFaceMaterial(
-              h as THREE.Mesh,
-              `&data=${encodeURIComponent(
-                this.mii.encodeStudio().toString("hex")
-              )}&width=512`
-            );
-          });
-        }
-        break;
-    }
+          break;
+        case RenderPart.Face:
+          if (head.length > 0) {
+            head.forEach((h) => {
+              this.traverseAddFaceMaterial(
+                h as THREE.Mesh,
+                `&data=${encodeURIComponent(
+                  this.mii.encodeStudio().toString("hex")
+                )}&width=512`
+              );
+            });
+          }
+          break;
+      }
 
-    if (this.headReady === false) this.fadeIn();
-    this.headReady = true;
-    await this.updateBody();
+      if (this.headReady === false) this.fadeIn();
+      this.headReady = true;
+      await this.updateBody();
+    } finally {
+      recordPerfTrace("Mii3DScene.updateMiiHead", performance.now() - start);
+    }
   }
 
   particles!: SparkleParticle[];

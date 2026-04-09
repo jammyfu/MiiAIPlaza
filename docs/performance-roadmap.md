@@ -135,6 +135,7 @@ Risk:
 1. Revisit screenshot/custom-render scene creation costs.
 2. Consider shared non-interactive renderer helpers.
 3. Only proceed if profiling shows scene setup is still dominant after phases 1-2.
+4. Keep profiling opt-in so normal users do not pay logging overhead.
 
 ## Implementation Status
 
@@ -143,7 +144,8 @@ Risk:
 - [x] Phase 1.2: Reuse local `CharModel` during head updates.
 - [x] Phase 2.1: Cache face mask generation.
 - [x] Phase 2.2: Cache library icons.
-- [ ] Phase 3: Revisit export/custom-render scene lifecycle.
+- [x] Phase 3.1: Add opt-in profiling for scene init, body/head refresh, and export capture.
+- [ ] Phase 3.2: Revisit export/custom-render scene lifecycle using measured hotspots.
 
 ## Success Criteria
 
@@ -152,3 +154,18 @@ We should consider this roadmap successful when:
 - Reopening scenes or generating screenshots does not repeatedly pay the full hat bundle load cost.
 - `bunx tsc --noEmit` and `bun build.ts` continue to pass after each phase.
 - We can trace each optimization to a clear bottleneck rather than speculative cleanup.
+
+## Profiling Notes
+
+Phase 3.1 adds opt-in console timing so we can measure hotspots without changing default behavior:
+- Add `?perf=1` to the app URL, or
+- Run `localStorage.setItem("mii_perf_trace", "1")` in the browser console and refresh.
+
+Current labels:
+- `Mii3DScene.init`
+- `Mii3DScene.updateBody`
+- `Mii3DScene.updateMiiHead`
+- `getMiiRender.updateBody`
+- `getMiiRender.updateMiiHead`
+- `getMiiRender.capture`
+- `getMiiRender.total`
