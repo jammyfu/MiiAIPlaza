@@ -151,6 +151,7 @@ Risk:
 - [x] Phase 3.2d: Convert export capture tail to promise-based blob/image helpers with URL cleanup.
 - [x] Phase 3.2e: Reuse blob-to-image helpers for QR/background assets and clean object URLs consistently.
 - [x] Phase 3.2f: Cache QR and background image assets across the session.
+- [x] Phase 3.2g: Cache repeated full-body QR export renders by URL within the session.
 - [ ] Phase 3.2: Revisit export/custom-render scene lifecycle using measured hotspots.
 
 ## Success Criteria

@@ -87,6 +87,7 @@ const loadImageFromBlob = async (blob: Blob, width: number, height: number) => {
   }
 };
 
+const remoteRenderImageCache = new Map<string, Promise<HTMLImageElement>>();
 const qrCodeImageCache = new Map<string, Promise<HTMLImageElement>>();
 const backgroundImageCache = new Map<string, Promise<HTMLImageElement>>();
 
@@ -289,20 +290,23 @@ export function loadImage(url: string): Promise<HTMLImageElement> {
   });
 }
 
+export function loadCachedImage(url: string): Promise<HTMLImageElement> {
+  return getCachedImage(remoteRenderImageCache, url, () => loadImage(url));
+}
+
 export const QRCodeCanvas = async (
   mii: string,
   extendedColors: boolean = true
 ) => {
   const miiData = new Mii(Buf.from(mii, "base64"));
-  const render = await loadImage(
-    `${Config.renderer.renderFullBodyAltURL}&data=${encodeURIComponent(
-      miiData.encodeStudio().toString("hex")
-    )}&${Config.renderer.hatTypeParam}=${
-      miiData.extHatType + Config.renderer.hatTypeAdd
-    }&${Config.renderer.hatColorParam}=${
-      miiData.extHatColor + Config.renderer.hatColorAdd
-    }`
-  );
+  const renderUrl = `${Config.renderer.renderFullBodyAltURL}&data=${encodeURIComponent(
+    miiData.encodeStudio().toString("hex")
+  )}&${Config.renderer.hatTypeParam}=${
+    miiData.extHatType + Config.renderer.hatTypeAdd
+  }&${Config.renderer.hatColorParam}=${
+    miiData.extHatColor + Config.renderer.hatColorAdd
+  }`;
+  const render = await loadCachedImage(renderUrl);
   const qrCodeSource = await makeQrCodeImage(mii);
   const background = await getBackground(extendedColors);
 
