@@ -149,6 +149,7 @@ Risk:
 - [x] Phase 3.2b: Replace fixed export delays with frame-based capture waits.
 - [x] Phase 3.2c: Reuse a shared hidden screenshot host instead of recreating DOM containers.
 - [x] Phase 3.2d: Convert export capture tail to promise-based blob/image helpers with URL cleanup.
+- [x] Phase 3.2e: Reuse blob-to-image helpers for QR/background assets and clean object URLs consistently.
 - [ ] Phase 3.2: Revisit export/custom-render scene lifecycle using measured hotspots.
 
 ## Success Criteria

@@ -32,14 +32,7 @@ const makeQrCodeImage = async (mii: string): Promise<HTMLImageElement> => {
   // ... after the encrypted portion (appending after that should still be safe to scan)
 
   const png = qrjs.generatePNG(ver3QRData, { margin: 0 });
-
-  const img = new Image(431, 431);
-  img.src = URL.createObjectURL(await (await fetch(png)).blob());
-  return new Promise((resolve) => {
-    img.onload = () => {
-      return resolve(img);
-    };
-  });
+  return loadImageFromBlob(await (await fetch(png)).blob(), 431, 431);
 };
 
 export enum MiiCustomRenderType {
@@ -82,6 +75,15 @@ const loadImageFromSrc = (src: string, width: number, height: number) =>
     image.onerror = (error) => reject(error);
     image.src = src;
   });
+
+const loadImageFromBlob = async (blob: Blob, width: number, height: number) => {
+  const objectUrl = URL.createObjectURL(blob);
+  try {
+    return await loadImageFromSrc(objectUrl, width, height);
+  } finally {
+    URL.revokeObjectURL(objectUrl);
+  }
+};
 
 let sharedScreenshotHost: HTMLDivElement | undefined;
 
@@ -205,16 +207,11 @@ export const getMiiRender = async (
               "getMiiRender.capture",
               performance.now() - captureStart
             );
-            const url = URL.createObjectURL(blob);
-            try {
-              image = await loadImageFromSrc(
-                url,
-                renderer.domElement.width,
-                renderer.domElement.height
-              );
-            } finally {
-              URL.revokeObjectURL(url);
-            }
+            image = await loadImageFromBlob(
+              blob,
+              renderer.domElement.width,
+              renderer.domElement.height
+            );
           } else {
             const url = renderer.domElement.toDataURL("png", 100);
             recordPerfTrace(
@@ -252,14 +249,7 @@ export const getBackground = async (
   } else {
     url = "./assets/images/bg_qr_wiiu.png";
   }
-  const blob = await (await fetch(url)).blob();
-  const img = new Image(1280, 720);
-  img.src = URL.createObjectURL(blob);
-  return new Promise((resolve) => {
-    img.onload = () => {
-      return resolve(img);
-    };
-  });
+  return loadImageFromBlob(await (await fetch(url)).blob(), 1280, 720);
 };
 
 export function loadImage(url: string): Promise<HTMLImageElement> {
