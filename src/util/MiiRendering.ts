@@ -17,7 +17,6 @@ import {
   updateCharModel,
 } from "../external/ffl.js/ffl";
 import { getFFL } from "../main";
-import { getTempRenderer } from "../ui/pages/Library";
 import type { Mii3DScene } from "../class/3DScene";
 
 export type GLTFLike = {
@@ -30,13 +29,11 @@ export type GLTFLike = {
   userData: any;
 };
 
-function wait(time: number) {
-  return new Promise<void>((resolve) => {
-    setTimeout(() => {
-      resolve();
-    }, time);
-  });
+function uint8ArrayToHex(data: Uint8Array) {
+  return Array.from(data, (byte) => byte.toString(16).padStart(2, "0")).join("");
 }
+
+const maskTextureCache = new Map<string, Promise<string>>();
 
 export type ModelFlag =
   | "NORMAL"
@@ -125,26 +122,27 @@ export async function getHeadModel(
 }
 
 export type MaskResult = {
-  model: CharModel;
   img: string;
+  model?: CharModel;
 };
 
 export async function getMaskTex(
   mii: Mii,
   Mii3DScene: Mii3DScene
 ): Promise<MaskResult> {
-  // In the future, this could be hooked up to a custom rendering library (FFL under WASM or a custom asset loader)
-  // For now, this will just return a cube with some FFL shader properties to test if it's working.
-
   const dataU8 = mii.encodeStudio();
+  const cacheKey = uint8ArrayToHex(dataU8);
+
+  const cachedMask = maskTextureCache.get(cacheKey);
+  if (cachedMask) {
+    return { img: await cachedMask };
+  }
 
   const modelDesc = FFLCharModelDescDefault;
   modelDesc.resolution = 512;
   modelDesc.allExpressionFlag = new Uint32Array([1, 0, 0]);
 
-  let currentCharModel: CharModel | null;
-
-  var img = "";
+  let currentCharModel: CharModel | undefined;
 
   try {
     currentCharModel = createCharModel(
@@ -152,23 +150,23 @@ export async function getMaskTex(
       modelDesc,
       window.LUTShaderMaterial,
       // window.FFLShaderMaterial,
-      getFFL(),
+        getFFL(),
       false
     );
-    
-    // weird workaround to promisify the texture outcome?
-    img = await new Promise((resolve) => {
+
+    const imgPromise = new Promise<string>((resolve) => {
       setMaskTextureHook((dataURL: any) => {
         resolve(dataURL.result);
       });
-      // Initialize textures for the new CharModel.
       initCharModelTextures(currentCharModel!, Mii3DScene.getRenderer());
     });
+
+    maskTextureCache.set(cacheKey, imgPromise);
+    const img = await imgPromise;
+    return { img, model: currentCharModel };
   } catch (err) {
-    currentCharModel = null;
+    maskTextureCache.delete(cacheKey);
     console.error("Error creating/updating CharModel:", err);
     throw err;
   }
-
-  return { img, model: currentCharModel };
 }

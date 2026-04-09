@@ -141,8 +141,8 @@ Risk:
 - [x] Phase 0: Type-check baseline restored (`bunx tsc --noEmit` passes).
 - [x] Phase 1.1: Cache hat model bundle globally.
 - [x] Phase 1.2: Reuse local `CharModel` during head updates.
-- [ ] Phase 2.1: Cache face mask generation.
-- [ ] Phase 2.2: Cache library icons.
+- [x] Phase 2.1: Cache face mask generation.
+- [x] Phase 2.2: Cache library icons.
 - [ ] Phase 3: Revisit export/custom-render scene lifecycle.
 
 ## Success Criteria

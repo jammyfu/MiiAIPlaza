@@ -1238,7 +1238,7 @@ export class Mii3DScene {
                 if (Config.renderer.useRendererServer === false) {
                   const { img, model } = await getMaskTex(this.mii, this);
                   loadUrl = img;
-                  model.dispose();
+                  model?.dispose();
                 }
 
                 const tex = await this.#textureLoader.loadAsync(loadUrl);

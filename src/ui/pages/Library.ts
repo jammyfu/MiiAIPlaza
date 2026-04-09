@@ -54,6 +54,8 @@ var canvas = document.createElement("canvas");
 document.body.appendChild(canvas);
 tmpRenderer = new WebGLRenderer({ alpha: true, preserveDrawingBuffer: true });
 
+const localIconCache = new Map<string, Promise<string>>();
+
 export const miiIconUrl = async (
   mii: Mii,
   source: string = "unknown",
@@ -62,49 +64,59 @@ export const miiIconUrl = async (
   index: number = 0
 ) => {
   if (Config.renderer.useRendererServer === false) {
-    // Momentarily create CharModel
-    let dataURL = "undefined",
-      model: any;
     const dataU8 = mii.encodeStudio();
-
-    if (getFFLWorkerExists()) {
-      const icon = await getFFLWorkerMakeIcon(dataU8, view);
-      return icon;
+    const cacheKey = `${Buffer.from(dataU8).toString("hex")}:${view}`;
+    const cachedIcon = localIconCache.get(cacheKey);
+    if (cachedIcon) {
+      return cachedIcon;
     }
 
-    try {
-      model = createCharModel(
-        dataU8,
-        undefined,
-        window.LUTShaderMaterial,
-        getFFL(),
-        false
-      );
-      initCharModelTextures(model, tmpRenderer);
-      let realView = ViewType.MakeIcon;
-      switch (view) {
-        case "face":
-        case "variableiconbody":
-          realView = ViewType.MakeIcon;
-          break;
-        case "all_body_sugar":
-          realView = ViewType.MakeIcon;
-          break;
+    const iconPromise: Promise<string> = (async () => {
+      let dataURL = "undefined",
+        model: any;
+
+      if (getFFLWorkerExists()) {
+        return (await getFFLWorkerMakeIcon(dataU8, view)) as string;
       }
-      dataURL = await createCharModelIcon(
-        model,
-        tmpRenderer,
-        realView,
-        512,
-        512
-      );
-      // console.log(`charModel for ${mii.miiName}:`, model);
-    } catch (e) {
-      console.error(`Library: Could not make icon for ${mii.miiName}: ${e}`);
-    } finally {
-      model?.dispose();
+
+      try {
+        model = createCharModel(
+          dataU8,
+          undefined,
+          window.LUTShaderMaterial,
+          getFFL(),
+          false
+        );
+        initCharModelTextures(model, tmpRenderer);
+        let realView = ViewType.MakeIcon;
+        switch (view) {
+          case "face":
+          case "variableiconbody":
+            realView = ViewType.MakeIcon;
+            break;
+          case "all_body_sugar":
+            realView = ViewType.MakeIcon;
+            break;
+        }
+        dataURL = await createCharModelIcon(
+          model,
+          tmpRenderer,
+          realView,
+          512,
+          512
+        );
+      } catch (e) {
+        localIconCache.delete(cacheKey);
+        console.error(`Library: Could not make icon for ${mii.miiName}: ${e}`);
+      } finally {
+        model?.dispose();
+      }
+
       return dataURL;
-    }
+    })();
+
+    localIconCache.set(cacheKey, iconPromise);
+    return iconPromise;
   }
 
   let url = Config.renderer.renderHeadshotURLNoParams;
