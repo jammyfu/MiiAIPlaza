@@ -10,6 +10,11 @@ is_port_in_use() {
   lsof -nP -iTCP:"${port}" -sTCP:LISTEN >/dev/null 2>&1
 }
 
+port_listener_summary() {
+  local port="$1"
+  lsof -nP -iTCP:"${port}" -sTCP:LISTEN 2>/dev/null | awk 'NR>1 {printf "%s(pid=%s)", $1, $2; exit}'
+}
+
 find_free_port() {
   local start_port="$1"
   local end_port="${2:-65535}"

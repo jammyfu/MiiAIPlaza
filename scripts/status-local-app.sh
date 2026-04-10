@@ -9,13 +9,21 @@ APP_PID_FILE="${STATE_DIR}/app.pid"
 BUILD_PID_FILE="${STATE_DIR}/app-build.pid"
 SERVER_PID_FILE="${STATE_DIR}/app-server.pid"
 
-if [ ! -d "${STATE_DIR}" ] || [ ! -f "${APP_ENV}" ]; then
-  echo "Local app is not running."
-  exit 0
+APP_PORT="${MII_APP_PORT:-}"
+APP_URL=""
+
+if [ -d "${STATE_DIR}" ] && [ -f "${APP_ENV}" ]; then
+  APP_PORT="$(stack_value "${APP_ENV}" "APP_PORT" || true)"
+  APP_URL="$(stack_value "${APP_ENV}" "APP_URL" || true)"
 fi
 
-APP_PORT="$(stack_value "${APP_ENV}" "APP_PORT" || true)"
-APP_URL="$(stack_value "${APP_ENV}" "APP_URL" || true)"
+if [ -z "${APP_PORT}" ]; then
+  APP_PORT="3000"
+fi
+
+if [ -z "${APP_URL}" ]; then
+  APP_URL="http://127.0.0.1:${APP_PORT}/"
+fi
 
 app_pid=""
 build_pid=""
@@ -51,10 +59,22 @@ if [ -n "${APP_URL}" ] && curl -fsS -o /dev/null "${APP_URL}" >/dev/null 2>&1; t
   app_http_status="up"
 fi
 
+tracked_state_status="missing"
+if [ -d "${STATE_DIR}" ] && [ -f "${APP_ENV}" ]; then
+  tracked_state_status="present"
+fi
+
+port_listener="none"
+if is_port_in_use "${APP_PORT}"; then
+  port_listener="$(port_listener_summary "${APP_PORT}")"
+fi
+
 echo "Local app status"
+echo "  Tracked State: ${tracked_state_status}"
 echo "  App PID:      ${app_pid:-n/a} (${app_pid_status})"
 echo "  Build PID:    ${build_pid:-n/a} (${build_pid_status})"
 echo "  Server PID:   ${server_pid:-n/a} (${server_pid_status})"
 echo "  App HTTP:     ${app_http_status}"
 echo "  App URL:      ${APP_URL:-n/a}"
 echo "  App Port:     ${APP_PORT:-n/a}"
+echo "  Port Owner:   ${port_listener}"

@@ -86,6 +86,8 @@ Check app-only status:
 - `./scripts/status-local-app.sh`
 - `./scripts/start-local-app.sh status`
 
+The status command now also reports whether the `.local-app` tracking state exists and which process currently owns the app port.
+
 Stop the app-only workflow:
 
 - `./scripts/stop-local-app.sh`
