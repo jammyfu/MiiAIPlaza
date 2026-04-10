@@ -74,6 +74,7 @@ let activeMii: Mii;
 export const getMii = () => activeMii;
 
 let editor2DRenderer: WebGLRenderer | undefined;
+const local2DRenderCache = new Map<string, Promise<string>>();
 
 function getEditor2DRenderer() {
   if (!editor2DRenderer) {
@@ -84,6 +85,55 @@ function getEditor2DRenderer() {
   }
 
   return editor2DRenderer;
+}
+
+async function renderLocal2DImage(mii: Mii): Promise<string> {
+  const cacheKey = `${mii.encode().toString("base64")}:${mii.extHatType}:${mii.extHatColor}`;
+  const cachedImage = local2DRenderCache.get(cacheKey);
+  if (cachedImage) {
+    return cachedImage;
+  }
+
+  const imagePromise = (async () => {
+    const dataU8 = mii.encodeStudio();
+    let model: any;
+
+    try {
+      if (getFFLWorkerExists()) {
+        return (await getFFLWorkerMakeIcon(
+          dataU8,
+          "all_body_sugar",
+          1024,
+          1024
+        )) as string;
+      }
+
+      model = createCharModel(
+        dataU8,
+        undefined,
+        window.LUTShaderMaterial,
+        getFFL(),
+        false
+      );
+      initCharModelTextures(model, getEditor2DRenderer());
+      return await createCharModelIcon(
+        model,
+        getEditor2DRenderer(),
+        ViewType.AllBody,
+        1024,
+        1024,
+        true
+      );
+    } catch (error) {
+      local2DRenderCache.delete(cacheKey);
+      throw error;
+    } finally {
+      model?.dispose?.();
+    }
+  })();
+
+  local2DRenderCache.set(cacheKey, imagePromise);
+  return imagePromise;
 }
 
 export class MiiEditor {
@@ -478,40 +528,13 @@ export class MiiEditor {
         image?.style({ display: "block" });
 
         if (Config.renderer.useRendererServer === false) {
-          const dataU8 = this.mii.encodeStudio();
-          let dataURL = "undefined";
-          let model: any;
-
           try {
-            if (getFFLWorkerExists()) {
-              dataURL = (await getFFLWorkerMakeIcon(
-                dataU8,
-                "all_body_sugar",
-                1024,
-                1024
-              )) as string;
-            } else {
-              model = createCharModel(
-                dataU8,
-                undefined,
-                window.LUTShaderMaterial,
-                getFFL(),
-                false
-              );
-              initCharModelTextures(model, getEditor2DRenderer());
-              dataURL = await createCharModelIcon(
-                model,
-                getEditor2DRenderer(),
-                ViewType.AllBody,
-                1024,
-                1024,
-                true
-              );
-            }
-
+            const dataURL = await renderLocal2DImage(this.mii);
             image?.attr({ src: dataURL });
+          } catch (error) {
+            console.error("2D render failed:", error);
           } finally {
-            model?.dispose?.();
+            image?.style({ display: "block" });
           }
           break;
         }
