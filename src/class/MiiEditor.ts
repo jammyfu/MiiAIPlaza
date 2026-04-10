@@ -162,6 +162,7 @@ export class MiiEditor {
   mii: Mii;
   icons!: IconSet;
   #renderRequestId: number;
+  #last2DImageSrc?: string;
 
   ui!: {
     base: Html;
@@ -196,6 +197,7 @@ export class MiiEditor {
     this.ready = false;
     this.errors = new Map();
     this.#renderRequestId = 0;
+    this.#last2DImageSrc = undefined;
 
     // default male mii
     let initString =
@@ -558,7 +560,10 @@ export class MiiEditor {
             if (requestId !== this.#renderRequestId) {
               break;
             }
-            image?.attr({ src: dataURL });
+            if (dataURL !== this.#last2DImageSrc) {
+              image?.attr({ src: dataURL });
+              this.#last2DImageSrc = dataURL;
+            }
           } catch (error) {
             if (requestId === this.#renderRequestId) {
               console.error("2D render failed:", error);
@@ -571,19 +576,23 @@ export class MiiEditor {
           break;
         }
 
-        image?.attr({
-          src: `${
-            Config.renderer.renderFullBodyAltURL
-          }&data=${encodeURIComponent(
-            this.mii.encodeStudio().toString("hex")
-          )}&${Config.renderer.hatTypeParam}=${
-            this.mii.extHatType + Config.renderer.hatTypeAdd
-          }&${Config.renderer.hatColorParam}=${
-            this.mii.extHatColor + Config.renderer.hatColorAdd
-          }&miic=${encodeURIComponent(
-            this.mii.encode().toString("base64")
-          )}&pantsColor=${pantsColor}`,
-        });
+        const remote2DImageURL = `${
+          Config.renderer.renderFullBodyAltURL
+        }&data=${encodeURIComponent(
+          this.mii.encodeStudio().toString("hex")
+        )}&${Config.renderer.hatTypeParam}=${
+          this.mii.extHatType + Config.renderer.hatTypeAdd
+        }&${Config.renderer.hatColorParam}=${
+          this.mii.extHatColor + Config.renderer.hatColorAdd
+        }&miic=${encodeURIComponent(
+          this.mii.encode().toString("base64")
+        )}&pantsColor=${pantsColor}`;
+        if (remote2DImageURL !== this.#last2DImageSrc) {
+          image?.attr({
+            src: remote2DImageURL,
+          });
+          this.#last2DImageSrc = remote2DImageURL;
+        }
         // this.ui.renderer.mii = this.mii;
         // this.ui.renderer.render();
         break;
