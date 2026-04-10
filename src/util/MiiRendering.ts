@@ -56,10 +56,12 @@ export async function getHeadModel(
 
   const dataU8 = mii.encodeStudio();
 
-  const modelDesc = FFLCharModelDescDefault;
-  modelDesc.resolution = 512;
-  modelDesc.allExpressionFlag = new Uint32Array([1, 0, 0]);
-  modelDesc.modelFlag = FFLModelFlag[modelFlag];
+  const modelDesc = {
+    ...FFLCharModelDescDefault,
+    resolution: 512,
+    allExpressionFlag: new Uint32Array([1, 0, 0]),
+    modelFlag: FFLModelFlag[modelFlag],
+  };
 
   let currentCharModel: CharModel | null;
 
@@ -83,6 +85,9 @@ export async function getHeadModel(
         rendererRef,
         modelDesc
       );
+      if (!currentCharModel) {
+        throw new Error("updateCharModel returned an invalid CharModel");
+      }
     } else {
       currentCharModel = createCharModel(
         dataU8,
@@ -143,9 +148,11 @@ export async function getMaskTex(
     return { img: await cachedMask };
   }
 
-  const modelDesc = FFLCharModelDescDefault;
-  modelDesc.resolution = 512;
-  modelDesc.allExpressionFlag = new Uint32Array([1, 0, 0]);
+  const modelDesc = {
+    ...FFLCharModelDescDefault,
+    resolution: 512,
+    allExpressionFlag: new Uint32Array([1, 0, 0]),
+  };
 
   let currentCharModel: CharModel | undefined;
 
