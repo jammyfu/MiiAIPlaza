@@ -75,7 +75,12 @@ let FFL: any, FFLWorker: Worker | undefined;
 export const getFFL = () => FFL;
 export const getFFLWorker = () => FFLWorker;
 export const getFFLWorkerExists = () => FFLWorker !== undefined;
-export const getFFLWorkerMakeIcon = (data: Uint8Array, view: string) => {
+export const getFFLWorkerMakeIcon = (
+  data: Uint8Array,
+  view: string,
+  width?: number,
+  height?: number
+) => {
   if (FFLWorker === undefined)
     throw new Error("FFL worker told to make icon, but it wasn't initialized");
 
@@ -84,6 +89,8 @@ export const getFFLWorkerMakeIcon = (data: Uint8Array, view: string) => {
       type: "MakeIcon",
       data,
       view,
+      width,
+      height,
     } as FFLWorkerMessage)
       .then((resp) => resolve(resp))
       .catch((err) => reject(err));

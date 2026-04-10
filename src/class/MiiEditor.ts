@@ -33,6 +33,14 @@ import { OptionsTab } from "../ui/tabs/Options";
 import { ExtHatTab } from "../ui/tabs/ExtHat";
 import { Mii2DRenderer } from "./2DRenderer";
 import { getSetting } from "../util/SettingsHelper";
+import {
+  createCharModel,
+  createCharModelIcon,
+  initCharModelTextures,
+  ViewType,
+} from "../external/ffl.js/ffl";
+import { getFFL, getFFLWorkerExists, getFFLWorkerMakeIcon } from "../main";
+import { WebGLRenderer } from "three";
 
 export enum MiiGender {
   Male,
@@ -64,6 +72,19 @@ export enum RenderPart {
 
 let activeMii: Mii;
 export const getMii = () => activeMii;
+
+let editor2DRenderer: WebGLRenderer | undefined;
+
+function getEditor2DRenderer() {
+  if (!editor2DRenderer) {
+    editor2DRenderer = new WebGLRenderer({
+      alpha: true,
+      preserveDrawingBuffer: true,
+    });
+  }
+
+  return editor2DRenderer;
+}
 
 export class MiiEditor {
   mii: Mii;
@@ -453,23 +474,61 @@ export class MiiEditor {
         if (this.mii.favorite) {
           pantsColor = "red";
         }
-        // replace for new 2d mode
-        this.ui.mii
-          .qs("img")
-          ?.style({ display: "block" })
-          .attr({
-            src: `${
-              Config.renderer.renderFullBodyURL
-            }&data=${encodeURIComponent(
-              this.mii.encodeStudio().toString("hex")
-            )}&${Config.renderer.hatTypeParam}=${
-              this.mii.extHatType + Config.renderer.hatTypeAdd
-            }&${Config.renderer.hatColorParam}=${
-              this.mii.extHatColor + Config.renderer.hatColorAdd
-            }&miic=${encodeURIComponent(
-              this.mii.encode().toString("base64")
-            )}&pantsColor=${pantsColor}`,
-          });
+        const image = this.ui.mii.qs("img");
+        image?.style({ display: "block" });
+
+        if (Config.renderer.useRendererServer === false) {
+          const dataU8 = this.mii.encodeStudio();
+          let dataURL = "undefined";
+          let model: any;
+
+          try {
+            if (getFFLWorkerExists()) {
+              dataURL = (await getFFLWorkerMakeIcon(
+                dataU8,
+                "all_body_sugar",
+                1024,
+                1024
+              )) as string;
+            } else {
+              model = createCharModel(
+                dataU8,
+                undefined,
+                window.LUTShaderMaterial,
+                getFFL(),
+                false
+              );
+              initCharModelTextures(model, getEditor2DRenderer());
+              dataURL = await createCharModelIcon(
+                model,
+                getEditor2DRenderer(),
+                ViewType.AllBody,
+                1024,
+                1024,
+                true
+              );
+            }
+
+            image?.attr({ src: dataURL });
+          } finally {
+            model?.dispose?.();
+          }
+          break;
+        }
+
+        image?.attr({
+          src: `${
+            Config.renderer.renderFullBodyAltURL
+          }&data=${encodeURIComponent(
+            this.mii.encodeStudio().toString("hex")
+          )}&${Config.renderer.hatTypeParam}=${
+            this.mii.extHatType + Config.renderer.hatTypeAdd
+          }&${Config.renderer.hatColorParam}=${
+            this.mii.extHatColor + Config.renderer.hatColorAdd
+          }&miic=${encodeURIComponent(
+            this.mii.encode().toString("base64")
+          )}&pantsColor=${pantsColor}`,
+        });
         // this.ui.renderer.mii = this.mii;
         // this.ui.renderer.render();
         break;

@@ -2942,7 +2942,7 @@ export function createCharModelIcon(charModel, renderer, viewType = ViewType.Mak
 
 		switch (gender) {
 			case 0: {
-				bodyModel = bodyModels.Miitomo.m;
+				bodyModel = bodyModels.Miitomo.m.clone(true);
 
 				bodyModelBody = bodyModel.getObjectByName("body_m");
 				bodyModelHands = bodyModel.getObjectByName("hands_m");
@@ -2950,7 +2950,7 @@ export function createCharModelIcon(charModel, renderer, viewType = ViewType.Mak
 				break;
 			}
 			case 1: {
-				bodyModel = bodyModels.Miitomo.f;
+				bodyModel = bodyModels.Miitomo.f.clone(true);
 
 				bodyModelBody = bodyModel.getObjectByName("body_f");
 				bodyModelHands = bodyModel.getObjectByName("hands_f");
@@ -2959,10 +2959,13 @@ export function createCharModelIcon(charModel, renderer, viewType = ViewType.Mak
 			}
 		}
 
-		bodyModel.scale.set(1, bodyScale.y*10,1);
+		bodyModel.scale.set(
+			bodyScale.x * 10,
+			bodyScale.y * 10,
+			bodyScale.z * 10
+		);
 
 		var box = new THREE.Box3().setFromObject(bodyModel);
-		console.log("pos y:", box.max.y);
 
 		bodyModel.position.set(0, -box.max.y, 0);
 		iconScene.add(bodyModel);

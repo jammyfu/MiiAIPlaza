@@ -16,6 +16,8 @@ export type FFLWorkerCreateIconMessage = {
   data: Uint8Array; // commonly studio data?
   view: string; // commonly studio data?
   id: string; // random id
+  width?: number;
+  height?: number;
 };
 
 let FFLModule: any,
@@ -67,15 +69,19 @@ self.onmessage = async (e) => {
             realView = FFL.ViewType.MakeIcon;
             break;
           case "all_body_sugar":
-            realView = FFL.ViewType.MakeIcon;
+            realView = FFL.ViewType.AllBody;
             break;
         }
+        const width = input.width ?? 512;
+        const height = input.height ?? width;
+        const useBody = input.view === "all_body_sugar";
         dataURL = await FFL.createCharModelIcon(
           model,
           workerRenderer,
           realView,
-          512,
-          512
+          width,
+          height,
+          useBody
         );
       } catch (e) {
         console.error(`Library error: Could not make icon`, e);
