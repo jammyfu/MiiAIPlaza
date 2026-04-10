@@ -62,13 +62,6 @@ export async function getHeadModel(
   let currentCharModel: CharModel | null;
 
   try {
-    if (charModelRef) {
-      // Local head refresh correctness matters more than reuse.
-      // Some full-head changes such as face type / hair flip can invalidate
-      // the reused ffl.js CharModel state and make the head disappear.
-      charModelRef.dispose();
-    }
-
     currentCharModel = createCharModel(
       dataU8,
       modelDesc,

@@ -97,6 +97,9 @@ export class Mii3DScene {
   #parent: HTMLElement;
   #pastCharModel?: CharModel;
   #pastCharMask?: CharModel;
+  #headUpdateQueue: Promise<void>;
+  #headUpdateScheduled: boolean;
+  #pendingHeadRenderPart?: RenderPart;
   mii: Mii;
   ready: boolean;
   headReady: boolean;
@@ -129,6 +132,8 @@ export class Mii3DScene {
     this.anim = new Map();
     this.#parent = parent;
     this.#scene = new THREE.Scene();
+    this.#headUpdateQueue = Promise.resolve();
+    this.#headUpdateScheduled = false;
     this.#camera = new THREE.PerspectiveCamera(
       45,
       parent.offsetWidth / parent.offsetHeight,
@@ -936,12 +941,44 @@ export class Mii3DScene {
     }
   }
   async updateMiiHead(renderPart: RenderPart = RenderPart.Head) {
+    if (
+      this.#pendingHeadRenderPart === undefined ||
+      renderPart === RenderPart.Head
+    ) {
+      this.#pendingHeadRenderPart = renderPart;
+    }
+
+    if (this.#headUpdateScheduled) {
+      return this.#headUpdateQueue;
+    }
+
+    this.#headUpdateScheduled = true;
+    this.#headUpdateQueue = this.#headUpdateQueue
+      .catch(() => {
+        // Keep the queue alive even if a previous update failed.
+      })
+      .then(async () => {
+        while (this.#pendingHeadRenderPart !== undefined) {
+          const nextRenderPart = this.#pendingHeadRenderPart;
+          this.#pendingHeadRenderPart = undefined;
+          await this.#updateMiiHeadNow(nextRenderPart);
+        }
+      })
+      .finally(() => {
+        this.#headUpdateScheduled = false;
+      });
+
+    return this.#headUpdateQueue;
+  }
+
+  async #updateMiiHeadNow(renderPart: RenderPart = RenderPart.Head) {
     const start = performance.now();
     let head = this.#scene.getObjectsByProperty("name", "MiiHead");
     try {
       switch (renderPart) {
         case RenderPart.Head:
           try {
+            const usingRendererServer = Config.renderer.useRendererServer;
             const previousCharModel = this.#pastCharModel;
             // CUSTOM APP-SPECIFIC DATA
             let favoriteColor: number = this.mii.favoriteColor;
@@ -969,7 +1006,7 @@ export class Mii3DScene {
             }
             params["verifyCharInfo"] = "0";
             let GLB: GLTF;
-            if (Config.renderer.useRendererServer) {
+            if (usingRendererServer) {
               GLB = await this.#gltfLoader.loadAsync(
                 tmpMii.studioUrl({
                   ext: "glb",
@@ -1016,33 +1053,8 @@ export class Mii3DScene {
                 obj.parent!.remove(obj);
               });
 
-            if (Config.renderer.useRendererServer)
+            if (usingRendererServer)
               traverseAddShader(GLB.scene, this.mii);
-            else {
-              this.#pastCharModel = (GLB as any).CharModel;
-              previousCharModel?.dispose?.();
-            }
-
-            head.forEach((h) => {
-              h.traverse((c) => {
-                const child = c as THREE.Mesh;
-                if (child.isMesh) {
-                  child.geometry.dispose();
-                  const material = child.material;
-                  if (Array.isArray(material)) {
-                    material.forEach((mat) => {
-                      const typedMat = mat as THREE.MeshBasicMaterial;
-                      typedMat.map?.dispose?.();
-                      typedMat.dispose?.();
-                    });
-                  } else {
-                    const typedMat = material as THREE.MeshBasicMaterial;
-                    typedMat.map?.dispose?.();
-                    typedMat.dispose?.();
-                  }
-                }
-              });
-            });
 
             const body = this.#scene.getObjectByName(this.type)!;
 
@@ -1068,6 +1080,32 @@ export class Mii3DScene {
 
             const bodyModelType = this.bodyModel;
             this.#scene.add(GLB.scene);
+
+            if (usingRendererServer) {
+              head.forEach((h) => {
+                h.traverse((c) => {
+                  const child = c as THREE.Mesh;
+                  if (child.isMesh) {
+                    child.geometry.dispose();
+                    const material = child.material;
+                    if (Array.isArray(material)) {
+                      material.forEach((mat) => {
+                        const typedMat = mat as THREE.MeshBasicMaterial;
+                        typedMat.map?.dispose?.();
+                        typedMat.dispose?.();
+                      });
+                    } else {
+                      const typedMat = material as THREE.MeshBasicMaterial;
+                      typedMat.map?.dispose?.();
+                      typedMat.dispose?.();
+                    }
+                  }
+                });
+              });
+            } else {
+              this.#pastCharModel = (GLB as any).CharModel;
+              previousCharModel?.dispose?.();
+            }
 
             // Hacky fix for head being snapped in the wrong direction for 1 frame
             if (bodyModelType === "miitomo") {
