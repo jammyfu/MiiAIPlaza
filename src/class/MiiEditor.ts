@@ -92,6 +92,10 @@ function trimLocal2DRenderCache() {
   }
 }
 
+function clearLocal2DRenderCache() {
+  local2DRenderCache.clear();
+}
+
 function getEditor2DRenderer() {
   if (!editor2DRenderer) {
     editor2DRenderer = new WebGLRenderer({
@@ -638,6 +642,9 @@ export class MiiEditor {
     if (this.#loadInterval) {
       clearInterval(this.#loadInterval);
     }
+
+    this.#renderRequestId++;
+    clearLocal2DRenderCache();
 
     this.ui.base.classOn("closing");
     setTimeout(() => {
