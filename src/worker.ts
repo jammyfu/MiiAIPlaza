@@ -87,16 +87,7 @@ self.onmessage = async (e) => {
         console.error(`Library error: Could not make icon`, e);
       } finally {
         model.dispose();
-
-        var url: string | undefined = undefined;
-        if (dataURL.type === "blob") {
-          url = URL.createObjectURL(dataURL.result as Blob);
-          setTimeout(() => {
-            URL.revokeObjectURL(url!);
-          }, 500);
-        }
-
-        postMessage({ id: input.id, result: url || dataURL.result });
+        postMessage({ id: input.id, result: dataURL.result });
       }
     }
   }

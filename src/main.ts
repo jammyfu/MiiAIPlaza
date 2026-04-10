@@ -75,6 +75,13 @@ let FFL: any, FFLWorker: Worker | undefined;
 export const getFFL = () => FFL;
 export const getFFLWorker = () => FFLWorker;
 export const getFFLWorkerExists = () => FFLWorker !== undefined;
+const blobToDataURL = (blob: Blob) =>
+  new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onloadend = () => resolve(reader.result as string);
+    reader.onerror = () => reject(reader.error);
+    reader.readAsDataURL(blob);
+  });
 export const getFFLWorkerMakeIcon = (
   data: Uint8Array,
   view: string,
@@ -92,7 +99,14 @@ export const getFFLWorkerMakeIcon = (
       width,
       height,
     } as FFLWorkerMessage)
-      .then((resp) => resolve(resp))
+      .then(async (resp) => {
+        if (resp instanceof Blob) {
+          resolve(await blobToDataURL(resp));
+          return;
+        }
+
+        resolve(resp);
+      })
       .catch((err) => reject(err));
   });
 };
