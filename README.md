@@ -80,6 +80,14 @@ Native prerequisites on macOS:
 `setup-local-renderer.sh` now also copies `FFLResHigh.dat` into `public/FFLResHigh.dat`, which the browser-side `ffl.js` renderer needs.
 `start-local-app.sh` will automatically prepare that resource if it is missing, and it now waits for the main frontend bundles before reporting ready.
 
+Check app-only status:
+
+- `./scripts/status-local-app.sh`
+
+Stop the app-only workflow:
+
+- `./scripts/stop-local-app.sh`
+
 If you want the native renderer server too:
 
 1. Run `./scripts/start-local-renderer.sh`

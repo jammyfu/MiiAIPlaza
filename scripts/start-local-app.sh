@@ -3,6 +3,11 @@ set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 source "${ROOT_DIR}/scripts/common.sh"
+STATE_DIR="${ROOT_DIR}/.local-app"
+APP_ENV="${STATE_DIR}/app.env"
+APP_PID_FILE="${STATE_DIR}/app.pid"
+BUILD_PID_FILE="${STATE_DIR}/app-build.pid"
+SERVER_PID_FILE="${STATE_DIR}/app-server.pid"
 
 APP_PORT="${MII_APP_PORT:-3000}"
 APP_URL="http://127.0.0.1:${APP_PORT}/"
@@ -23,11 +28,24 @@ if [ ! -s "${APP_RESOURCE_DAT}" ]; then
   "${ROOT_DIR}/scripts/setup-local-renderer.sh"
 fi
 
+mkdir -p "${STATE_DIR}"
+cat > "${APP_ENV}" <<EOF
+APP_PORT=${APP_PORT}
+APP_URL=${APP_URL}
+EOF
+echo "$$" > "${APP_PID_FILE}"
+
 bun build.ts &
 BUILD_PID=$!
+echo "${BUILD_PID}" > "${BUILD_PID_FILE}"
 
 cleanup() {
   kill "${BUILD_PID}" >/dev/null 2>&1 || true
+  rm -f "${BUILD_PID_FILE}"
+  rm -f "${SERVER_PID_FILE}"
+  rm -f "${APP_PID_FILE}"
+  rm -f "${APP_ENV}"
+  rmdir "${STATE_DIR}" >/dev/null 2>&1 || true
 }
 
 trap cleanup EXIT INT TERM
@@ -35,10 +53,16 @@ trap cleanup EXIT INT TERM
 cd "${ROOT_DIR}/public"
 python3 -m http.server --bind 127.0.0.1 "${APP_PORT}" &
 SERVER_PID=$!
+echo "${SERVER_PID}" > "${SERVER_PID_FILE}"
 
 cleanup() {
   kill "${SERVER_PID}" >/dev/null 2>&1 || true
   kill "${BUILD_PID}" >/dev/null 2>&1 || true
+  rm -f "${BUILD_PID_FILE}"
+  rm -f "${SERVER_PID_FILE}"
+  rm -f "${APP_PID_FILE}"
+  rm -f "${APP_ENV}"
+  rmdir "${STATE_DIR}" >/dev/null 2>&1 || true
 }
 
 trap cleanup EXIT INT TERM

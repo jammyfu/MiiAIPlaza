@@ -180,6 +180,7 @@ AFLRes*.dat
 
 # Local stack runtime state
 .local-stack/
+.local-app/
 
 # Local browser automation artifacts
 output/playwright/
