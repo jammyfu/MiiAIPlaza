@@ -23,6 +23,17 @@ require_cmd bun
 require_cmd python3
 require_cmd curl
 
+if [ -d "${STATE_DIR}" ]; then
+  echo "Found an existing local app session. Stopping it before restart..."
+  "${ROOT_DIR}/scripts/stop-local-app.sh"
+fi
+
+if is_port_in_use "${APP_PORT}"; then
+  echo "Port ${APP_PORT} is already in use by another process." >&2
+  echo "Stop that process or rerun with MII_APP_PORT set to a free port." >&2
+  exit 1
+fi
+
 if [ ! -s "${APP_RESOURCE_DAT}" ]; then
   echo "Missing ${APP_RESOURCE_DAT}. Preparing local renderer resources..."
   "${ROOT_DIR}/scripts/setup-local-renderer.sh"
