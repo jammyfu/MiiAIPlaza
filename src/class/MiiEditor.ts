@@ -75,6 +75,22 @@ export const getMii = () => activeMii;
 
 let editor2DRenderer: WebGLRenderer | undefined;
 const local2DRenderCache = new Map<string, Promise<string>>();
+const LOCAL_2D_RENDER_CACHE_LIMIT = 24;
+
+function touchLocal2DRenderCacheEntry(cacheKey: string, imagePromise: Promise<string>) {
+  local2DRenderCache.delete(cacheKey);
+  local2DRenderCache.set(cacheKey, imagePromise);
+}
+
+function trimLocal2DRenderCache() {
+  while (local2DRenderCache.size > LOCAL_2D_RENDER_CACHE_LIMIT) {
+    const oldestKey = local2DRenderCache.keys().next().value;
+    if (oldestKey === undefined) {
+      break;
+    }
+    local2DRenderCache.delete(oldestKey);
+  }
+}
 
 function getEditor2DRenderer() {
   if (!editor2DRenderer) {
@@ -91,6 +107,7 @@ async function renderLocal2DImage(mii: Mii): Promise<string> {
   const cacheKey = `${mii.encode().toString("base64")}:${mii.extHatType}:${mii.extHatColor}`;
   const cachedImage = local2DRenderCache.get(cacheKey);
   if (cachedImage) {
+    touchLocal2DRenderCacheEntry(cacheKey, cachedImage);
     return cachedImage;
   }
 
@@ -133,6 +150,7 @@ async function renderLocal2DImage(mii: Mii): Promise<string> {
   })();
 
   local2DRenderCache.set(cacheKey, imagePromise);
+  trimLocal2DRenderCache();
   return imagePromise;
 }
 
