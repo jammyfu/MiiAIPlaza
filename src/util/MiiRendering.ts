@@ -5,16 +5,12 @@ import { RandomInt } from "./Numbers";
 import { cMaterialName } from "../class/3d/shader/fflShaderConst";
 import {
   CharModel,
-  convertStudioCharInfoToFFLiCharInfo,
   createCharModel,
   FFLCharModelDesc,
   FFLCharModelDescDefault,
-  FFLiCharInfo,
   FFLModelFlag,
   initCharModelTextures,
   setMaskTextureHook,
-  StudioCharInfo,
-  updateCharModel,
 } from "../external/ffl.js/ffl";
 import { getFFL } from "../main";
 import type { Mii3DScene } from "../class/3DScene";
@@ -67,39 +63,22 @@ export async function getHeadModel(
 
   try {
     if (charModelRef) {
-      if (!rendererRef)
-        throw new Error("Missing renderer when trying to update CharModel");
-
-      currentCharModel = charModelRef;
-
-      // Create new charinfo data
-      const studioCharInfo = StudioCharInfo.unpack(dataU8);
-      const newCharInfo = FFLiCharInfo.pack(
-        convertStudioCharInfoToFFLiCharInfo(studioCharInfo)
-      );
-
-      // updateCharModel disposes the old model and returns a fresh CharModel
-      currentCharModel = updateCharModel(
-        currentCharModel,
-        newCharInfo,
-        rendererRef,
-        modelDesc
-      );
-      if (!currentCharModel) {
-        throw new Error("updateCharModel returned an invalid CharModel");
-      }
-    } else {
-      currentCharModel = createCharModel(
-        dataU8,
-        modelDesc,
-        window.LUTShaderMaterial,
-        // window.FFLShaderMaterial,
-        getFFL(),
-        false
-      );
-      // Initialize textures for a newly created CharModel.
-      initCharModelTextures(currentCharModel, Mii3DScene.getRenderer());
+      // Local head refresh correctness matters more than reuse.
+      // Some full-head changes such as face type / hair flip can invalidate
+      // the reused ffl.js CharModel state and make the head disappear.
+      charModelRef.dispose();
     }
+
+    currentCharModel = createCharModel(
+      dataU8,
+      modelDesc,
+      window.LUTShaderMaterial,
+      // window.FFLShaderMaterial,
+      getFFL(),
+      false
+    );
+    // Initialize textures for a newly created CharModel.
+    initCharModelTextures(currentCharModel, Mii3DScene.getRenderer());
   } catch (err) {
     currentCharModel = null;
     console.error("Error creating/updating CharModel:", err);
