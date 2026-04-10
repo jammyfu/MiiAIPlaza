@@ -84,10 +84,16 @@ If a previous app-only session is still recorded, `start-local-app.sh` now stops
 Check app-only status:
 
 - `./scripts/status-local-app.sh`
+- `./scripts/start-local-app.sh status`
 
 Stop the app-only workflow:
 
 - `./scripts/stop-local-app.sh`
+- `./scripts/start-local-app.sh stop`
+
+Restart the app-only workflow:
+
+- `./scripts/start-local-app.sh restart`
 
 If you want the native renderer server too:
 

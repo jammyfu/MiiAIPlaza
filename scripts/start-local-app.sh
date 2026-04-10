@@ -15,9 +15,49 @@ APP_RESOURCE_DAT="${ROOT_DIR}/public/FFLResHigh.dat"
 MAIN_BUNDLE="${ROOT_DIR}/public/dist/main.js"
 WORKER_BUNDLE="${ROOT_DIR}/public/dist/worker.js"
 MAIN_CSS="${ROOT_DIR}/public/dist/main.css"
+ACTION="${1:-start}"
 
 export PATH="${HOME}/.bun/bin:${PATH}"
 cd "${ROOT_DIR}"
+
+print_help() {
+  cat <<EOF
+Usage: ./scripts/start-local-app.sh [start|restart|status|stop|help]
+
+Commands:
+  start    Start the local frontend app (default)
+  restart  Stop any tracked app-only session, then start again
+  status   Show local app status
+  stop     Stop the tracked app-only session
+  help     Show this help message
+EOF
+}
+
+case "${ACTION}" in
+  start)
+    ;;
+  restart)
+    if [ -d "${STATE_DIR}" ]; then
+      echo "Restarting existing local app session..."
+      "${ROOT_DIR}/scripts/stop-local-app.sh"
+    fi
+    ;;
+  status)
+    exec "${ROOT_DIR}/scripts/status-local-app.sh"
+    ;;
+  stop)
+    exec "${ROOT_DIR}/scripts/stop-local-app.sh"
+    ;;
+  help|-h|--help)
+    print_help
+    exit 0
+    ;;
+  *)
+    echo "Unknown action: ${ACTION}" >&2
+    print_help >&2
+    exit 1
+    ;;
+esac
 
 require_cmd bun
 require_cmd python3
