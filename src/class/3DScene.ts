@@ -941,27 +941,8 @@ export class Mii3DScene {
     try {
       switch (renderPart) {
         case RenderPart.Head:
-          const canReuseLocalCharModel =
-            Config.renderer.useRendererServer === false &&
-            this.#pastCharModel !== undefined;
-          if (head.length > 0) {
-            head.forEach((h) => {
-              // Dispose of old head materials
-              h.traverse((c) => {
-                let child = c as THREE.Mesh;
-                if (child.isMesh) {
-                  if (!canReuseLocalCharModel) {
-                    child.geometry.dispose();
-                    const mat = child.material as THREE.MeshBasicMaterial;
-                    if (mat.map) mat.map.dispose();
-                    mat.dispose();
-                  }
-                }
-              });
-            });
-          }
-
           try {
+            const previousCharModel = this.#pastCharModel;
             // CUSTOM APP-SPECIFIC DATA
             let favoriteColor: number = this.mii.favoriteColor;
             // console.log("fav color:", favoriteColor);
@@ -1015,7 +996,7 @@ export class Mii3DScene {
                 tmpMii,
                 this,
                 modelType,
-                this.#pastCharModel,
+                undefined,
                 this.#renderer
               );
             }
@@ -1039,7 +1020,29 @@ export class Mii3DScene {
               traverseAddShader(GLB.scene, this.mii);
             else {
               this.#pastCharModel = (GLB as any).CharModel;
+              previousCharModel?.dispose?.();
             }
+
+            head.forEach((h) => {
+              h.traverse((c) => {
+                const child = c as THREE.Mesh;
+                if (child.isMesh) {
+                  child.geometry.dispose();
+                  const material = child.material;
+                  if (Array.isArray(material)) {
+                    material.forEach((mat) => {
+                      const typedMat = mat as THREE.MeshBasicMaterial;
+                      typedMat.map?.dispose?.();
+                      typedMat.dispose?.();
+                    });
+                  } else {
+                    const typedMat = material as THREE.MeshBasicMaterial;
+                    typedMat.map?.dispose?.();
+                    typedMat.dispose?.();
+                  }
+                }
+              });
+            });
 
             const body = this.#scene.getObjectByName(this.type)!;
 
