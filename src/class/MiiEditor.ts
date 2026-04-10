@@ -157,6 +157,7 @@ async function renderLocal2DImage(mii: Mii): Promise<string> {
 export class MiiEditor {
   mii: Mii;
   icons!: IconSet;
+  #renderRequestId: number;
 
   ui!: {
     base: Html;
@@ -190,6 +191,7 @@ export class MiiEditor {
     this.dirty = false;
     this.ready = false;
     this.errors = new Map();
+    this.#renderRequestId = 0;
 
     // default male mii
     let initString =
@@ -546,13 +548,21 @@ export class MiiEditor {
         image?.style({ display: "block" });
 
         if (Config.renderer.useRendererServer === false) {
+          const requestId = ++this.#renderRequestId;
           try {
             const dataURL = await renderLocal2DImage(this.mii);
+            if (requestId !== this.#renderRequestId) {
+              break;
+            }
             image?.attr({ src: dataURL });
           } catch (error) {
-            console.error("2D render failed:", error);
+            if (requestId === this.#renderRequestId) {
+              console.error("2D render failed:", error);
+            }
           } finally {
-            image?.style({ display: "block" });
+            if (requestId === this.#renderRequestId) {
+              image?.style({ display: "block" });
+            }
           }
           break;
         }
@@ -574,6 +584,7 @@ export class MiiEditor {
         // this.ui.renderer.render();
         break;
       case RenderMode.Canvas3DScene:
+        this.#renderRequestId++;
         if (this.ui.mii.qs("canvas.scene") === null) {
           await this.#setup3D();
         }
