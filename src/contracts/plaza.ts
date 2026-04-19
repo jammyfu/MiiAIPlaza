@@ -80,5 +80,7 @@ export interface PlazaWorldData {
 
 export interface PlazaWorldDataProvider {
   id: string;
+  provider: string;
+  mode: PlazaWorldDataSource["mode"];
   load(): Promise<PlazaWorldData>;
 }

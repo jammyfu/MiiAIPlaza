@@ -18,3 +18,4 @@
 - Updated the plaza page to choose its data source through a provider seam while keeping mock boot as the default path.
 - Added shared plaza freshness diagnostics, timestamp-based stale detection, and provider source cues in the plaza HUD and resident inspection panels.
 - Added typed provider health metadata to plaza data sources and surfaced health summaries plus fallback hints in the plaza HUD.
+- Added typed fallback plaza world data for provider failures so outages stay inside the normal plaza shell instead of switching to a separate error page.

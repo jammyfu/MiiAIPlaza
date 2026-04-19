@@ -30,3 +30,6 @@
 - Surfaced provider health status, summary, and fallback hints in the plaza HUD without breaking the existing diagnostics UI.
 - Kept mock and fixture providers aligned on the same health contract and verified the new copy path with tests plus the standard repository verification command.
 - Advanced `CURRENT_PLAN.md` to the next outage-handling slice after provider health landed cleanly.
+- Added a typed provider-failure fallback loader so provider exceptions now recover into structured plaza world data instead of a separate error page.
+- Taught `Plaza.ts` to route provider failures back into the normal plaza shell, including an inspectable provider status hotspot.
+- Extended verification to cover the new fallback loader path and advanced `CURRENT_PLAN.md` to a retry-metadata slice for future live polling work.

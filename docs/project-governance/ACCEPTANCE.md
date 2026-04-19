@@ -12,10 +12,11 @@
 - The plaza HUD can identify the active provider feed and resident freshness diagnostics.
 - Stale resident snapshots can be detected from timestamps through shared diagnostics helpers.
 - The plaza HUD can identify provider health state, summary, and fallback guidance from the world-data source contract.
+- Provider load failures can recover into structured fallback plaza world data instead of a separate error screen.
 
 ## Current Verification Evidence
 
-- `bun test src/providers/mockPlazaPresence.test.ts src/providers/openClawPresenceAdapter.test.ts src/game/plaza/plazaPresenceDiagnostics.test.ts src/game/plaza/plazaResidentAvatarAdapter.test.ts` passes
+- `bun test src/providers/mockPlazaPresence.test.ts src/providers/openClawPresenceAdapter.test.ts src/game/plaza/loadPlazaWorldData.test.ts src/game/plaza/plazaPresenceDiagnostics.test.ts src/game/plaza/plazaResidentAvatarAdapter.test.ts` passes
 - `python3 -m unittest tools.test_sync_or_queue tools.test_queue_local_git_sync tools.test_verify` passes
 - `bun run build.ts --once` passes
 - `python3 tools/verify.py` passes
@@ -29,3 +30,4 @@
 - A tested `OpenClaw` fixture adapter now normalizes external-style payloads into shared plaza residents and hotspots.
 - Plaza HUD now surfaces provider source, resident freshness, and stale-state cues derived from timestamps.
 - Plaza world sources now carry typed provider health metadata that the HUD renders directly.
+- Provider load failures now recover into a structured plaza shell with a status hotspot instead of a separate error page.

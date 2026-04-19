@@ -223,6 +223,8 @@ export function createOpenClawFixtureWorldData(
 
 export const openClawFixtureWorldDataProvider: PlazaWorldDataProvider = {
   id: "openclaw-fixture",
+  provider: "OpenClaw",
+  mode: "fixture",
   async load() {
     return createOpenClawFixtureWorldData(createOpenClawPresenceFixture());
   },

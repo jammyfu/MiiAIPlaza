@@ -73,3 +73,11 @@ Represent provider health directly on `PlazaWorldDataSource` with typed healthy/
 
 Why:
 Live polling will need a stable way to report degraded or failing provider states even when resident data is partial or stale. Keeping health on the source contract prevents the page layer from inventing provider-specific heuristics and keeps fallback behavior explicit.
+
+### Recover provider failures into structured plaza world data
+
+Decision:
+When a provider throws during load, convert that failure into typed fallback `PlazaWorldData` and keep rendering through the normal plaza shell instead of swapping to a separate full-page error state.
+
+Why:
+This keeps outage handling on the same contract path as normal and degraded provider states, preserves the player-facing shell, and makes future live polling recovery behavior easier to reason about and test.

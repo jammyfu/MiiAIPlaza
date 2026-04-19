@@ -2,29 +2,29 @@
 
 ## Goal
 
-Prepare the plaza for real provider outages by adding a typed failing-provider fallback path instead of the current generic load-error page.
+Prepare the plaza for eventual live polling by adding typed retry metadata and recovery affordances to provider health.
 
 ## In Scope
 
-- Add a typed failing-provider result path that still returns structured plaza world data
-- Surface failing-provider fallback copy inside the regular plaza HUD instead of replacing the whole page shell
-- Preserve the current mock and fixture providers while making outage handling explicit for future live polling
-- Extend tests and docs for failing-provider behavior before network polling is introduced
+- Add retry-oriented fields to provider health metadata so the client can describe recovery timing
+- Surface retry timing and recovery guidance in the plaza HUD without breaking the current shell
+- Keep mock, fixture, and fallback providers aligned on the same recovery contract
+- Extend tests and docs for recovery metadata before real network polling is introduced
 
 ## Tasks
 
-- [ ] Add a failing-provider source shape and fallback world payload
-- [ ] Teach `Plaza.ts` to recover into the normal plaza shell for provider failures
-- [ ] Surface failing-provider guidance in the HUD and keep controls usable
-- [ ] Extend tests and governance docs for outage handling and future live polling handoff
+- [ ] Add retry-oriented metadata to `PlazaWorldDataHealth`
+- [ ] Surface retry timing and recovery copy in the plaza HUD
+- [ ] Keep mock, fixture, and failing fallback providers aligned on the same recovery contract
+- [ ] Extend tests and governance docs for recovery metadata and live polling handoff
 
 ## Acceptance
 
 - `python3 tools/verify.py` succeeds locally
 - The plaza continues to boot from the current mock provider without breaking the editor flow
-- A provider failure can still render a structured fallback plaza shell
-- The existing diagnostics HUD remains compatible with the failure path
-- The next step from typed failure handling to live polling remains explicit in code and docs
+- The plaza can describe when a provider should be retried after degraded or failing states
+- The existing diagnostics HUD remains compatible with recovery metadata
+- The next step from retry metadata to real live polling remains explicit in code and docs
 
 ## Out Of Scope
 

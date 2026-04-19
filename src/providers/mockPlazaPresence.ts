@@ -163,6 +163,8 @@ export function createMockPlazaWorldData(): PlazaWorldData {
 
 export const mockPlazaWorldDataProvider: PlazaWorldDataProvider = {
   id: "mock",
+  provider: "Mock",
+  mode: "mock",
   async load() {
     return createMockPlazaWorldData();
   },
