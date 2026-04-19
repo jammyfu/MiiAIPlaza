@@ -17,3 +17,11 @@ Do not introduce a new engine before the first playable plaza exists.
 
 Why:
 The repository already has the right dependencies and rendering context to ship a first shell quickly.
+
+### Use thread heartbeat automation for continuous推进
+
+Decision:
+Use a heartbeat automation attached to the current thread every 10 minutes instead of a separate cron conversation.
+
+Why:
+The work benefits from preserving conversation context, current-plan state, and ongoing repository decisions in one place.

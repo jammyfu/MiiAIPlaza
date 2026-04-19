@@ -1,45 +1,39 @@
 # Current Plan
 
-## Current Slice
+## Goal
 
-Phase 0 and early Phase 1 bootstrap.
+Turn the plaza prototype from colored proxy residents into a recognizable Mii-driven resident experience without breaking the existing editor flow.
 
 ## In Scope
 
-- Create the standard governance and automation file set
-- Add a non-interactive verification entrypoint
-- Define plaza contracts and a mock presence provider
-- Ship a `?plaza=1` runtime path with:
-  - third-person movement
-  - a small authored scene shell
-  - resident agents from mock data
-  - hotspot interactions and HUD
+- Replace the current proxy resident meshes in `/?plaza=1` with rendered or renderer-backed Mii residents
+- Preserve the current plaza movement, camera, and hotspot interaction loop
+- Keep the implementation behind the existing plaza contracts and mock provider seam
+- Extend verification only as needed to keep this slice stable
+
+## Tasks
+
+- [ ] Add a resident avatar adapter that maps plaza resident records to renderable Mii data
+- [ ] Render at least one resident in the plaza using the Mii pipeline instead of the proxy box-body shell
+- [ ] Preserve or restore resident inspection panels and prompt behavior after the renderer swap
+- [ ] Update verification, worklog, and changelog evidence for the new resident embodiment path
 
 ## Acceptance
 
 - `python3 tools/verify.py` succeeds locally
-- The repository has a single documented planning entrypoint
-- Visiting `/?plaza=1` loads the plaza shell without breaking the existing editor flow
-- The plaza allows movement, camera orbit controls, and at least one resident or hotspot interaction
+- Visiting `/?plaza=1` still loads without breaking the existing editor flow
+- At least one resident in the plaza is represented through the Mii rendering pipeline rather than the temporary proxy geometry
+- Resident interaction prompts and detail panels still work after the renderer change
 
-## Deferred
+## Out Of Scope
 
 - live `OpenClaw` integration
 - realtime sync
-- full Mii body integration inside the new world runtime
+- persistent plaza board and mailbox data
+- full animation-state polish for all residents
 
-## Execution Checklist
+## Next Candidates
 
-- [x] Add governance, roadmap, and automation documentation
-- [x] Add `tools/verify.py` and `tools/next_plan.py`
-- [x] Add plaza contracts and a tested mock presence provider
-- [x] Add a `?plaza=1` shell with movement, camera orbit, residents, and hotspots
-- [ ] Replace proxy plaza avatars with rendered Miis
-- [ ] Introduce a live `OpenClaw` adapter behind the same contracts
-- [ ] Add persistent plaza board and mailbox data
-
-## Next Slice Candidate
-
-- Replace proxy residents with rendered Miis
-- Add a live `OpenClaw` adapter contract implementation
+- Introduce a live `OpenClaw` adapter behind the same contracts
 - Add persistent plaza board and mailbox data
+- Add proper walk, idle, and emote animation states for residents

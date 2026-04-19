@@ -28,3 +28,4 @@ http://127.0.0.1:3000/?plaza=1
 
 - `tools/verify.py` avoids watch mode and is safe for automation.
 - `tools/next_plan.py` reads the current planning files and prints the next recommended slice.
+- Continuous automation should wake this thread every 10 minutes, assess `CURRENT_PLAN.md`, execute one stable closure, verify, then record the result back into the governance files before continuing.
