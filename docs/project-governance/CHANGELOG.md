@@ -23,3 +23,4 @@
 - Added a shared `Provider Status` hotspot so provider retry guidance is inspectable in both normal and failure fallback plaza shells.
 - Added a typed plaza world-data controller so future manual refresh and live polling can reuse the same provider-boundary load path.
 - Added the first player-facing `Refresh Provider` action and aligned provider-status inspection with the same refresh boundary.
+- Added typed polling-plan metadata so the plaza can describe future scheduled refresh posture without starting background timers.

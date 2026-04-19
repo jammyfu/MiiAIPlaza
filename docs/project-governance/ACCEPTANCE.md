@@ -17,6 +17,7 @@
 - The plaza exposes provider retry guidance through a shared `Provider Status` hotspot in both success and failure paths.
 - The plaza page owns a typed initial-load and manual-refresh controller at the provider boundary without changing the shell contract.
 - The plaza now exposes a player-facing manual refresh affordance that reuses the shared controller and keeps provider-status inspection aligned.
+- The plaza controller now exposes typed polling-plan metadata so future scheduled refreshes can reuse the current refresh boundary without adding timers yet.
 
 ## Current Verification Evidence
 
@@ -39,3 +40,4 @@
 - Provider loads now upsert a shared `Provider Status` hotspot so inspection-driven recovery guidance works in both success and failure paths.
 - The plaza page now loads provider data through a typed controller that can distinguish initial load and manual refresh triggers while reusing the same fallback behavior.
 - The plaza HUD now exposes a `Refresh Provider` action, and the provider-status inspection path reflects the same refresh boundary.
+- The plaza HUD and provider-status inspection now expose typed polling-posture copy derived from the shared controller cadence plan.

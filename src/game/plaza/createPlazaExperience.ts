@@ -23,6 +23,7 @@ import {
 } from "three";
 import type {
   PlazaHotspot,
+  PlazaWorldDataPollingPlan,
   PlazaResident,
   PlazaWorldDataSnapshot,
   PlazaWorldDataSource,
@@ -37,6 +38,7 @@ import {
 } from "./plazaPresenceDiagnostics";
 import {
   createProviderStatusRefreshDetails,
+  describePollingPlanUi,
   describeRefreshUiState,
 } from "./plazaRefreshUi";
 import { getMiiRender, MiiCustomRenderType } from "../../util/miiImageUtils";
@@ -49,6 +51,7 @@ interface PlazaExperienceOptions {
   onExit: () => void;
   onRefresh?: () => Promise<void>;
   refreshSnapshot?: Pick<PlazaWorldDataSnapshot, "sequence" | "trigger">;
+  pollingPlan?: PlazaWorldDataPollingPlan | null;
 }
 
 type Interactable =
@@ -81,6 +84,7 @@ export function createPlazaExperience({
   onExit,
   onRefresh,
   refreshSnapshot,
+  pollingPlan,
 }: PlazaExperienceOptions) {
   const providerSummary = summarizeResidentDiagnostics(residents);
   const sourceLabel = describeWorldDataSource(source);
@@ -88,6 +92,7 @@ export function createPlazaExperience({
   const refreshUiState = refreshSnapshot
     ? describeRefreshUiState(refreshSnapshot, false)
     : null;
+  const pollingPlanUi = pollingPlan ? describePollingPlanUi(pollingPlan) : null;
 
   root.innerHTML = `
     <div class="plaza-shell">
@@ -124,6 +129,8 @@ export function createPlazaExperience({
             ${
               refreshUiState ? `<small>${refreshUiState.statusLabel}</small>` : ""
             }
+            ${pollingPlanUi ? `<small>${pollingPlanUi.label}</small>` : ""}
+            ${pollingPlanUi ? `<small>${pollingPlanUi.detail}</small>` : ""}
           </div>
           <div class="plaza-inline-actions">
             ${
@@ -413,7 +420,10 @@ export function createPlazaExperience({
     detailList.innerHTML = "";
     const detailLines =
       hotspot.id === "provider-status" && refreshSnapshot
-        ? [...createProviderStatusRefreshDetails(refreshSnapshot), ...hotspot.details]
+        ? [
+            ...createProviderStatusRefreshDetails(refreshSnapshot, pollingPlan),
+            ...hotspot.details,
+          ]
         : hotspot.details;
     detailLines.forEach((line) => {
       const item = document.createElement("li");

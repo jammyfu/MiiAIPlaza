@@ -45,3 +45,6 @@
 - Added the first player-facing `Refresh Provider` affordance in the plaza HUD and routed it through the shared world-data controller.
 - Kept `Provider Status` inspection aligned with the same refresh boundary by surfacing refresh status and action guidance in hotspot details.
 - Expanded verification to cover refresh UI copy and advanced `CURRENT_PLAN.md` to a polling-preparation slice that stays timer-free for now.
+- Added typed polling-plan metadata on top of the shared world-data controller so manual refresh and future scheduled refreshes share one cadence seam.
+- Surfaced polling posture copy in the plaza HUD and `Provider Status` inspection flow without introducing background timers.
+- Expanded verification to cover the new polling-plan copy and advanced `CURRENT_PLAN.md` to a live-request-configuration preparation slice.

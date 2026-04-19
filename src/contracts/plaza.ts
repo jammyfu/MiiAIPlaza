@@ -88,6 +88,13 @@ export interface PlazaWorldDataSnapshot {
   world: PlazaWorldData;
 }
 
+export interface PlazaWorldDataPollingPlan {
+  mode: "manual-only" | "cadence-ready";
+  recommendedIntervalMs: number | null;
+  nextSuggestedRefreshAt?: string;
+  reason: string;
+}
+
 export interface PlazaWorldDataProvider {
   id: string;
   provider: string;

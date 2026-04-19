@@ -43,6 +43,12 @@ test("createPlazaWorldDataController tracks initial load and manual refresh meta
   expect(refreshed.world.hotspots[0]?.id).toBe("provider-status");
 
   expect(controller.getLatestSnapshot()).toEqual(refreshed);
+  expect(controller.getPollingPlan()).toEqual({
+    mode: "manual-only",
+    recommendedIntervalMs: null,
+    nextSuggestedRefreshAt: undefined,
+    reason: "Stay on manual refresh until provider retry timing is available.",
+  });
   expect(loadCount).toBe(2);
 });
 
@@ -79,6 +85,12 @@ test("createPlazaWorldDataController keeps fallback loading behavior during manu
   const initial = await controller.loadInitial();
   expect(initial.trigger).toBe("initial");
   expect(initial.world.source.health.state).toBe("degraded");
+  expect(controller.getPollingPlan()).toEqual({
+    mode: "manual-only",
+    recommendedIntervalMs: null,
+    nextSuggestedRefreshAt: undefined,
+    reason: "Stay on manual refresh until provider retry timing is available.",
+  });
 
   const refreshed = await controller.refresh();
   expect(refreshed.trigger).toBe("manual-refresh");
@@ -86,4 +98,10 @@ test("createPlazaWorldDataController keeps fallback loading behavior during manu
   expect(refreshed.world.source.health.state).toBe("failing");
   expect(refreshed.world.hotspots[0]?.id).toBe("provider-status");
   expect(refreshed.world.hotspots[0]?.details).toContain("Failure: manual refresh timed out");
+  expect(controller.getPollingPlan()).toEqual({
+    mode: "cadence-ready",
+    recommendedIntervalMs: 120000,
+    nextSuggestedRefreshAt: refreshed.world.source.health.nextRetryAt,
+    reason: "Future background polling can reuse the provider retry timing without changing the refresh boundary.",
+  });
 });

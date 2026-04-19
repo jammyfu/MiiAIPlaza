@@ -2,6 +2,7 @@
 
 - Integrate existing Mii body and head assets into the plaza runtime
 - Fetch live `OpenClaw` provider data once endpoint details and auth shape are confirmed
+- Add a typed live-provider request configuration seam ahead of real `OpenClaw` fetches
 - Add background provider polling on top of the shared refresh controller
 - Add proper animation states for walking, idling, and emotes
 - Add navmesh or waypoint routing for resident agents

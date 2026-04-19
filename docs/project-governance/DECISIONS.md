@@ -113,3 +113,11 @@ Let `Plaza.ts` own refresh-triggered re-rendering through the shared controller,
 
 Why:
 This keeps WebGL runtime changes minimal, reuses the same provider-loading and fallback path for both initial and manual loads, and gives future scheduled polling a single orchestration point outside the scene implementation.
+
+### Represent future polling as typed cadence metadata before adding timers
+
+Decision:
+Expose a typed polling plan from the shared world-data controller and render that plan in the HUD and provider-status details, instead of starting real intervals now.
+
+Why:
+This keeps the current manual refresh path canonical while making future scheduled refresh behavior explicit and testable. When live polling arrives, it can reuse the same cadence contract instead of inventing timer rules in the page or scene layers.

@@ -50,14 +50,17 @@ export function Plaza() {
     currentExperience?.destroy();
     currentExperience = null;
     const { source, hotspots, residents } = snapshot.world;
+    const pollingPlan = worldDataController.getPollingPlan();
     root.dataset.providerRefreshSequence = String(snapshot.sequence);
     root.dataset.providerRefreshTrigger = snapshot.trigger;
+    root.dataset.providerPollingMode = pollingPlan?.mode ?? "unknown";
     currentExperience = createPlazaExperience({
       root,
       source,
       residents,
       hotspots,
       refreshSnapshot: snapshot,
+      pollingPlan,
       onRefresh: async () => {
         renderLoading("Refreshing provider presence from the selected source...");
         const refreshedSnapshot = await worldDataController.refresh();
