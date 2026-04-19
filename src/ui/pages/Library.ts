@@ -460,6 +460,13 @@ export async function Library(highlightMiiId?: string) {
         })
       ),
       AddButtonSounds(
+        new Html("button").text("Enter Plaza").on("click", async () => {
+          const url = new URL(location.href);
+          url.searchParams.set("plaza", "1");
+          location.href = `${url.pathname}${url.search}`;
+        })
+      ),
+      AddButtonSounds(
         new Html("button").text("Settings").on("click", async () => {
           Settings();
         })

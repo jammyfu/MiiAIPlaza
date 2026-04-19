@@ -4,6 +4,25 @@
 
 Create and share Mii characters online with just a few clicks!
 
+## Project Direction
+
+This fork is now evolving into a `Mii Plaza Client`: a world-first 3D plaza built on top of the existing Mii editor and renderer stack.
+
+Recommended reading order:
+
+- [Project brief](PROJECT_BRIEF.md)
+- [Current plan](CURRENT_PLAN.md)
+- [Master plan](MASTER_PLAN.md)
+- [Platform roadmap](docs/architecture/PLATFORM_ROADMAP.md)
+- [Automation commands](docs/AUTOMATION_COMMANDS.md)
+- [Long-running autonomy rules](docs/LONG_RUNNING_AUTONOMY.md)
+- [Design spec](docs/superpowers/specs/2026-04-20-mii-plaza-platform-design.md)
+
+## Current Modes
+
+- Classic editor and library flow at `/`
+- Early plaza prototype at `/?plaza=1`
+
 ## Upstream Reference
 
 This repository is based on the original [datkat21/mii-creator](https://github.com/datkat21/mii-creator) project.

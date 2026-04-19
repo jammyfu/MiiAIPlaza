@@ -36,7 +36,7 @@ import { watch } from "fs";
 import * as sass from "sass";
 import type { BuildOutput } from "bun";
 
-async function build() {
+export async function buildAssets() {
   try {
     await compile(
       ["./src/main.ts", "./src/api.ts", "./src/worker.ts"],
@@ -56,14 +56,21 @@ async function build() {
   }
 }
 
-const watcher = watch(
-  join(import.meta.dir, "./src"),
-  { recursive: true },
-  async (event, filename) => {
-    console.log(`Detected ${event} in ${filename}`);
-    build();
-  }
-);
+const runOnce = process.argv.includes("--once");
 
-console.log("Watching!");
-build();
+if (runOnce) {
+  console.log("Building once...");
+  await buildAssets();
+} else {
+  watch(
+    join(import.meta.dir, "./src"),
+    { recursive: true },
+    async (event, filename) => {
+      console.log(`Detected ${event} in ${filename}`);
+      buildAssets();
+    }
+  );
+
+  console.log("Watching!");
+  buildAssets();
+}

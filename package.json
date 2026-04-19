@@ -4,7 +4,10 @@
   "type": "module",
   "scripts": {
     "build-ts": "bun build.ts",
-    "serve": "bunx serve -l 3000 -C ./public"
+    "build-once": "bun run build.ts --once",
+    "serve": "bunx serve -l 3000 -C ./public",
+    "test": "bun test src/providers/mockPlazaPresence.test.ts",
+    "verify": "python3 tools/verify.py"
   },
   "devDependencies": {
     "@types/bun": "latest"

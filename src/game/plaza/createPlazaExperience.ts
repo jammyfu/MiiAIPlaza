@@ -1,0 +1,487 @@
+import {
+  AmbientLight,
+  BoxGeometry,
+  Clock,
+  Color,
+  DirectionalLight,
+  Fog,
+  Group,
+  MathUtils,
+  Mesh,
+  MeshStandardMaterial,
+  PerspectiveCamera,
+  PlaneGeometry,
+  Scene,
+  SphereGeometry,
+  Vector2,
+  Vector3,
+  WebGLRenderer,
+} from "three";
+import type { PlazaHotspot, PlazaResident } from "../../contracts/plaza";
+
+interface PlazaExperienceOptions {
+  root: HTMLElement;
+  residents: PlazaResident[];
+  hotspots: PlazaHotspot[];
+  onExit: () => void;
+}
+
+type Interactable =
+  | {
+      type: "resident";
+      resident: PlazaResident;
+      mesh: Group;
+      position: Vector3;
+    }
+  | {
+      type: "hotspot";
+      hotspot: PlazaHotspot;
+      mesh: Mesh;
+      position: Vector3;
+    };
+
+const statusLabels: Record<string, string> = {
+  offline: "Offline",
+  idle: "Idle",
+  active: "Active",
+  busy: "Busy",
+  blocked: "Blocked",
+};
+
+export function createPlazaExperience({
+  root,
+  residents,
+  hotspots,
+  onExit,
+}: PlazaExperienceOptions) {
+  root.innerHTML = `
+    <div class="plaza-shell">
+      <div class="plaza-canvas-wrap"></div>
+      <div class="plaza-overlay">
+        <div class="plaza-hud-card plaza-brand-card">
+          <span class="plaza-eyebrow">Mii Plaza Prototype</span>
+          <h1>Mii Plaza</h1>
+          <p>Walk the plaza, orbit the camera, and inspect mock-backed resident agents.</p>
+          <div class="plaza-inline-actions">
+            <button class="primary" data-plaza-action="back">Back To Studio</button>
+          </div>
+        </div>
+        <div class="plaza-hud-card plaza-residents-card">
+          <span class="plaza-eyebrow">Residents</span>
+          <div class="plaza-resident-list"></div>
+        </div>
+        <div class="plaza-hud-card plaza-detail-card" hidden>
+          <span class="plaza-eyebrow plaza-detail-eyebrow">Inspection</span>
+          <h2 class="plaza-detail-title"></h2>
+          <p class="plaza-detail-description"></p>
+          <ul class="plaza-detail-list"></ul>
+        </div>
+        <div class="plaza-hud-card plaza-footer-card">
+          <div class="plaza-prompt">Walk toward a resident or hotspot to inspect it.</div>
+          <div class="plaza-controls-copy">
+            <span><strong>Move</strong> WASD or arrows</span>
+            <span><strong>Camera</strong> drag, Q/E, or touch buttons</span>
+            <span><strong>Inspect</strong> E</span>
+          </div>
+        </div>
+        <div class="plaza-touch-controls">
+          <div class="plaza-touch-cluster">
+            <button data-hold-key="ArrowUp">Up</button>
+            <div class="plaza-touch-row">
+              <button data-hold-key="ArrowLeft">Left</button>
+              <button data-hold-key="ArrowDown">Down</button>
+              <button data-hold-key="ArrowRight">Right</button>
+            </div>
+          </div>
+          <div class="plaza-touch-cluster">
+            <div class="plaza-touch-row">
+              <button data-hold-key="KeyQ">Cam L</button>
+              <button data-hold-key="KeyE">Cam R</button>
+            </div>
+            <button data-plaza-action="interact">Inspect</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  const canvasWrap = root.querySelector(".plaza-canvas-wrap") as HTMLDivElement;
+  const promptElm = root.querySelector(".plaza-prompt") as HTMLDivElement;
+  const detailCard = root.querySelector(".plaza-detail-card") as HTMLDivElement;
+  const detailEyebrow = root.querySelector(
+    ".plaza-detail-eyebrow"
+  ) as HTMLSpanElement;
+  const detailTitle = root.querySelector(".plaza-detail-title") as HTMLHeadingElement;
+  const detailDescription = root.querySelector(
+    ".plaza-detail-description"
+  ) as HTMLParagraphElement;
+  const detailList = root.querySelector(".plaza-detail-list") as HTMLUListElement;
+  const residentList = root.querySelector(".plaza-resident-list") as HTMLDivElement;
+
+  const scene = new Scene();
+  scene.background = new Color("#d7f2ff");
+  scene.fog = new Fog("#d7f2ff", 18, 42);
+
+  const camera = new PerspectiveCamera(58, 1, 0.1, 100);
+  const renderer = new WebGLRenderer({ antialias: true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.75));
+  renderer.shadowMap.enabled = true;
+  canvasWrap.appendChild(renderer.domElement);
+
+  scene.add(new AmbientLight("#ffffff", 1.6));
+
+  const sunLight = new DirectionalLight("#fff4d6", 2.4);
+  sunLight.position.set(10, 16, 8);
+  sunLight.castShadow = true;
+  scene.add(sunLight);
+
+  const ground = new Mesh(
+    new PlaneGeometry(64, 64),
+    new MeshStandardMaterial({ color: "#89c77a" })
+  );
+  ground.rotation.x = -Math.PI / 2;
+  ground.receiveShadow = true;
+  scene.add(ground);
+
+  const centralPlaza = new Mesh(
+    new BoxGeometry(14, 0.2, 14),
+    new MeshStandardMaterial({ color: "#f5efe6" })
+  );
+  centralPlaza.position.set(0, 0.11, 0);
+  centralPlaza.receiveShadow = true;
+  scene.add(centralPlaza);
+
+  const fountain = new Mesh(
+    new BoxGeometry(2.5, 1.8, 2.5),
+    new MeshStandardMaterial({ color: "#9ec1cf" })
+  );
+  fountain.position.set(0, 0.95, 0);
+  fountain.castShadow = true;
+  scene.add(fountain);
+
+  const player = new Group();
+  const playerBody = new Mesh(
+    new BoxGeometry(0.9, 1.4, 0.7),
+    new MeshStandardMaterial({ color: "#3d7ef0" })
+  );
+  playerBody.position.y = 0.9;
+  playerBody.castShadow = true;
+  const playerHead = new Mesh(
+    new SphereGeometry(0.38, 24, 16),
+    new MeshStandardMaterial({ color: "#f5d2b3" })
+  );
+  playerHead.position.y = 1.95;
+  playerHead.castShadow = true;
+  player.add(playerBody, playerHead);
+  player.position.set(0, 0, 10);
+  scene.add(player);
+
+  const interactables: Interactable[] = [];
+
+  const residentMeshes = residents.map((resident, index) => {
+    const group = new Group();
+    const body = new Mesh(
+      new BoxGeometry(0.75, 1.25, 0.65),
+      new MeshStandardMaterial({ color: resident.agent.themeColor })
+    );
+    body.position.y = 0.8;
+    body.castShadow = true;
+    const head = new Mesh(
+      new SphereGeometry(0.34, 18, 14),
+      new MeshStandardMaterial({ color: "#f0cfaf" })
+    );
+    head.position.y = 1.7;
+    head.castShadow = true;
+    const marker = new Mesh(
+      new BoxGeometry(0.18, 0.18, 0.18),
+      new MeshStandardMaterial({ color: resident.agent.accentColor })
+    );
+    marker.position.y = 2.35;
+    group.add(body, head, marker);
+    group.position.set(resident.position.x, 0, resident.position.z);
+    scene.add(group);
+    interactables.push({
+      type: "resident",
+      resident,
+      mesh: group,
+      position: group.position,
+    });
+
+    const item = document.createElement("button");
+    item.className = "plaza-resident-button";
+    item.innerHTML = `
+      <span class="plaza-status-dot" data-status="${resident.presence.status}"></span>
+      <span>
+        <strong>${resident.agent.displayName}</strong>
+        <small>${statusLabels[resident.presence.status]} · ${resident.presence.headline}</small>
+      </span>
+    `;
+    item.addEventListener("click", () => openResident(resident));
+    residentList.appendChild(item);
+
+    return { group, index };
+  });
+
+  hotspots.forEach((hotspot) => {
+    const mesh = new Mesh(
+      new BoxGeometry(1.3, 1.4, 1.3),
+      new MeshStandardMaterial({ color: hotspot.color })
+    );
+    mesh.position.set(hotspot.position.x, 0.7, hotspot.position.z);
+    mesh.castShadow = true;
+    scene.add(mesh);
+    interactables.push({
+      type: "hotspot",
+      hotspot,
+      mesh,
+      position: mesh.position,
+    });
+  });
+
+  const keyState = new Set<string>();
+  let cameraYaw = Math.PI;
+  let dragging = false;
+  let lastPointerX = 0;
+  let interactionLatch = false;
+
+  const movementInput = new Vector2();
+  const cameraDirection = new Vector3();
+  const sideDirection = new Vector3();
+  const moveDirection = new Vector3();
+  const desiredCamera = new Vector3();
+  const cameraLook = new Vector3();
+  const clock = new Clock();
+
+  function openResident(resident: PlazaResident) {
+    detailCard.hidden = false;
+    detailEyebrow.textContent = `${resident.agent.provider} · ${resident.agent.role}`;
+    detailTitle.textContent = resident.agent.displayName;
+    detailDescription.textContent = `${resident.bio} Current task: ${resident.presence.currentTask}.`;
+    detailList.innerHTML = "";
+
+    [
+      `Status: ${statusLabels[resident.presence.status]}`,
+      `Mood: ${resident.presence.mood}`,
+      `Location hint: ${resident.presence.locationHint}`,
+      `Capabilities: ${resident.agent.capabilityTags.join(", ")}`,
+      ...resident.details,
+    ].forEach((line) => {
+      const item = document.createElement("li");
+      item.textContent = line;
+      detailList.appendChild(item);
+    });
+  }
+
+  function openHotspot(hotspot: PlazaHotspot) {
+    detailCard.hidden = false;
+    detailEyebrow.textContent = "Plaza hotspot";
+    detailTitle.textContent = hotspot.name;
+    detailDescription.textContent = hotspot.description;
+    detailList.innerHTML = "";
+    hotspot.details.forEach((line) => {
+      const item = document.createElement("li");
+      item.textContent = line;
+      detailList.appendChild(item);
+    });
+  }
+
+  function currentNearestInteractable() {
+    let nearest: Interactable | undefined;
+    let nearestDistance = Number.POSITIVE_INFINITY;
+
+    for (const interactable of interactables) {
+      const distance = interactable.position.distanceTo(player.position);
+      if (distance < nearestDistance) {
+        nearestDistance = distance;
+        nearest = interactable;
+      }
+    }
+
+    return nearestDistance <= 3.4 ? nearest : undefined;
+  }
+
+  function interact() {
+    const nearest = currentNearestInteractable();
+    if (!nearest) {
+      return;
+    }
+
+    if (nearest.type === "resident") {
+      openResident(nearest.resident);
+      return;
+    }
+
+    openHotspot(nearest.hotspot);
+  }
+
+  function setHeldKey(key: string, active: boolean) {
+    if (active) {
+      keyState.add(key);
+      return;
+    }
+    keyState.delete(key);
+  }
+
+  root.querySelectorAll<HTMLElement>("[data-hold-key]").forEach((button) => {
+    const key = button.dataset.holdKey!;
+    const start = () => setHeldKey(key, true);
+    const stop = () => setHeldKey(key, false);
+    button.addEventListener("pointerdown", start);
+    button.addEventListener("pointerup", stop);
+    button.addEventListener("pointercancel", stop);
+    button.addEventListener("pointerleave", stop);
+  });
+
+  root
+    .querySelector('[data-plaza-action="interact"]')!
+    .addEventListener("click", interact);
+  root
+    .querySelector('[data-plaza-action="back"]')!
+    .addEventListener("click", onExit);
+
+  function onKeyDown(event: KeyboardEvent) {
+    if (event.code === "KeyE") {
+      if (!interactionLatch) {
+        interact();
+      }
+      interactionLatch = true;
+    }
+
+    if (
+      event.code.startsWith("Arrow") ||
+      ["KeyW", "KeyA", "KeyS", "KeyD", "KeyQ", "KeyE"].includes(event.code)
+    ) {
+      keyState.add(event.code);
+    }
+  }
+
+  function onKeyUp(event: KeyboardEvent) {
+    keyState.delete(event.code);
+    if (event.code === "KeyE") {
+      interactionLatch = false;
+    }
+  }
+
+  function onPointerDown(event: PointerEvent) {
+    dragging = true;
+    lastPointerX = event.clientX;
+  }
+
+  function onPointerMove(event: PointerEvent) {
+    if (!dragging) {
+      return;
+    }
+
+    const delta = event.clientX - lastPointerX;
+    lastPointerX = event.clientX;
+    cameraYaw -= delta * 0.012;
+  }
+
+  function onPointerUp() {
+    dragging = false;
+  }
+
+  window.addEventListener("keydown", onKeyDown);
+  window.addEventListener("keyup", onKeyUp);
+  renderer.domElement.addEventListener("pointerdown", onPointerDown);
+  window.addEventListener("pointermove", onPointerMove);
+  window.addEventListener("pointerup", onPointerUp);
+
+  function resize() {
+    const { clientWidth, clientHeight } = canvasWrap;
+    if (clientWidth === 0 || clientHeight === 0) {
+      return;
+    }
+
+    camera.aspect = clientWidth / clientHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(clientWidth, clientHeight, false);
+  }
+
+  const resizeObserver = new ResizeObserver(resize);
+  resizeObserver.observe(canvasWrap);
+  resize();
+
+  let frameId = 0;
+  const worldLimit = 19;
+
+  function animate() {
+    frameId = requestAnimationFrame(animate);
+    const delta = Math.min(clock.getDelta(), 0.05);
+    const elapsed = clock.elapsedTime;
+
+    movementInput.set(
+      (keyState.has("KeyD") || keyState.has("ArrowRight") ? 1 : 0) -
+        (keyState.has("KeyA") || keyState.has("ArrowLeft") ? 1 : 0),
+      (keyState.has("KeyW") || keyState.has("ArrowUp") ? 1 : 0) -
+        (keyState.has("KeyS") || keyState.has("ArrowDown") ? 1 : 0)
+    );
+
+    if (keyState.has("KeyQ")) {
+      cameraYaw += delta * 1.7;
+    }
+    if (keyState.has("KeyE")) {
+      cameraYaw -= delta * 1.7;
+    }
+
+    cameraDirection.set(-Math.sin(cameraYaw), 0, -Math.cos(cameraYaw));
+    sideDirection.set(cameraDirection.z, 0, -cameraDirection.x);
+    moveDirection
+      .copy(cameraDirection)
+      .multiplyScalar(movementInput.y)
+      .add(sideDirection.multiplyScalar(movementInput.x));
+
+    if (moveDirection.lengthSq() > 0) {
+      moveDirection.normalize();
+      player.position.addScaledVector(moveDirection, 6.5 * delta);
+      player.position.x = MathUtils.clamp(player.position.x, -worldLimit, worldLimit);
+      player.position.z = MathUtils.clamp(player.position.z, -worldLimit, worldLimit);
+      const targetRotation = Math.atan2(moveDirection.x, moveDirection.z);
+      player.rotation.y = MathUtils.lerp(
+        player.rotation.y,
+        targetRotation,
+        Math.min(1, delta * 8)
+      );
+      player.position.y = Math.sin(elapsed * 14) * 0.03;
+    } else {
+      player.position.y = 0;
+    }
+
+    residentMeshes.forEach(({ group, index }) => {
+      group.position.y = Math.sin(elapsed * 1.7 + index) * 0.06;
+      group.rotation.y = Math.sin(elapsed * 0.8 + index) * 0.22;
+    });
+
+    desiredCamera
+      .copy(player.position)
+      .addScaledVector(cameraDirection, -6.8)
+      .add(new Vector3(0, 4.6, 0));
+    camera.position.lerp(desiredCamera, Math.min(1, delta * 5));
+    cameraLook.copy(player.position).add(new Vector3(0, 1.65, 0));
+    camera.lookAt(cameraLook);
+
+    const nearest = currentNearestInteractable();
+    promptElm.textContent = nearest
+      ? nearest.type === "resident"
+        ? `Press E to inspect ${nearest.resident.agent.displayName}. ${nearest.resident.prompt}`
+        : `Press E to inspect ${nearest.hotspot.name}. ${nearest.hotspot.prompt}`
+      : "Walk toward a resident or hotspot to inspect it.";
+
+    renderer.render(scene, camera);
+  }
+
+  animate();
+
+  return {
+    destroy() {
+      cancelAnimationFrame(frameId);
+      resizeObserver.disconnect();
+      window.removeEventListener("keydown", onKeyDown);
+      window.removeEventListener("keyup", onKeyUp);
+      renderer.domElement.removeEventListener("pointerdown", onPointerDown);
+      window.removeEventListener("pointermove", onPointerMove);
+      window.removeEventListener("pointerup", onPointerUp);
+      renderer.dispose();
+    },
+  };
+}

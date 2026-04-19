@@ -21,6 +21,7 @@ import { Config } from "../config";
 import Html from "@datkat21/html";
 import { AddButtonSounds } from "../util/AddButtonSounds";
 import { customRender } from "./pages/library/render/customRender";
+import { Plaza } from "./pages/Plaza";
 
 export async function setupUi() {
   let mm = getMusicManager();
@@ -80,6 +81,11 @@ export async function setupUi() {
 
   if (location.search !== "") {
     const searchParams = new URLSearchParams(location.search);
+
+    if (searchParams.has("plaza")) {
+      Plaza();
+      return;
+    }
 
     // open editor with specific data
     if (searchParams.has("data")) {

@@ -1013,3 +1013,271 @@ select {
     flex-direction: row !important;
   }
 }
+
+.plaza-mode,
+.plaza-mode body,
+.plaza-root,
+.plaza-shell,
+.plaza-canvas-wrap,
+.plaza-overlay {
+  width: 100%;
+  height: 100%;
+}
+
+.plaza-root {
+  position: relative;
+}
+
+.plaza-shell {
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at top, rgba(255, 255, 255, 0.9), transparent 45%),
+    linear-gradient(180deg, #ddf4ff 0%, #b9ead6 100%);
+}
+
+.plaza-canvas-wrap {
+  position: absolute;
+  inset: 0;
+
+  canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+}
+
+.plaza-overlay {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(240px, 320px) minmax(0, 1fr) minmax(260px, 340px);
+  grid-template-rows: auto 1fr auto;
+  gap: 1rem;
+  padding: 1rem;
+  pointer-events: none;
+}
+
+.plaza-hud-card {
+  pointer-events: auto;
+  align-self: start;
+  background: rgba(255, 255, 255, 0.78);
+  color: #102134;
+  border: 1px solid rgba(16, 33, 52, 0.08);
+  border-radius: 24px;
+  box-shadow: 0 18px 48px rgba(16, 33, 52, 0.12);
+  backdrop-filter: blur(16px);
+  padding: 1rem 1.1rem;
+}
+
+.plaza-brand-card {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.plaza-residents-card {
+  grid-column: 3;
+  grid-row: 1 / span 2;
+  max-height: calc(100vh - 8rem);
+  overflow: auto;
+}
+
+.plaza-detail-card {
+  grid-column: 1;
+  grid-row: 2;
+}
+
+.plaza-footer-card {
+  grid-column: 1 / span 3;
+  grid-row: 3;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.plaza-eyebrow {
+  display: inline-block;
+  margin-bottom: 0.35rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #4c6b8a;
+}
+
+.plaza-inline-actions {
+  margin-top: 0.9rem;
+}
+
+.plaza-resident-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+.plaza-resident-button {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.8rem 0.9rem;
+  border-radius: 18px;
+  border: 1px solid rgba(16, 33, 52, 0.08);
+  background: rgba(255, 255, 255, 0.82);
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+
+  small {
+    display: block;
+    margin-top: 0.1rem;
+    color: #4a6075;
+  }
+}
+
+.plaza-status-dot {
+  width: 0.78rem;
+  height: 0.78rem;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: #8b98a5;
+
+  &[data-status="idle"] {
+    background: #4cc9f0;
+  }
+  &[data-status="active"] {
+    background: #57cc99;
+  }
+  &[data-status="busy"] {
+    background: #f4a261;
+  }
+  &[data-status="blocked"] {
+    background: #e63946;
+  }
+}
+
+.plaza-detail-list {
+  margin: 0.75rem 0 0;
+  padding-left: 1rem;
+
+  li + li {
+    margin-top: 0.45rem;
+  }
+}
+
+.plaza-prompt {
+  font-size: 0.98rem;
+  font-weight: 550;
+}
+
+.plaza-controls-copy {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  color: #42596f;
+  font-size: 0.92rem;
+}
+
+.plaza-touch-controls {
+  display: none;
+  position: absolute;
+  inset: auto 1rem 1rem 1rem;
+  justify-content: space-between;
+  gap: 1rem;
+  pointer-events: none;
+}
+
+.plaza-touch-cluster {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  pointer-events: auto;
+}
+
+.plaza-touch-row {
+  display: flex;
+  gap: 0.55rem;
+}
+
+.plaza-touch-controls button {
+  min-width: 4.6rem;
+  min-height: 3.1rem;
+  border-radius: 18px;
+  border: 0;
+  background: rgba(16, 33, 52, 0.75);
+  color: white;
+  font: inherit;
+}
+
+@media (prefers-color-scheme: dark) {
+  .plaza-hud-card {
+    background: rgba(8, 20, 32, 0.76);
+    color: #f5fbff;
+    border-color: rgba(255, 255, 255, 0.08);
+  }
+
+  .plaza-resident-button {
+    background: rgba(19, 35, 48, 0.9);
+
+    small {
+      color: #bdd3e4;
+    }
+  }
+
+  .plaza-eyebrow,
+  .plaza-controls-copy {
+    color: #bdd3e4;
+  }
+}
+
+@media (max-width: 960px) {
+  .plaza-overlay {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto 1fr auto;
+  }
+
+  .plaza-brand-card,
+  .plaza-detail-card,
+  .plaza-residents-card,
+  .plaza-footer-card {
+    grid-column: 1;
+  }
+
+  .plaza-brand-card {
+    grid-row: 1;
+  }
+
+  .plaza-detail-card {
+    grid-row: 2;
+  }
+
+  .plaza-residents-card {
+    grid-row: 3;
+    max-height: 32vh;
+  }
+
+  .plaza-footer-card {
+    grid-row: 4;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 720px) {
+  .plaza-overlay {
+    padding: 0.75rem;
+    gap: 0.75rem;
+  }
+
+  .plaza-brand-card,
+  .plaza-detail-card {
+    max-width: min(100%, 26rem);
+  }
+
+  .plaza-touch-controls {
+    display: flex;
+  }
+
+  .plaza-footer-card {
+    margin-bottom: 7.5rem;
+  }
+}
