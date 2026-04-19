@@ -214,6 +214,10 @@ export function createOpenClawFixtureWorldData(
         lastSuccessfulUpdate: payload.generatedAt,
         fallbackHint:
           "Using the last normalized snapshot while live polling is unavailable.",
+        retryAfterMs: 3 * 60 * 1000,
+        nextRetryAt: new Date(
+          new Date(payload.generatedAt).getTime() + 3 * 60 * 1000
+        ).toISOString(),
       },
     },
     residents: openClawPresenceAdapter.listResidents(payload),

@@ -19,6 +19,8 @@ function createProviderFailureWorldData(
         headline: `${provider.provider} is currently unavailable.`,
         fallbackHint:
           "Walk to the status terminal while the plaza keeps the last safe shell online.",
+        retryAfterMs: 2 * 60 * 1000,
+        nextRetryAt: new Date(Date.now() + 2 * 60 * 1000).toISOString(),
       },
     },
     residents: [],

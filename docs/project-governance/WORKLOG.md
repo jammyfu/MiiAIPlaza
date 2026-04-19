@@ -33,3 +33,6 @@
 - Added a typed provider-failure fallback loader so provider exceptions now recover into structured plaza world data instead of a separate error page.
 - Taught `Plaza.ts` to route provider failures back into the normal plaza shell, including an inspectable provider status hotspot.
 - Extended verification to cover the new fallback loader path and advanced `CURRENT_PLAN.md` to a retry-metadata slice for future live polling work.
+- Added retry-oriented provider health metadata so healthy, degraded, and failing sources can all describe recovery timing on the same contract.
+- Surfaced retry timing and next-retry copy through the shared plaza health diagnostics helper and HUD provider meta area.
+- Kept mock, fixture, and failing fallback providers aligned on the same retry contract, and advanced `CURRENT_PLAN.md` to a follow-up manual retry interaction slice after verification passed.

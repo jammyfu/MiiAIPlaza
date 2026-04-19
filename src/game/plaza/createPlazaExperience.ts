@@ -98,6 +98,12 @@ export function createPlazaExperience({
                 ? `<small>${healthCopy.lastUpdatedLabel}</small>`
                 : ""
             }
+            <small>${healthCopy.retryLabel}</small>
+            ${
+              healthCopy.nextRetryLabel
+                ? `<small>${healthCopy.nextRetryLabel}</small>`
+                : ""
+            }
             ${
               healthCopy.fallbackHint
                 ? `<small>${healthCopy.fallbackHint}</small>`

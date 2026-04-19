@@ -25,6 +25,8 @@ export interface PlazaWorldDataHealthCopy {
   summary: string;
   lastUpdatedLabel: string | null;
   fallbackHint: string | null;
+  retryLabel: string;
+  nextRetryLabel: string | null;
 }
 
 const DEFAULT_FRESH_FOR_MS = 2 * 60 * 1000;
@@ -66,6 +68,13 @@ function formatDuration(ageMs: number): string {
     return `${hours}h ago`;
   }
   return `${hours}h ${remainderMinutes}m ago`;
+}
+
+function formatClockTime(timestamp: number): string {
+  const date = new Date(timestamp);
+  const hours = date.getHours().toString().padStart(2, "0");
+  const minutes = date.getMinutes().toString().padStart(2, "0");
+  return `${hours}:${minutes}`;
 }
 
 export function getPresenceDiagnostics(
@@ -128,13 +137,26 @@ export function describeWorldDataHealth(
 ): PlazaWorldDataHealthCopy {
   const label =
     health.state.charAt(0).toUpperCase() + health.state.slice(1);
+  const now = resolveNow(options.now);
   let lastUpdatedLabel: string | null = null;
+  let nextRetryLabel: string | null = null;
 
   if (health.lastSuccessfulUpdate) {
     const timestamp = toTimestamp(health.lastSuccessfulUpdate);
     if (timestamp !== null) {
-      const now = resolveNow(options.now);
       lastUpdatedLabel = `Last good update ${formatDuration(Math.max(0, now - timestamp))}`;
+    }
+  }
+
+  let retryLabel = "Retry on demand";
+  if (typeof health.retryAfterMs === "number") {
+    retryLabel = `Retry in ${formatDuration(Math.max(0, health.retryAfterMs)).replace(" ago", "")}`;
+  }
+
+  if (health.nextRetryAt) {
+    const timestamp = toTimestamp(health.nextRetryAt);
+    if (timestamp !== null) {
+      nextRetryLabel = `Next retry at ${formatClockTime(timestamp)}`;
     }
   }
 
@@ -143,6 +165,8 @@ export function describeWorldDataHealth(
     summary: health.headline,
     lastUpdatedLabel,
     fallbackHint: health.fallbackHint ?? null,
+    retryLabel,
+    nextRetryLabel,
   };
 }
 

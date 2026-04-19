@@ -81,3 +81,11 @@ When a provider throws during load, convert that failure into typed fallback `Pl
 
 Why:
 This keeps outage handling on the same contract path as normal and degraded provider states, preserves the player-facing shell, and makes future live polling recovery behavior easier to reason about and test.
+
+### Keep provider retry timing on the health contract
+
+Decision:
+Represent retry timing directly on `PlazaWorldDataHealth` using typed retry fields rather than inventing separate UI-only countdown logic.
+
+Why:
+Future live polling will need both background retries and user-facing recovery guidance. Keeping retry timing on the shared health contract lets the HUD, fallback shells, and future interaction surfaces stay consistent without duplicating recovery rules.

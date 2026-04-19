@@ -154,6 +154,7 @@ export function createMockPlazaWorldData(): PlazaWorldData {
         state: "healthy",
         headline: "Local mock presence is current and safe for UI iteration.",
         lastSuccessfulUpdate: new Date().toISOString(),
+        retryAfterMs: 0,
       },
     },
     residents: listMockResidents(),

@@ -13,6 +13,7 @@
 - Stale resident snapshots can be detected from timestamps through shared diagnostics helpers.
 - The plaza HUD can identify provider health state, summary, and fallback guidance from the world-data source contract.
 - Provider load failures can recover into structured fallback plaza world data instead of a separate error screen.
+- The plaza can describe retry timing for healthy, degraded, and failing provider states through the shared health contract.
 
 ## Current Verification Evidence
 
@@ -31,3 +32,4 @@
 - Plaza HUD now surfaces provider source, resident freshness, and stale-state cues derived from timestamps.
 - Plaza world sources now carry typed provider health metadata that the HUD renders directly.
 - Provider load failures now recover into a structured plaza shell with a status hotspot instead of a separate error page.
+- Provider health metadata now includes retry timing so recovery guidance is consistent across healthy, degraded, and failing states.

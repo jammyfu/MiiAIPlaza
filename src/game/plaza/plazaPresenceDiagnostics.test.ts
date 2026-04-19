@@ -78,6 +78,8 @@ test("world data health copy stays readable in the hud", () => {
     headline: "Fixture feed is available with stale residents.",
     lastSuccessfulUpdate: "2026-04-20T10:05:00Z",
     fallbackHint: "Using the last normalized snapshot while live polling is unavailable.",
+    retryAfterMs: 180_000,
+    nextRetryAt: "2026-04-20T10:15:00Z",
   };
 
   expect(describeWorldDataHealth(health, { now: "2026-04-20T10:12:00Z" })).toEqual({
@@ -85,5 +87,41 @@ test("world data health copy stays readable in the hud", () => {
     summary: "Fixture feed is available with stale residents.",
     lastUpdatedLabel: "Last good update 7m ago",
     fallbackHint: "Using the last normalized snapshot while live polling is unavailable.",
+    retryLabel: "Retry in 3m",
+    nextRetryLabel: "Next retry at 10:15",
+  });
+});
+
+test("world data health copy can describe healthy and failing recovery timing", () => {
+  const healthy: PlazaWorldDataHealth = {
+    state: "healthy",
+    headline: "Mock provider is healthy.",
+    lastSuccessfulUpdate: "2026-04-20T10:11:00Z",
+  };
+
+  const failing: PlazaWorldDataHealth = {
+    state: "failing",
+    headline: "OpenClaw is currently unavailable.",
+    fallbackHint: "Using the provider status terminal while recovery is pending.",
+    retryAfterMs: 120_000,
+    nextRetryAt: "2026-04-20T10:14:00Z",
+  };
+
+  expect(describeWorldDataHealth(healthy, { now: "2026-04-20T10:12:00Z" })).toEqual({
+    label: "Healthy",
+    summary: "Mock provider is healthy.",
+    lastUpdatedLabel: "Last good update 1m ago",
+    fallbackHint: null,
+    retryLabel: "Retry on demand",
+    nextRetryLabel: null,
+  });
+
+  expect(describeWorldDataHealth(failing, { now: "2026-04-20T10:12:00Z" })).toEqual({
+    label: "Failing",
+    summary: "OpenClaw is currently unavailable.",
+    lastUpdatedLabel: null,
+    fallbackHint: "Using the provider status terminal while recovery is pending.",
+    retryLabel: "Retry in 2m",
+    nextRetryLabel: "Next retry at 10:14",
   });
 });

@@ -70,6 +70,8 @@ export interface PlazaWorldDataHealth {
   headline: string;
   lastSuccessfulUpdate?: string;
   fallbackHint?: string;
+  retryAfterMs?: number;
+  nextRetryAt?: string;
 }
 
 export interface PlazaWorldData {
