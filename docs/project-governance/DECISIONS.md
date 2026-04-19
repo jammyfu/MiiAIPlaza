@@ -89,3 +89,11 @@ Represent retry timing directly on `PlazaWorldDataHealth` using typed retry fiel
 
 Why:
 Future live polling will need both background retries and user-facing recovery guidance. Keeping retry timing on the shared health contract lets the HUD, fallback shells, and future interaction surfaces stay consistent without duplicating recovery rules.
+
+### Keep provider status inspection on the world-data path
+
+Decision:
+Expose provider retry guidance through a shared `Provider Status` hotspot that is injected for both successful and failing provider loads, instead of only showing retry copy in top-level HUD chrome.
+
+Why:
+This keeps recovery guidance available through the same interaction model as the rest of the plaza, avoids a failure-only special case, and gives future manual refresh behavior a natural interaction anchor.

@@ -26,7 +26,11 @@ test("loadPlazaWorldData passes through successful provider results", async () =
 
   const world = await loadPlazaWorldData(provider);
   expect(world.source.health.state).toBe("healthy");
-  expect(world.hotspots.length).toBe(0);
+  expect(world.hotspots.length).toBe(1);
+  expect(world.hotspots[0]?.id).toBe("provider-status");
+  expect(world.hotspots[0]?.name).toBe("Provider Status");
+  expect(world.hotspots[0]?.details).toContain("Health: Healthy");
+  expect(world.hotspots[0]?.details).toContain("Retry: Retry on demand");
 });
 
 test("loadPlazaWorldData recovers provider failures into structured fallback world data", async () => {
@@ -50,4 +54,8 @@ test("loadPlazaWorldData recovers provider failures into structured fallback wor
   expect(world.residents.length).toBe(0);
   expect(world.hotspots.length).toBeGreaterThan(0);
   expect(world.hotspots[0]?.name).toBe("Provider Status");
+  expect(world.hotspots[0]?.details).toContain("Health: Failing");
+  expect(world.hotspots[0]?.details.some((detail) => detail.startsWith("Retry: "))).toBe(
+    true
+  );
 });

@@ -2,29 +2,29 @@
 
 ## Goal
 
-Prepare the plaza for eventual live polling by adding a small manual retry affordance and provider status interaction path.
+Prepare the plaza for eventual live polling by adding a lightweight manual refresh hook at the provider boundary.
 
 ## In Scope
 
-- Add a provider-status interaction path that can surface retry guidance inside the existing plaza shell
-- Keep retry-oriented provider health metadata visible from both the HUD and hotspot inspection flow
-- Preserve current mock, fixture, and fallback providers while making future manual refresh behavior explicit
-- Extend tests and docs for retry affordances before real network polling is introduced
+- Add a client-side refresh hook at the provider-loading boundary
+- Keep the current provider-status interaction path intact while making reload behavior explicit
+- Preserve current mock, fixture, and fallback providers while preparing for future live polling
+- Extend tests and docs for manual refresh hooks before real network polling is introduced
 
 ## Tasks
 
-- [ ] Add a provider-status interaction model that can expose retry guidance in the normal inspection card
-- [ ] Surface retry metadata consistently between HUD copy and provider-status inspection
-- [ ] Keep mock, fixture, and fallback providers aligned on the same interaction contract
-- [ ] Extend tests and governance docs for manual retry affordances and live polling handoff
+- [ ] Add a refresh-oriented loader hook that can be called without replacing the plaza shell contract
+- [ ] Keep provider-status inspection compatible with future manual refresh affordances
+- [ ] Keep mock, fixture, and fallback providers aligned on the same reload boundary
+- [ ] Extend tests and governance docs for refresh hooks and live polling handoff
 
 ## Acceptance
 
 - `python3 tools/verify.py` succeeds locally
 - The plaza continues to boot from the current mock provider without breaking the editor flow
-- The plaza can surface retry guidance both in the HUD and through provider-status inspection
-- The existing diagnostics shell remains compatible with the retry interaction path
-- The next step from manual retry affordances to real live polling remains explicit in code and docs
+- The plaza has a typed boundary where future manual refresh can re-load provider data
+- The existing diagnostics shell remains compatible with the refresh hook
+- The next step from a refresh hook to real live polling remains explicit in code and docs
 
 ## Out Of Scope
 

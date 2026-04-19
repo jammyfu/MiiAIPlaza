@@ -36,3 +36,6 @@
 - Added retry-oriented provider health metadata so healthy, degraded, and failing sources can all describe recovery timing on the same contract.
 - Surfaced retry timing and next-retry copy through the shared plaza health diagnostics helper and HUD provider meta area.
 - Kept mock, fixture, and failing fallback providers aligned on the same retry contract, and advanced `CURRENT_PLAN.md` to a follow-up manual retry interaction slice after verification passed.
+- Unified all provider loads behind a shared `Provider Status` hotspot so retry guidance is visible through the normal inspection card as well as the HUD.
+- Taught successful and failing provider paths to upsert the same provider-status hotspot contract instead of keeping failure-only ad-hoc details.
+- Advanced `CURRENT_PLAN.md` to a follow-up refresh-hook slice once the provider-status interaction path passed verification.

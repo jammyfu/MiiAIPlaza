@@ -20,3 +20,4 @@
 - Added typed provider health metadata to plaza data sources and surfaced health summaries plus fallback hints in the plaza HUD.
 - Added typed fallback plaza world data for provider failures so outages stay inside the normal plaza shell instead of switching to a separate error page.
 - Added retry-oriented provider health metadata and surfaced retry timing in plaza health copy.
+- Added a shared `Provider Status` hotspot so provider retry guidance is inspectable in both normal and failure fallback plaza shells.

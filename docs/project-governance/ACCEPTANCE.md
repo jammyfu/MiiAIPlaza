@@ -14,6 +14,7 @@
 - The plaza HUD can identify provider health state, summary, and fallback guidance from the world-data source contract.
 - Provider load failures can recover into structured fallback plaza world data instead of a separate error screen.
 - The plaza can describe retry timing for healthy, degraded, and failing provider states through the shared health contract.
+- The plaza exposes provider retry guidance through a shared `Provider Status` hotspot in both success and failure paths.
 
 ## Current Verification Evidence
 
@@ -33,3 +34,4 @@
 - Plaza world sources now carry typed provider health metadata that the HUD renders directly.
 - Provider load failures now recover into a structured plaza shell with a status hotspot instead of a separate error page.
 - Provider health metadata now includes retry timing so recovery guidance is consistent across healthy, degraded, and failing states.
+- Provider loads now upsert a shared `Provider Status` hotspot so inspection-driven recovery guidance works in both success and failure paths.
