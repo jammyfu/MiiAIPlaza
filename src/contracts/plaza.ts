@@ -62,6 +62,14 @@ export interface PlazaWorldDataSource {
   id: string;
   provider: string;
   mode: "mock" | "fixture" | "live";
+  health: PlazaWorldDataHealth;
+}
+
+export interface PlazaWorldDataHealth {
+  state: "healthy" | "degraded" | "failing";
+  headline: string;
+  lastSuccessfulUpdate?: string;
+  fallbackHint?: string;
 }
 
 export interface PlazaWorldData {

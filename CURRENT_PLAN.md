@@ -2,29 +2,29 @@
 
 ## Goal
 
-Prepare the plaza for live provider polling by surfacing provider health and fallback behavior alongside the existing diagnostics UI.
+Prepare the plaza for real provider outages by adding a typed failing-provider fallback path instead of the current generic load-error page.
 
 ## In Scope
 
-- Add provider health metadata so data sources can describe healthy, degraded, or failing states
-- Surface provider health and fallback copy in the plaza HUD without breaking the current world loop
-- Preserve the current mock and fixture providers while making live-polling handoff explicit
-- Extend tests and docs for provider health before network polling is introduced
+- Add a typed failing-provider result path that still returns structured plaza world data
+- Surface failing-provider fallback copy inside the regular plaza HUD instead of replacing the whole page shell
+- Preserve the current mock and fixture providers while making outage handling explicit for future live polling
+- Extend tests and docs for failing-provider behavior before network polling is introduced
 
 ## Tasks
 
-- [ ] Add provider health metadata to the world-data source contract
-- [ ] Surface provider health, last-successful-update copy, and fallback hints in the plaza HUD
-- [ ] Keep mock and fixture providers aligned on the same health contract
-- [ ] Extend tests and governance docs for provider health and live polling handoff
+- [ ] Add a failing-provider source shape and fallback world payload
+- [ ] Teach `Plaza.ts` to recover into the normal plaza shell for provider failures
+- [ ] Surface failing-provider guidance in the HUD and keep controls usable
+- [ ] Extend tests and governance docs for outage handling and future live polling handoff
 
 ## Acceptance
 
 - `python3 tools/verify.py` succeeds locally
 - The plaza continues to boot from the current mock provider without breaking the editor flow
-- The plaza can show whether the selected provider is healthy, degraded, or failing
-- The existing diagnostics HUD remains compatible with the provider health layer
-- The next step from provider health metadata to live polling remains explicit in code and docs
+- A provider failure can still render a structured fallback plaza shell
+- The existing diagnostics HUD remains compatible with the failure path
+- The next step from typed failure handling to live polling remains explicit in code and docs
 
 ## Out Of Scope
 

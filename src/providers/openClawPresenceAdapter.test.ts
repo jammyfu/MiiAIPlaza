@@ -37,6 +37,8 @@ test("openclaw fixture world data preserves hotspots through the provider seam",
 
   expect(providerData.source.id).toBe("openclaw-fixture");
   expect(providerData.source.mode).toBe("fixture");
+  expect(providerData.source.health.state).toBe("degraded");
+  expect(providerData.source.health.fallbackHint).toContain("last normalized snapshot");
   expect(providerData.residents.length).toBe(directData.residents.length);
   expect(providerData.hotspots.length).toBeGreaterThan(0);
 });

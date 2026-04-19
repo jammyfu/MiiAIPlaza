@@ -26,3 +26,7 @@
 - Updated mock and fixture providers to emit parseable timestamps and intentionally surface stale cases through the shared diagnostics path.
 - Surfaced provider source, resident freshness, and stale-state cues in the plaza HUD and resident inspection flow.
 - Advanced `CURRENT_PLAN.md` to a new provider-health slice once diagnostics landed and passed verification.
+- Added typed provider health metadata to plaza world sources so providers can describe healthy and degraded states with last-good-update copy.
+- Surfaced provider health status, summary, and fallback hints in the plaza HUD without breaking the existing diagnostics UI.
+- Kept mock and fixture providers aligned on the same health contract and verified the new copy path with tests plus the standard repository verification command.
+- Advanced `CURRENT_PLAN.md` to the next outage-handling slice after provider health landed cleanly.

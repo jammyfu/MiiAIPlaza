@@ -36,6 +36,7 @@ test("mock provider exposes plaza world data through an explicit provider seam",
 
   expect(providerData.source.id).toBe("mock");
   expect(providerData.source.mode).toBe("mock");
+  expect(providerData.source.health.state).toBe("healthy");
   expect(providerData.residents.length).toBe(directData.residents.length);
   expect(providerData.hotspots.length).toBe(directData.hotspots.length);
 });

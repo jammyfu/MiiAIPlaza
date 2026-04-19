@@ -5,7 +5,7 @@
 - Add proper animation states for walking, idling, and emotes
 - Add navmesh or waypoint routing for resident agents
 - Add day/night and seasonal world variants
-- Add provider health and fallback metadata to world data sources
+- Add typed failing-provider fallback world payloads
 - Add durable board and mailbox persistence
 - Add message board persistence
 - Add mailbox and postcard authoring

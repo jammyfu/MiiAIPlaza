@@ -1,7 +1,12 @@
 import { expect, test } from "bun:test";
-import type { PlazaPresenceSnapshot, PlazaWorldDataSource } from "../../contracts/plaza";
+import type {
+  PlazaPresenceSnapshot,
+  PlazaWorldDataHealth,
+  PlazaWorldDataSource,
+} from "../../contracts/plaza";
 import {
   describePresenceFreshness,
+  describeWorldDataHealth,
   describeWorldDataSource,
   getPresenceDiagnostics,
 } from "./plazaPresenceDiagnostics";
@@ -56,7 +61,29 @@ test("world data source copy stays readable in the hud", () => {
     id: "openclaw-fixture",
     provider: "OpenClaw",
     mode: "fixture",
+    health: {
+      state: "degraded",
+      headline: "Fixture feed is available with stale residents.",
+      lastSuccessfulUpdate: "2026-04-20T10:05:00Z",
+      fallbackHint: "Using the last normalized snapshot while live polling is unavailable.",
+    },
   };
 
   expect(describeWorldDataSource(source)).toBe("OpenClaw fixture feed");
+});
+
+test("world data health copy stays readable in the hud", () => {
+  const health: PlazaWorldDataHealth = {
+    state: "degraded",
+    headline: "Fixture feed is available with stale residents.",
+    lastSuccessfulUpdate: "2026-04-20T10:05:00Z",
+    fallbackHint: "Using the last normalized snapshot while live polling is unavailable.",
+  };
+
+  expect(describeWorldDataHealth(health, { now: "2026-04-20T10:12:00Z" })).toEqual({
+    label: "Degraded",
+    summary: "Fixture feed is available with stale residents.",
+    lastUpdatedLabel: "Last good update 7m ago",
+    fallbackHint: "Using the last normalized snapshot while live polling is unavailable.",
+  });
 });

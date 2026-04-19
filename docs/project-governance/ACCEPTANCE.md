@@ -11,6 +11,7 @@
 - A fixture-backed `OpenClaw` adapter exists and is covered by automated tests.
 - The plaza HUD can identify the active provider feed and resident freshness diagnostics.
 - Stale resident snapshots can be detected from timestamps through shared diagnostics helpers.
+- The plaza HUD can identify provider health state, summary, and fallback guidance from the world-data source contract.
 
 ## Current Verification Evidence
 
@@ -27,3 +28,4 @@
 - Plaza runtime data now loads through explicit `PlazaWorldDataProvider` seams instead of only hardcoded mock functions.
 - A tested `OpenClaw` fixture adapter now normalizes external-style payloads into shared plaza residents and hotspots.
 - Plaza HUD now surfaces provider source, resident freshness, and stale-state cues derived from timestamps.
+- Plaza world sources now carry typed provider health metadata that the HUD renders directly.

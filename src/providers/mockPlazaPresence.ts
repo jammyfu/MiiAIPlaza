@@ -150,6 +150,11 @@ export function createMockPlazaWorldData(): PlazaWorldData {
       id: "mock",
       provider: "Mock",
       mode: "mock",
+      health: {
+        state: "healthy",
+        headline: "Local mock presence is current and safe for UI iteration.",
+        lastSuccessfulUpdate: new Date().toISOString(),
+      },
     },
     residents: listMockResidents(),
     hotspots: listMockHotspots(),

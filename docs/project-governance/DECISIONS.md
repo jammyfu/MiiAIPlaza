@@ -65,3 +65,11 @@ Use a shared plaza diagnostics helper to classify resident freshness from `updat
 
 Why:
 Future live polling needs machine-readable freshness rules, not provider-specific prose. Moving the logic into a shared helper keeps stale-state behavior consistent across providers and lets the HUD reflect diagnostics without knowing where the snapshot came from.
+
+### Put provider health on the source contract, not in ad-hoc UI state
+
+Decision:
+Represent provider health directly on `PlazaWorldDataSource` with typed healthy/degraded/failing metadata and let the HUD render from that contract.
+
+Why:
+Live polling will need a stable way to report degraded or failing provider states even when resident data is partial or stale. Keeping health on the source contract prevents the page layer from inventing provider-specific heuristics and keeps fallback behavior explicit.

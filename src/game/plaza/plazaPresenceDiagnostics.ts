@@ -1,4 +1,5 @@
 import type {
+  PlazaWorldDataHealth,
   PlazaPresenceSnapshot,
   PlazaResident,
   PlazaWorldDataSource,
@@ -17,6 +18,13 @@ export interface PlazaPresenceDiagnosticsOptions {
   now?: Date | number | string;
   freshForMs?: number;
   staleAfterMs?: number;
+}
+
+export interface PlazaWorldDataHealthCopy {
+  label: string;
+  summary: string;
+  lastUpdatedLabel: string | null;
+  fallbackHint: string | null;
 }
 
 const DEFAULT_FRESH_FOR_MS = 2 * 60 * 1000;
@@ -112,6 +120,30 @@ export function describePresenceFreshness(
 
 export function describeWorldDataSource(source: PlazaWorldDataSource): string {
   return `${source.provider} ${source.mode} feed`;
+}
+
+export function describeWorldDataHealth(
+  health: PlazaWorldDataHealth,
+  options: PlazaPresenceDiagnosticsOptions = {}
+): PlazaWorldDataHealthCopy {
+  const label =
+    health.state.charAt(0).toUpperCase() + health.state.slice(1);
+  let lastUpdatedLabel: string | null = null;
+
+  if (health.lastSuccessfulUpdate) {
+    const timestamp = toTimestamp(health.lastSuccessfulUpdate);
+    if (timestamp !== null) {
+      const now = resolveNow(options.now);
+      lastUpdatedLabel = `Last good update ${formatDuration(Math.max(0, now - timestamp))}`;
+    }
+  }
+
+  return {
+    label,
+    summary: health.headline,
+    lastUpdatedLabel,
+    fallbackHint: health.fallbackHint ?? null,
+  };
 }
 
 export function summarizeResidentDiagnostics(

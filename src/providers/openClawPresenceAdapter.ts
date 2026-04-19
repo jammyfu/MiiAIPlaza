@@ -208,6 +208,13 @@ export function createOpenClawFixtureWorldData(
       id: "openclaw-fixture",
       provider: "OpenClaw",
       mode: "fixture",
+      health: {
+        state: "degraded",
+        headline: "Fixture feed is available, but at least one resident snapshot is stale.",
+        lastSuccessfulUpdate: payload.generatedAt,
+        fallbackHint:
+          "Using the last normalized snapshot while live polling is unavailable.",
+      },
     },
     residents: openClawPresenceAdapter.listResidents(payload),
     hotspots: listMockHotspots(),

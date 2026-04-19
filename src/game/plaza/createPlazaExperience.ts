@@ -29,6 +29,7 @@ import type {
 import { createResidentAvatarMii } from "./plazaResidentAvatarAdapter";
 import {
   describePresenceFreshness,
+  describeWorldDataHealth,
   describeWorldDataSource,
   getPresenceDiagnostics,
   summarizeResidentDiagnostics,
@@ -74,6 +75,7 @@ export function createPlazaExperience({
 }: PlazaExperienceOptions) {
   const providerSummary = summarizeResidentDiagnostics(residents);
   const sourceLabel = describeWorldDataSource(source);
+  const healthCopy = describeWorldDataHealth(source.health);
 
   root.innerHTML = `
     <div class="plaza-shell">
@@ -84,11 +86,23 @@ export function createPlazaExperience({
           <h1>Mii Plaza</h1>
           <p>Walk the plaza, orbit the camera, and inspect provider-backed resident agents.</p>
           <div class="plaza-provider-meta">
-            <span class="plaza-provider-pill">${sourceLabel}</span>
+            <span class="plaza-provider-pill" data-health="${source.health.state}">${sourceLabel}</span>
+            <strong class="plaza-provider-health">${healthCopy.label}</strong>
             <small>
               ${residents.length} residents · ${providerSummary.staleResidents} stale ·
               ${providerSummary.blockedResidents} blocked
             </small>
+            <small>${healthCopy.summary}</small>
+            ${
+              healthCopy.lastUpdatedLabel
+                ? `<small>${healthCopy.lastUpdatedLabel}</small>`
+                : ""
+            }
+            ${
+              healthCopy.fallbackHint
+                ? `<small>${healthCopy.fallbackHint}</small>`
+                : ""
+            }
           </div>
           <div class="plaza-inline-actions">
             <button class="primary" data-plaza-action="back">Back To Studio</button>
