@@ -1,6 +1,6 @@
 import type { PlazaWorldDataProvider } from "../../contracts/plaza";
 import { createPlazaExperience } from "../../game/plaza/createPlazaExperience";
-import { loadPlazaWorldData } from "../../game/plaza/loadPlazaWorldData";
+import { createPlazaWorldDataController } from "../../game/plaza/createPlazaWorldDataController";
 import { mockPlazaWorldDataProvider } from "../../providers/mockPlazaPresence";
 import { openClawFixtureWorldDataProvider } from "../../providers/openClawPresenceAdapter";
 
@@ -36,7 +36,11 @@ export function Plaza() {
   `;
 
   const provider = resolvePlazaWorldDataProvider();
-  void loadPlazaWorldData(provider).then(({ source, hotspots, residents }) => {
+  const worldDataController = createPlazaWorldDataController(provider);
+  root.dataset.providerRefreshBoundary = "ready";
+
+  void worldDataController.loadInitial().then(({ world }) => {
+    const { source, hotspots, residents } = world;
     createPlazaExperience({
       root,
       source,

@@ -80,6 +80,14 @@ export interface PlazaWorldData {
   hotspots: PlazaHotspot[];
 }
 
+export type PlazaWorldDataLoadTrigger = "initial" | "manual-refresh";
+
+export interface PlazaWorldDataSnapshot {
+  sequence: number;
+  trigger: PlazaWorldDataLoadTrigger;
+  world: PlazaWorldData;
+}
+
 export interface PlazaWorldDataProvider {
   id: string;
   provider: string;

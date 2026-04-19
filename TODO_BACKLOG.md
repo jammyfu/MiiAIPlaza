@@ -2,7 +2,8 @@
 
 - Integrate existing Mii body and head assets into the plaza runtime
 - Fetch live `OpenClaw` provider data once endpoint details and auth shape are confirmed
-- Add a lightweight provider refresh hook and manual retry affordance
+- Add a player-facing provider refresh affordance on top of the new refresh controller
+- Add background provider polling on top of the shared refresh controller
 - Add proper animation states for walking, idling, and emotes
 - Add navmesh or waypoint routing for resident agents
 - Add day/night and seasonal world variants

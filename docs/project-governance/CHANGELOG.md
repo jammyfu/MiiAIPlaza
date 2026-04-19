@@ -21,3 +21,4 @@
 - Added typed fallback plaza world data for provider failures so outages stay inside the normal plaza shell instead of switching to a separate error page.
 - Added retry-oriented provider health metadata and surfaced retry timing in plaza health copy.
 - Added a shared `Provider Status` hotspot so provider retry guidance is inspectable in both normal and failure fallback plaza shells.
+- Added a typed plaza world-data controller so future manual refresh and live polling can reuse the same provider-boundary load path.

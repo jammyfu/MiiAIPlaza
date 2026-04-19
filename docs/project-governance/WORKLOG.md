@@ -39,3 +39,6 @@
 - Unified all provider loads behind a shared `Provider Status` hotspot so retry guidance is visible through the normal inspection card as well as the HUD.
 - Taught successful and failing provider paths to upsert the same provider-status hotspot contract instead of keeping failure-only ad-hoc details.
 - Advanced `CURRENT_PLAN.md` to a follow-up refresh-hook slice once the provider-status interaction path passed verification.
+- Added a typed plaza world-data controller that separates initial load and manual refresh triggers without changing the plaza shell contract.
+- Moved `Plaza.ts` onto the new controller boundary so future refresh actions can reuse the same provider-loading path and fallback behavior.
+- Expanded verification to cover refresh-controller behavior and advanced `CURRENT_PLAN.md` to the next player-facing refresh affordance slice.

@@ -97,3 +97,11 @@ Expose provider retry guidance through a shared `Provider Status` hotspot that i
 
 Why:
 This keeps recovery guidance available through the same interaction model as the rest of the plaza, avoids a failure-only special case, and gives future manual refresh behavior a natural interaction anchor.
+
+### Add refresh control at the provider boundary before wiring UI actions
+
+Decision:
+Introduce a typed world-data controller that distinguishes `initial` and `manual-refresh` loads at the page boundary, while still returning the same world-data shape to the plaza shell.
+
+Why:
+This keeps provider refresh behavior explicit before a player-facing button exists, preserves the current shell contract, and gives future manual refresh or live polling work a single reusable seam instead of ad-hoc reload calls.

@@ -2,39 +2,39 @@
 
 ## Goal
 
-Prepare the plaza for eventual live polling by adding a lightweight manual refresh hook at the provider boundary.
+Wire the first manual provider refresh affordance onto the existing provider-status interaction path.
 
 ## In Scope
 
-- Add a client-side refresh hook at the provider-loading boundary
-- Keep the current provider-status interaction path intact while making reload behavior explicit
+- Expose the new provider-boundary refresh controller through a player-facing interaction surface
+- Keep the current provider-status hotspot and HUD copy as the anchor for reload guidance
 - Preserve current mock, fixture, and fallback providers while preparing for future live polling
-- Extend tests and docs for manual refresh hooks before real network polling is introduced
+- Extend tests and docs for the first refresh affordance before automatic polling is introduced
 
 ## Tasks
 
-- [ ] Add a refresh-oriented loader hook that can be called without replacing the plaza shell contract
-- [ ] Keep provider-status inspection compatible with future manual refresh affordances
-- [ ] Keep mock, fixture, and fallback providers aligned on the same reload boundary
-- [ ] Extend tests and governance docs for refresh hooks and live polling handoff
+- [ ] Add a minimal manual refresh affordance that reuses the provider-boundary controller
+- [ ] Keep provider-status inspection and HUD copy aligned with the same refresh entrypoint
+- [ ] Keep mock, fixture, and fallback providers aligned when refresh is invoked repeatedly
+- [ ] Extend tests and governance docs for manual refresh behavior before live polling arrives
 
 ## Acceptance
 
 - `python3 tools/verify.py` succeeds locally
 - The plaza continues to boot from the current mock provider without breaking the editor flow
-- The plaza has a typed boundary where future manual refresh can re-load provider data
-- The existing diagnostics shell remains compatible with the refresh hook
-- The next step from a refresh hook to real live polling remains explicit in code and docs
+- The plaza can trigger a manual refresh through the new provider-boundary controller without replacing the shell contract
+- The existing diagnostics shell remains compatible with the first refresh affordance
+- The next step from a manual refresh affordance to real live polling remains explicit in code and docs
 
 ## Out Of Scope
 
 - live network fetches against a real `OpenClaw` endpoint
+- background automatic polling loops
 - realtime sync
 - persistent plaza board and mailbox data
-- full animation-state polish for all residents
 
 ## Next Candidates
 
+- Add background polling on top of the refresh controller once live endpoint rules exist
 - Add persistent plaza board and mailbox data
 - Add proper walk, idle, and emote animation states for residents
-- Replace billboard Mii residents with fully embodied 3D Mii bodies
