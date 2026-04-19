@@ -2,29 +2,29 @@
 
 ## Goal
 
-Expose provider source and freshness diagnostics in the plaza HUD so fixture-backed and future live providers can degrade gracefully.
+Prepare the plaza for live provider polling by surfacing provider health and fallback behavior alongside the existing diagnostics UI.
 
 ## In Scope
 
-- Surface the currently selected plaza data provider in the runtime HUD
-- Add freshness and staleness derivation from `PlazaPresenceSnapshot.updatedAt`
-- Make stale or blocked residents visually legible without breaking the current interaction loop
-- Extend tests and docs for provider diagnostics before live polling arrives
+- Add provider health metadata so data sources can describe healthy, degraded, or failing states
+- Surface provider health and fallback copy in the plaza HUD without breaking the current world loop
+- Preserve the current mock and fixture providers while making live-polling handoff explicit
+- Extend tests and docs for provider health before network polling is introduced
 
 ## Tasks
 
-- [ ] Add a small provider metadata surface to the plaza shell so users can tell which source hydrated the world
-- [ ] Derive resident freshness from `updatedAt` values and classify stale snapshots
-- [ ] Reflect blocked or stale state in the resident list and inspection card without disturbing movement flow
-- [ ] Extend tests and governance docs for provider diagnostics and future live polling handoff
+- [ ] Add provider health metadata to the world-data source contract
+- [ ] Surface provider health, last-successful-update copy, and fallback hints in the plaza HUD
+- [ ] Keep mock and fixture providers aligned on the same health contract
+- [ ] Extend tests and governance docs for provider health and live polling handoff
 
 ## Acceptance
 
 - `python3 tools/verify.py` succeeds locally
 - The plaza continues to boot from the current mock provider without breaking the editor flow
-- The plaza can label which provider source hydrated the current resident view
-- Residents with stale fixture timestamps can be detected through the same contract that future live polling will use
-- The next step from diagnostics to live provider polling remains explicit in code and docs
+- The plaza can show whether the selected provider is healthy, degraded, or failing
+- The existing diagnostics HUD remains compatible with the provider health layer
+- The next step from provider health metadata to live polling remains explicit in code and docs
 
 ## Out Of Scope
 

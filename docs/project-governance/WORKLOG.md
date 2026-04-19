@@ -22,3 +22,7 @@
 - Added a tested `OpenClaw` fixture adapter and world-data provider that normalize external-style payloads into the shared plaza resident contract.
 - Updated `Plaza.ts` to resolve a named provider explicitly, keeping mock boot as the default while enabling fixture-backed provider swaps.
 - Advanced `CURRENT_PLAN.md` to the next provider-diagnostics slice after verifying the new adapter seam with the repository standard verification command.
+- Added a pure plaza presence diagnostics helper so freshness and stale-state behavior are derived from timestamps instead of hardcoded text.
+- Updated mock and fixture providers to emit parseable timestamps and intentionally surface stale cases through the shared diagnostics path.
+- Surfaced provider source, resident freshness, and stale-state cues in the plaza HUD and resident inspection flow.
+- Advanced `CURRENT_PLAN.md` to a new provider-health slice once diagnostics landed and passed verification.

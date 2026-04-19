@@ -39,93 +39,107 @@ export interface OpenClawFixturePayload {
   agents: OpenClawFixtureAgent[];
 }
 
-export const openClawPresenceFixture: OpenClawFixturePayload = {
-  generatedAt: "2026-04-20T09:30:00Z",
-  workspace: "mii-plaza-client",
-  agents: [
-    {
-      id: "openclaw",
-      name: "OpenClaw",
-      occupation: "Execution Captain",
-      state: "running",
-      summary: "Coordinating the provider seam rollout",
-      task: "Mapping provider payloads into plaza residents",
-      vibe: "focused",
-      seenAt: "2026-04-20T09:28:00Z",
-      zone: "Fountain Walk",
-      score: 0.96,
-      tags: ["plans", "tools", "builds"],
-      palette: {
-        primary: "#ff8a4c",
-        accent: "#ffd166",
+function isoOffset(baseTimestamp: number, minutesAgo: number): string {
+  return new Date(baseTimestamp - minutesAgo * 60_000).toISOString();
+}
+
+export function createOpenClawPresenceFixture(
+  now: Date | string | number = Date.now()
+): OpenClawFixturePayload {
+  const baseTimestamp =
+    now instanceof Date ? now.getTime() : new Date(now).getTime();
+
+  return {
+    generatedAt: new Date(baseTimestamp).toISOString(),
+    workspace: "mii-plaza-client",
+    agents: [
+      {
+        id: "openclaw",
+        name: "OpenClaw",
+        occupation: "Execution Captain",
+        state: "running",
+        summary: "Coordinating the provider seam rollout",
+        task: "Mapping provider payloads into plaza residents",
+        vibe: "focused",
+        seenAt: isoOffset(baseTimestamp, 1),
+        zone: "Fountain Walk",
+        score: 0.96,
+        tags: ["plans", "tools", "builds"],
+        palette: {
+          primary: "#ff8a4c",
+          accent: "#ffd166",
+        },
+        bio: "Turns multi-step shipping work into visible forward motion for the plaza.",
+        prompt: "Inspect the provider adapter seam OpenClaw is driving.",
+        highlights: [
+          "Normalizes external presence snapshots into the client contract.",
+          "Will later swap fixture payloads for live provider polling.",
+        ],
+        plazaPosition: {
+          x: -5.5,
+          z: -2,
+        },
       },
-      bio: "Turns multi-step shipping work into visible forward motion for the plaza.",
-      prompt: "Inspect the provider adapter seam OpenClaw is driving.",
-      highlights: [
-        "Normalizes external presence snapshots into the client contract.",
-        "Will later swap fixture payloads for live provider polling.",
-      ],
-      plazaPosition: {
-        x: -5.5,
-        z: -2,
+      {
+        id: "release-orbit",
+        name: "Release Orbit",
+        occupation: "Stability Pilot",
+        state: "ready",
+        summary: "Watching the next sync window",
+        task: "Preparing fallback rules for stale provider data",
+        vibe: "steady",
+        seenAt: isoOffset(baseTimestamp, 7),
+        zone: "Board Walk",
+        score: 0.61,
+        tags: ["verification", "ops", "status"],
+        palette: {
+          primary: "#4cc9f0",
+          accent: "#90f1ef",
+        },
+        bio: "Keeps provider transitions smooth by surfacing safe fallback behavior early.",
+        prompt: "Preview how stale provider data will degrade gracefully.",
+        highlights: [
+          "Tracks freshness windows before live transport arrives.",
+          "Will eventually power stale-data and health diagnostics.",
+        ],
+        plazaPosition: {
+          x: 3.5,
+          z: 4,
+        },
       },
-    },
-    {
-      id: "release-orbit",
-      name: "Release Orbit",
-      occupation: "Stability Pilot",
-      state: "ready",
-      summary: "Watching the next sync window",
-      task: "Preparing fallback rules for stale provider data",
-      vibe: "steady",
-      seenAt: "2026-04-20T09:24:00Z",
-      zone: "Board Walk",
-      score: 0.61,
-      tags: ["verification", "ops", "status"],
-      palette: {
-        primary: "#4cc9f0",
-        accent: "#90f1ef",
+      {
+        id: "mailbox-lantern",
+        name: "Mailbox Lantern",
+        occupation: "Social Relay",
+        state: "waiting",
+        summary: "Holding the social layer in reserve",
+        task: "Keeping board and mailbox hooks aligned with the world shell",
+        vibe: "hopeful",
+        seenAt: isoOffset(baseTimestamp, 24),
+        zone: "Mailbox Corner",
+        score: 0.39,
+        tags: ["mail", "board", "social"],
+        palette: {
+          primary: "#80ed99",
+          accent: "#57cc99",
+        },
+        bio: "Represents the future social systems that will sit beside provider-backed presence.",
+        prompt: "See how social hooks stay decoupled from provider data ingestion.",
+        highlights: [
+          "Keeps the social layer out of the provider adapter boundary.",
+          "Will power postcards and shared board updates later on.",
+        ],
+        plazaPosition: {
+          x: 8,
+          z: -4.5,
+        },
       },
-      bio: "Keeps provider transitions smooth by surfacing safe fallback behavior early.",
-      prompt: "Preview how stale provider data will degrade gracefully.",
-      highlights: [
-        "Tracks freshness windows before live transport arrives.",
-        "Will eventually power stale-data and health diagnostics.",
-      ],
-      plazaPosition: {
-        x: 3.5,
-        z: 4,
-      },
-    },
-    {
-      id: "mailbox-lantern",
-      name: "Mailbox Lantern",
-      occupation: "Social Relay",
-      state: "waiting",
-      summary: "Holding the social layer in reserve",
-      task: "Keeping board and mailbox hooks aligned with the world shell",
-      vibe: "hopeful",
-      seenAt: "2026-04-20T09:18:00Z",
-      zone: "Mailbox Corner",
-      score: 0.39,
-      tags: ["mail", "board", "social"],
-      palette: {
-        primary: "#80ed99",
-        accent: "#57cc99",
-      },
-      bio: "Represents the future social systems that will sit beside provider-backed presence.",
-      prompt: "See how social hooks stay decoupled from provider data ingestion.",
-      highlights: [
-        "Keeps the social layer out of the provider adapter boundary.",
-        "Will power postcards and shared board updates later on.",
-      ],
-      plazaPosition: {
-        x: 8,
-        z: -4.5,
-      },
-    },
-  ],
-};
+    ],
+  };
+}
+
+export const openClawPresenceFixture: OpenClawFixturePayload =
+  createOpenClawPresenceFixture("2026-04-20T10:12:00Z");
 
 function normalizeState(state: OpenClawFixtureAgent["state"]): PlazaAgentStatus {
   switch (state) {
@@ -203,6 +217,6 @@ export function createOpenClawFixtureWorldData(
 export const openClawFixtureWorldDataProvider: PlazaWorldDataProvider = {
   id: "openclaw-fixture",
   async load() {
-    return createOpenClawFixtureWorldData();
+    return createOpenClawFixtureWorldData(createOpenClawPresenceFixture());
   },
 };

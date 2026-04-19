@@ -1,4 +1,5 @@
 import { expect, test } from "bun:test";
+import { getPresenceDiagnostics } from "../game/plaza/plazaPresenceDiagnostics";
 import {
   createMockPlazaWorldData,
   listMockHotspots,
@@ -18,6 +19,7 @@ test("mock residents match their presence snapshots", () => {
   for (const resident of listMockResidents()) {
     expect(resident.presence.agentId).toBe(resident.agent.id);
     expect(resident.agent.capabilityTags.length).toBeGreaterThan(0);
+    expect(Number.isNaN(new Date(resident.presence.updatedAt).getTime())).toBe(false);
   }
 });
 
@@ -36,4 +38,13 @@ test("mock provider exposes plaza world data through an explicit provider seam",
   expect(providerData.source.mode).toBe("mock");
   expect(providerData.residents.length).toBe(directData.residents.length);
   expect(providerData.hotspots.length).toBe(directData.hotspots.length);
+});
+
+test("mock residents can surface stale diagnostics through timestamps", () => {
+  const residents = listMockResidents();
+  const staleResidents = residents.filter((resident) =>
+    getPresenceDiagnostics(resident.presence).isStale
+  );
+
+  expect(staleResidents.length).toBeGreaterThanOrEqual(1);
 });

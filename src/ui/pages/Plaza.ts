@@ -1,8 +1,6 @@
 import type { PlazaWorldDataProvider } from "../../contracts/plaza";
 import { createPlazaExperience } from "../../game/plaza/createPlazaExperience";
-import {
-  mockPlazaWorldDataProvider,
-} from "../../providers/mockPlazaPresence";
+import { mockPlazaWorldDataProvider } from "../../providers/mockPlazaPresence";
 import { openClawFixtureWorldDataProvider } from "../../providers/openClawPresenceAdapter";
 
 const plazaWorldDataProviders: Record<string, PlazaWorldDataProvider> = {
@@ -39,9 +37,10 @@ export function Plaza() {
   const provider = resolvePlazaWorldDataProvider();
   void provider
     .load()
-    .then(({ hotspots, residents }) => {
+    .then(({ source, hotspots, residents }) => {
       createPlazaExperience({
         root,
+        source,
         residents,
         hotspots,
         onExit: () => {

@@ -5,6 +5,10 @@ import type {
   PlazaWorldDataProvider,
 } from "../contracts/plaza";
 
+function isoOffset(minutesAgo: number): string {
+  return new Date(Date.now() - minutesAgo * 60_000).toISOString();
+}
+
 export function listMockResidents(): PlazaResident[] {
   return [
     {
@@ -23,7 +27,7 @@ export function listMockResidents(): PlazaResident[] {
         headline: "Driving the plaza bootstrap",
         currentTask: "Coordinating renderer and world-shell implementation",
         mood: "focused",
-        updatedAt: "just now",
+        updatedAt: isoOffset(1),
         locationHint: "Fountain Walk",
         activityScore: 0.93,
       },
@@ -52,7 +56,7 @@ export function listMockResidents(): PlazaResident[] {
         headline: "Keeping the resident feed calm",
         currentTask: "Refreshing plaza summaries and idle animations",
         mood: "calm",
-        updatedAt: "2 min ago",
+        updatedAt: isoOffset(4),
         locationHint: "Garden Loop",
         activityScore: 0.44,
       },
@@ -80,7 +84,7 @@ export function listMockResidents(): PlazaResident[] {
         headline: "Preparing the social layer",
         currentTask: "Drafting mailbox and bulletin board hooks",
         mood: "eager",
-        updatedAt: "5 min ago",
+        updatedAt: isoOffset(19),
         locationHint: "Mailbox Corner",
         activityScore: 0.71,
       },

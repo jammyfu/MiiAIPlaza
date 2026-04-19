@@ -1,5 +1,7 @@
 import { expect, test } from "bun:test";
+import { getPresenceDiagnostics } from "../game/plaza/plazaPresenceDiagnostics";
 import {
+  createOpenClawPresenceFixture,
   createOpenClawFixtureWorldData,
   openClawPresenceAdapter,
   openClawPresenceFixture,
@@ -37,4 +39,15 @@ test("openclaw fixture world data preserves hotspots through the provider seam",
   expect(providerData.source.mode).toBe("fixture");
   expect(providerData.residents.length).toBe(directData.residents.length);
   expect(providerData.hotspots.length).toBeGreaterThan(0);
+});
+
+test("openclaw fixture can expose stale residents for provider diagnostics", () => {
+  const fixture = createOpenClawPresenceFixture("2026-04-20T10:12:00Z");
+  const residents = openClawPresenceAdapter.listResidents(fixture);
+  const staleResidents = residents.filter((resident) =>
+    getPresenceDiagnostics(resident.presence, { now: fixture.generatedAt }).isStale
+  );
+
+  expect(staleResidents.length).toBe(1);
+  expect(staleResidents[0]?.agent.id).toBe("mailbox-lantern");
 });

@@ -21,12 +21,23 @@ import {
   Vector3,
   WebGLRenderer,
 } from "three";
-import type { PlazaHotspot, PlazaResident } from "../../contracts/plaza";
+import type {
+  PlazaHotspot,
+  PlazaResident,
+  PlazaWorldDataSource,
+} from "../../contracts/plaza";
 import { createResidentAvatarMii } from "./plazaResidentAvatarAdapter";
+import {
+  describePresenceFreshness,
+  describeWorldDataSource,
+  getPresenceDiagnostics,
+  summarizeResidentDiagnostics,
+} from "./plazaPresenceDiagnostics";
 import { getMiiRender, MiiCustomRenderType } from "../../util/miiImageUtils";
 
 interface PlazaExperienceOptions {
   root: HTMLElement;
+  source: PlazaWorldDataSource;
   residents: PlazaResident[];
   hotspots: PlazaHotspot[];
   onExit: () => void;
@@ -56,10 +67,14 @@ const statusLabels: Record<string, string> = {
 
 export function createPlazaExperience({
   root,
+  source,
   residents,
   hotspots,
   onExit,
 }: PlazaExperienceOptions) {
+  const providerSummary = summarizeResidentDiagnostics(residents);
+  const sourceLabel = describeWorldDataSource(source);
+
   root.innerHTML = `
     <div class="plaza-shell">
       <div class="plaza-canvas-wrap"></div>
@@ -67,7 +82,14 @@ export function createPlazaExperience({
         <div class="plaza-hud-card plaza-brand-card">
           <span class="plaza-eyebrow">Mii Plaza Prototype</span>
           <h1>Mii Plaza</h1>
-          <p>Walk the plaza, orbit the camera, and inspect mock-backed resident agents.</p>
+          <p>Walk the plaza, orbit the camera, and inspect provider-backed resident agents.</p>
+          <div class="plaza-provider-meta">
+            <span class="plaza-provider-pill">${sourceLabel}</span>
+            <small>
+              ${residents.length} residents · ${providerSummary.staleResidents} stale ·
+              ${providerSummary.blockedResidents} blocked
+            </small>
+          </div>
           <div class="plaza-inline-actions">
             <button class="primary" data-plaza-action="back">Back To Studio</button>
           </div>
@@ -187,6 +209,8 @@ export function createPlazaExperience({
   const disposableMaterials: SpriteMaterial[] = [];
 
   const residentMeshes = residents.map((resident, index) => {
+    const diagnostics = getPresenceDiagnostics(resident.presence);
+    const freshnessLabel = describePresenceFreshness(diagnostics.freshness);
     const group = new Group();
     const body = new Mesh(
       new BoxGeometry(0.75, 1.25, 0.65),
@@ -217,11 +241,18 @@ export function createPlazaExperience({
 
     const item = document.createElement("button");
     item.className = "plaza-resident-button";
+    item.dataset.status = resident.presence.status;
+    item.dataset.freshness = diagnostics.freshness;
     item.innerHTML = `
-      <span class="plaza-status-dot" data-status="${resident.presence.status}"></span>
+      <span
+        class="plaza-status-dot"
+        data-status="${resident.presence.status}"
+        data-freshness="${diagnostics.freshness}"
+      ></span>
       <span>
         <strong>${resident.agent.displayName}</strong>
-        <small>${statusLabels[resident.presence.status]} · ${resident.presence.headline}</small>
+        <small>${statusLabels[resident.presence.status]} · ${freshnessLabel} · ${diagnostics.updatedLabel}</small>
+        <small>${resident.presence.headline}</small>
       </span>
     `;
     item.addEventListener("click", () => openResident(resident));
@@ -304,14 +335,20 @@ export function createPlazaExperience({
   const clock = new Clock();
 
   function openResident(resident: PlazaResident) {
+    const diagnostics = getPresenceDiagnostics(resident.presence);
     detailCard.hidden = false;
-    detailEyebrow.textContent = `${resident.agent.provider} · ${resident.agent.role}`;
+    detailCard.dataset.freshness = diagnostics.freshness;
+    detailEyebrow.textContent = `${resident.agent.provider} · ${resident.agent.role} · ${describePresenceFreshness(
+      diagnostics.freshness
+    )}`;
     detailTitle.textContent = resident.agent.displayName;
     detailDescription.textContent = `${resident.bio} Current task: ${resident.presence.currentTask}.`;
     detailList.innerHTML = "";
 
     [
       `Status: ${statusLabels[resident.presence.status]}`,
+      `Updated: ${diagnostics.updatedLabel}`,
+      `Freshness: ${describePresenceFreshness(diagnostics.freshness)}`,
       `Mood: ${resident.presence.mood}`,
       `Location hint: ${resident.presence.locationHint}`,
       `Capabilities: ${resident.agent.capabilityTags.join(", ")}`,
@@ -325,6 +362,7 @@ export function createPlazaExperience({
 
   function openHotspot(hotspot: PlazaHotspot) {
     detailCard.hidden = false;
+    delete detailCard.dataset.freshness;
     detailEyebrow.textContent = "Plaza hotspot";
     detailTitle.textContent = hotspot.name;
     detailDescription.textContent = hotspot.description;

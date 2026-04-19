@@ -57,3 +57,11 @@ Load plaza residents and hotspots through explicit `PlazaWorldDataProvider` inst
 
 Why:
 This keeps the world runtime insulated from provider-specific payload shapes, lets fixture-backed adapters prove the contract before live network fetches exist, and gives the next live polling step a single page-boundary seam instead of scattered mock imports.
+
+### Derive freshness from timestamps instead of provider prose
+
+Decision:
+Use a shared plaza diagnostics helper to classify resident freshness from `updatedAt` timestamps, and update mock/fixture providers so they emit parseable ISO timestamps instead of human-only relative strings.
+
+Why:
+Future live polling needs machine-readable freshness rules, not provider-specific prose. Moving the logic into a shared helper keeps stale-state behavior consistent across providers and lets the HUD reflect diagnostics without knowing where the snapshot came from.
