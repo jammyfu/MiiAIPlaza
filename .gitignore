@@ -67,6 +67,10 @@ web_modules/
 
 *.tsbuildinfo
 
+# Python cache
+__pycache__/
+*.pyc
+
 # Optional npm cache directory
 
 .npm
