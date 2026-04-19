@@ -2,39 +2,39 @@
 
 ## Goal
 
-Wire the first manual provider refresh affordance onto the existing provider-status interaction path.
+Prepare the shared refresh controller for eventual background polling without introducing automatic loops yet.
 
 ## In Scope
 
-- Expose the new provider-boundary refresh controller through a player-facing interaction surface
-- Keep the current provider-status hotspot and HUD copy as the anchor for reload guidance
-- Preserve current mock, fixture, and fallback providers while preparing for future live polling
-- Extend tests and docs for the first refresh affordance before automatic polling is introduced
+- Keep the current manual refresh affordance as the canonical reload path
+- Add typed metadata or helper seams that make future polling cadence explicit
+- Preserve current mock, fixture, and fallback providers while preparing for background reload scheduling
+- Extend tests and docs for polling-preparation seams without starting timers
 
 ## Tasks
 
-- [ ] Add a minimal manual refresh affordance that reuses the provider-boundary controller
-- [ ] Keep provider-status inspection and HUD copy aligned with the same refresh entrypoint
-- [ ] Keep mock, fixture, and fallback providers aligned when refresh is invoked repeatedly
-- [ ] Extend tests and governance docs for manual refresh behavior before live polling arrives
+- [ ] Add a polling-preparation seam on top of the shared refresh controller
+- [ ] Keep provider-status inspection and HUD copy compatible with both manual refresh and future scheduled refreshes
+- [ ] Keep mock, fixture, and fallback providers aligned when future background cadence metadata is present
+- [ ] Extend tests and governance docs for polling-preparation behavior before automatic timers are introduced
 
 ## Acceptance
 
 - `python3 tools/verify.py` succeeds locally
 - The plaza continues to boot from the current mock provider without breaking the editor flow
-- The plaza can trigger a manual refresh through the new provider-boundary controller without replacing the shell contract
-- The existing diagnostics shell remains compatible with the first refresh affordance
-- The next step from a manual refresh affordance to real live polling remains explicit in code and docs
+- The manual refresh affordance remains the only user-triggered reload path while future polling cadence is represented through typed seams
+- The existing diagnostics shell remains compatible with both current manual refresh and future scheduled refresh metadata
+- The next step from manual refresh to real live polling remains explicit in code and docs
 
 ## Out Of Scope
 
 - live network fetches against a real `OpenClaw` endpoint
-- background automatic polling loops
+- actual background timers or interval loops
 - realtime sync
 - persistent plaza board and mailbox data
 
 ## Next Candidates
 
-- Add background polling on top of the refresh controller once live endpoint rules exist
+- Add actual background polling once live endpoint rules exist
 - Add persistent plaza board and mailbox data
 - Add proper walk, idle, and emote animation states for residents

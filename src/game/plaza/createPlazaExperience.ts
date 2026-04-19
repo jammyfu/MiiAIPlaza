@@ -24,6 +24,7 @@ import {
 import type {
   PlazaHotspot,
   PlazaResident,
+  PlazaWorldDataSnapshot,
   PlazaWorldDataSource,
 } from "../../contracts/plaza";
 import { createResidentAvatarMii } from "./plazaResidentAvatarAdapter";
@@ -34,6 +35,10 @@ import {
   getPresenceDiagnostics,
   summarizeResidentDiagnostics,
 } from "./plazaPresenceDiagnostics";
+import {
+  createProviderStatusRefreshDetails,
+  describeRefreshUiState,
+} from "./plazaRefreshUi";
 import { getMiiRender, MiiCustomRenderType } from "../../util/miiImageUtils";
 
 interface PlazaExperienceOptions {
@@ -42,6 +47,8 @@ interface PlazaExperienceOptions {
   residents: PlazaResident[];
   hotspots: PlazaHotspot[];
   onExit: () => void;
+  onRefresh?: () => Promise<void>;
+  refreshSnapshot?: Pick<PlazaWorldDataSnapshot, "sequence" | "trigger">;
 }
 
 type Interactable =
@@ -72,10 +79,15 @@ export function createPlazaExperience({
   residents,
   hotspots,
   onExit,
+  onRefresh,
+  refreshSnapshot,
 }: PlazaExperienceOptions) {
   const providerSummary = summarizeResidentDiagnostics(residents);
   const sourceLabel = describeWorldDataSource(source);
   const healthCopy = describeWorldDataHealth(source.health);
+  const refreshUiState = refreshSnapshot
+    ? describeRefreshUiState(refreshSnapshot, false)
+    : null;
 
   root.innerHTML = `
     <div class="plaza-shell">
@@ -109,8 +121,16 @@ export function createPlazaExperience({
                 ? `<small>${healthCopy.fallbackHint}</small>`
                 : ""
             }
+            ${
+              refreshUiState ? `<small>${refreshUiState.statusLabel}</small>` : ""
+            }
           </div>
           <div class="plaza-inline-actions">
+            ${
+              onRefresh && refreshUiState
+                ? `<button class="secondary" data-plaza-action="refresh">${refreshUiState.actionLabel}</button>`
+                : ""
+            }
             <button class="primary" data-plaza-action="back">Back To Studio</button>
           </div>
         </div>
@@ -165,6 +185,9 @@ export function createPlazaExperience({
   ) as HTMLParagraphElement;
   const detailList = root.querySelector(".plaza-detail-list") as HTMLUListElement;
   const residentList = root.querySelector(".plaza-resident-list") as HTMLDivElement;
+  const refreshButton = root.querySelector(
+    '[data-plaza-action="refresh"]'
+  ) as HTMLButtonElement | null;
 
   const scene = new Scene();
   scene.background = new Color("#d7f2ff");
@@ -345,6 +368,7 @@ export function createPlazaExperience({
   let dragging = false;
   let lastPointerX = 0;
   let interactionLatch = false;
+  let refreshing = false;
 
   const movementInput = new Vector2();
   const cameraDirection = new Vector3();
@@ -387,7 +411,11 @@ export function createPlazaExperience({
     detailTitle.textContent = hotspot.name;
     detailDescription.textContent = hotspot.description;
     detailList.innerHTML = "";
-    hotspot.details.forEach((line) => {
+    const detailLines =
+      hotspot.id === "provider-status" && refreshSnapshot
+        ? [...createProviderStatusRefreshDetails(refreshSnapshot), ...hotspot.details]
+        : hotspot.details;
+    detailLines.forEach((line) => {
       const item = document.createElement("li");
       item.textContent = line;
       detailList.appendChild(item);
@@ -444,6 +472,36 @@ export function createPlazaExperience({
   root
     .querySelector('[data-plaza-action="interact"]')!
     .addEventListener("click", interact);
+  refreshButton?.addEventListener("click", async () => {
+    if (!onRefresh || refreshing) {
+      return;
+    }
+
+    refreshing = true;
+    const refreshingUiState = refreshSnapshot
+      ? describeRefreshUiState(refreshSnapshot, true)
+      : null;
+
+    if (refreshButton && refreshingUiState) {
+      refreshButton.disabled = true;
+      refreshButton.textContent = refreshingUiState.actionLabel;
+      promptElm.textContent = refreshingUiState.actionHint;
+    }
+
+    try {
+      await onRefresh();
+    } catch (error) {
+      refreshing = false;
+      if (refreshButton && refreshUiState) {
+        refreshButton.disabled = false;
+        refreshButton.textContent = refreshUiState.actionLabel;
+      }
+      promptElm.textContent =
+        error instanceof Error && error.message.trim().length > 0
+          ? error.message.trim()
+          : "Refresh failed. Inspect provider status for fallback guidance.";
+    }
+  });
   root
     .querySelector('[data-plaza-action="back"]')!
     .addEventListener("click", onExit);

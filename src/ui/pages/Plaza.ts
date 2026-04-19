@@ -23,35 +23,56 @@ export function Plaza() {
   root.className = "plaza-root";
   document.body.appendChild(root);
 
-  root.innerHTML = `
-    <div class="plaza-shell">
-      <div class="plaza-overlay">
-        <div class="plaza-hud-card plaza-brand-card">
-          <span class="plaza-eyebrow">Loading Plaza</span>
-          <h1>Mii Plaza</h1>
-          <p>Hydrating resident presence from the selected provider...</p>
-        </div>
-      </div>
-    </div>
-  `;
-
   const provider = resolvePlazaWorldDataProvider();
   const worldDataController = createPlazaWorldDataController(provider);
+  let currentExperience: { destroy(): void } | null = null;
   root.dataset.providerRefreshBoundary = "ready";
 
-  void worldDataController.loadInitial().then(({ world }) => {
-    const { source, hotspots, residents } = world;
-    createPlazaExperience({
+  function renderLoading(message: string) {
+    currentExperience?.destroy();
+    currentExperience = null;
+    root.innerHTML = `
+      <div class="plaza-shell">
+        <div class="plaza-overlay">
+          <div class="plaza-hud-card plaza-brand-card">
+            <span class="plaza-eyebrow">Loading Plaza</span>
+            <h1>Mii Plaza</h1>
+            <p>${message}</p>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  function renderSnapshot(
+    snapshot: Awaited<ReturnType<typeof worldDataController.loadInitial>>
+  ) {
+    currentExperience?.destroy();
+    currentExperience = null;
+    const { source, hotspots, residents } = snapshot.world;
+    root.dataset.providerRefreshSequence = String(snapshot.sequence);
+    root.dataset.providerRefreshTrigger = snapshot.trigger;
+    currentExperience = createPlazaExperience({
       root,
       source,
       residents,
       hotspots,
+      refreshSnapshot: snapshot,
+      onRefresh: async () => {
+        renderLoading("Refreshing provider presence from the selected source...");
+        const refreshedSnapshot = await worldDataController.refresh();
+        renderSnapshot(refreshedSnapshot);
+      },
       onExit: () => {
+        currentExperience?.destroy();
         const url = new URL(window.location.href);
         url.searchParams.delete("plaza");
         url.searchParams.delete("presence");
         window.location.href = `${url.pathname}${url.search}`;
       },
     });
-  });
+  }
+
+  renderLoading("Hydrating resident presence from the selected provider...");
+  void worldDataController.loadInitial().then(renderSnapshot);
 }

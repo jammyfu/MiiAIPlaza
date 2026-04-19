@@ -22,3 +22,4 @@
 - Added retry-oriented provider health metadata and surfaced retry timing in plaza health copy.
 - Added a shared `Provider Status` hotspot so provider retry guidance is inspectable in both normal and failure fallback plaza shells.
 - Added a typed plaza world-data controller so future manual refresh and live polling can reuse the same provider-boundary load path.
+- Added the first player-facing `Refresh Provider` action and aligned provider-status inspection with the same refresh boundary.

@@ -43,6 +43,7 @@ def verification_commands(repo_root: Path) -> list[list[str]]:
             "src/game/plaza/createPlazaWorldDataController.test.ts",
             "src/game/plaza/loadPlazaWorldData.test.ts",
             "src/game/plaza/plazaPresenceDiagnostics.test.ts",
+            "src/game/plaza/plazaRefreshUi.test.ts",
             "src/game/plaza/plazaResidentAvatarAdapter.test.ts",
         ],
         [

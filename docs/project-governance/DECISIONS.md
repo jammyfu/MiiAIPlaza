@@ -105,3 +105,11 @@ Introduce a typed world-data controller that distinguishes `initial` and `manual
 
 Why:
 This keeps provider refresh behavior explicit before a player-facing button exists, preserves the current shell contract, and gives future manual refresh or live polling work a single reusable seam instead of ad-hoc reload calls.
+
+### Keep manual refresh orchestration at the page boundary
+
+Decision:
+Let `Plaza.ts` own refresh-triggered re-rendering through the shared controller, while `createPlazaExperience` only exposes a lightweight `onRefresh` affordance and matching HUD/detail copy.
+
+Why:
+This keeps WebGL runtime changes minimal, reuses the same provider-loading and fallback path for both initial and manual loads, and gives future scheduled polling a single orchestration point outside the scene implementation.
