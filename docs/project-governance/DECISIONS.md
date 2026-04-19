@@ -41,3 +41,11 @@ Adopt the same `check_git_writable -> git_safe_sync` primary path plus `sync_or_
 
 Why:
 This repository now relies on heartbeat-style automation, so it benefits from a submission path that can safely commit and push when `.git` is writable, but can also queue a local terminal sync request instead of getting stuck in restricted environments.
+
+### Make `sync_or_queue --prefer-local` the default heartbeat submission path
+
+Decision:
+Heartbeat automation should default to `python3 tools/sync_or_queue.py --message "<stable-closure>" --prefer-local` instead of generic raw git commands.
+
+Why:
+The key lesson from `ai-analysis-mcp` and `AegisGraph` is not just the presence of helper scripts, but that automation should proactively choose the queueable local-terminal path to avoid `.git` write assumptions and to keep long-running loops stable.

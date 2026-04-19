@@ -36,5 +36,6 @@ http://127.0.0.1:3000/?plaza=1
 - `tools/verify.py` avoids watch mode and is safe for automation.
 - `tools/next_plan.py` reads the current planning files and prints the next recommended slice.
 - `tools/sync_or_queue.py` is the preferred sync entrypoint: it will use direct git sync when possible and queue a local request when the environment blocks `.git` writes.
+- For heartbeat-style automation, `python3 tools/sync_or_queue.py --message "<stable-closure>" --prefer-local` should be considered the default commit path.
 - `.codex-local/git_sync_request.json` is a local sync control file and should not be treated as product diff.
 - Continuous automation should wake this thread every 10 minutes, assess `CURRENT_PLAN.md`, execute one stable closure, verify, then record the result back into the governance files before continuing.

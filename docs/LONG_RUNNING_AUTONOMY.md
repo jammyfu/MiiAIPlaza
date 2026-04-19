@@ -14,7 +14,7 @@
 6. Execute the bounded slice only
 7. Re-run verification
 8. Update worklog, changelog, backlog, and acceptance notes
-9. If a stable closure exists, prefer `python3 tools/sync_or_queue.py --message "<stable-closure>"` and use `--prefer-local` in sandboxed automation
+9. If a stable closure exists, heartbeat automation should prefer `python3 tools/sync_or_queue.py --message "<stable-closure>" --prefer-local`; use the direct path without `--prefer-local` only when diagnosing sync behavior in a fully writable environment
 10. Run `python3 tools/next_plan.py`
 
 ## Heartbeat Cadence

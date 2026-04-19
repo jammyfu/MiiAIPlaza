@@ -13,3 +13,4 @@
 - Hardened the verification script for automation-friendly `bun` resolution.
 - Added a resident avatar adapter and Mii-driven billboard residents for the plaza prototype.
 - Added safe-sync automation tools and tests modeled after `ai-analysis-mcp` and `AegisGraph`, including queued local git sync fallback support.
+- Updated the automation guidance so heartbeat runs default to the queued local safe-sync path instead of raw commit/push behavior.

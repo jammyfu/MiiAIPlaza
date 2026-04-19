@@ -29,7 +29,7 @@ This repository uses the `continuous-project-loop` convention.
 
 - If `git status --short` is non-empty, do not expand scope immediately.
 - First decide whether the current diff is already a stable closure.
-- If it is stable, verify, commit, and push before starting the next task.
+- If it is stable, verify first, then prefer the repository sync entrypoint instead of raw `git commit` / `git push`.
 - If it is not stable, finish or explicitly record the blocker in `docs/project-governance/WORKLOG.md`.
 
 ## Verification
@@ -58,8 +58,9 @@ bun run build.ts --once
 
 - Prefer one stable closure per commit.
 - Run `python3 tools/verify.py` before any commit or sync attempt.
-- If `.git` is writable, prefer `python3 tools/sync_or_queue.py --message "<stable-closure>"`.
-- In automation or sandboxed contexts, prefer `python3 tools/sync_or_queue.py --message "<stable-closure>" --prefer-local`.
+- Heartbeat and automation runs should treat `python3 tools/sync_or_queue.py --message "<stable-closure>" --prefer-local` as the default submission path.
+- If `.git` is writable and the environment is not restricted, `python3 tools/sync_or_queue.py --message "<stable-closure>"` is the preferred direct-sync path.
+- Only use raw `git commit` / `git push` manually when diagnosing the sync tooling itself.
 - Treat `.codex-local/git_sync_request.json` as a sync control file, not as product work.
 - If `git status --short` is empty but a sync request remains, run `python3 tools/local_git_flush.py` before deciding the repo is blocked.
 

@@ -17,3 +17,4 @@
 - Studied `ai-analysis-mcp` and `AegisGraph` git submission logic and imported their safe-sync pattern into this repository.
 - Added safe sync, local queue, local flush, LaunchAgent install, and git-writable probe tools to support long-running automation.
 - Expanded verification to cover the new sync automation tests and documented the preferred submission flow.
+- Tightened the automation rule so heartbeat submissions default to `sync_or_queue --prefer-local` instead of generic commit/push wording.
