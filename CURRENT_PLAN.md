@@ -2,38 +2,38 @@
 
 ## Goal
 
-Turn the plaza prototype from colored proxy residents into a recognizable Mii-driven resident experience without breaking the existing editor flow.
+Introduce an `OpenClaw` presence adapter seam behind the plaza contracts so the client can graduate from mock-only residents toward live provider-backed residents.
 
 ## In Scope
 
-- Replace the current proxy resident meshes in `/?plaza=1` with rendered or renderer-backed Mii residents
-- Preserve the current plaza movement, camera, and hotspot interaction loop
-- Keep the implementation behind the existing plaza contracts and mock provider seam
-- Extend verification only as needed to keep this slice stable
+- Add a provider-facing adapter interface for turning external status payloads into `PlazaResident[]`
+- Add an `OpenClaw` adapter that can normalize fixture data through the same seam
+- Preserve the current mock provider and plaza runtime behavior
+- Keep verification automation-friendly and fixture-based until live endpoint details are confirmed
 
 ## Tasks
 
-- [ ] Add a resident avatar adapter that maps plaza resident records to renderable Mii data
-- [ ] Render at least one resident in the plaza using the Mii pipeline instead of the proxy box-body shell
-- [ ] Preserve or restore resident inspection panels and prompt behavior after the renderer swap
-- [ ] Update verification, worklog, and changelog evidence for the new resident embodiment path
+- [ ] Add a provider adapter interface for plaza residents and presence snapshots
+- [ ] Add an `OpenClaw` adapter that maps fixture payloads into `PlazaResident[]`
+- [ ] Keep `Plaza.ts` able to boot with mock data now while making the provider swap explicit
+- [ ] Extend tests and documentation for the adapter seam and fixture normalization path
 
 ## Acceptance
 
 - `python3 tools/verify.py` succeeds locally
-- Visiting `/?plaza=1` still loads without breaking the existing editor flow
-- At least one resident in the plaza is represented through the Mii rendering pipeline rather than the temporary proxy geometry
-- Resident interaction prompts and detail panels still work after the renderer change
+- The plaza still boots with the current mock provider without breaking the existing editor flow
+- The repository contains a tested `OpenClaw` adapter that normalizes fixture data through the same client contract as the mock provider
+- The next step from fixture data to live provider data is explicit in code and docs
 
 ## Out Of Scope
 
-- live `OpenClaw` integration
+- live network fetches against a real `OpenClaw` endpoint
 - realtime sync
 - persistent plaza board and mailbox data
 - full animation-state polish for all residents
 
 ## Next Candidates
 
-- Introduce a live `OpenClaw` adapter behind the same contracts
 - Add persistent plaza board and mailbox data
 - Add proper walk, idle, and emote animation states for residents
+- Replace billboard Mii residents with fully embodied 3D Mii bodies

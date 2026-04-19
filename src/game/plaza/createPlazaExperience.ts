@@ -8,16 +8,22 @@ import {
   Group,
   MathUtils,
   Mesh,
+  MeshBasicMaterial,
   MeshStandardMaterial,
   PerspectiveCamera,
   PlaneGeometry,
   Scene,
   SphereGeometry,
+  Sprite,
+  SpriteMaterial,
+  Texture,
   Vector2,
   Vector3,
   WebGLRenderer,
 } from "three";
 import type { PlazaHotspot, PlazaResident } from "../../contracts/plaza";
+import { createResidentAvatarMii } from "./plazaResidentAvatarAdapter";
+import { getMiiRender, MiiCustomRenderType } from "../../util/miiImageUtils";
 
 interface PlazaExperienceOptions {
   root: HTMLElement;
@@ -177,6 +183,8 @@ export function createPlazaExperience({
   scene.add(player);
 
   const interactables: Interactable[] = [];
+  const disposableTextures: Texture[] = [];
+  const disposableMaterials: SpriteMaterial[] = [];
 
   const residentMeshes = residents.map((resident, index) => {
     const group = new Group();
@@ -219,8 +227,51 @@ export function createPlazaExperience({
     item.addEventListener("click", () => openResident(resident));
     residentList.appendChild(item);
 
-    return { group, index };
+    return { group, index, resident, body, head, marker, item };
   });
+
+  residentMeshes.forEach(
+    ({ resident, group, body, head, marker, item }) => {
+      const residentMii = createResidentAvatarMii(resident);
+      if (!residentMii) {
+        return;
+      }
+
+      getMiiRender(residentMii, MiiCustomRenderType.Body)
+        .then((image) => {
+          const texture = new Texture(image);
+          texture.needsUpdate = true;
+          const material = new SpriteMaterial({
+            map: texture,
+            transparent: true,
+            depthWrite: false,
+          });
+          const sprite = new Sprite(material);
+          sprite.position.y = 1.45;
+          sprite.scale.set(2.45, 3.5, 1);
+          group.add(sprite);
+
+          body.visible = false;
+          head.visible = false;
+          marker.position.y = 2.6;
+
+          disposableTextures.push(texture);
+          disposableMaterials.push(material);
+
+          const avatarChip = document.createElement("img");
+          avatarChip.className = "plaza-resident-avatar";
+          avatarChip.src = image.src;
+          avatarChip.alt = `${resident.agent.displayName} Mii portrait`;
+          item.prepend(avatarChip);
+        })
+        .catch((error) => {
+          console.error(
+            `Plaza resident avatar render failed for ${resident.agent.id}`,
+            error
+          );
+        });
+    }
+  );
 
   hotspots.forEach((hotspot) => {
     const mesh = new Mesh(
@@ -481,6 +532,8 @@ export function createPlazaExperience({
       renderer.domElement.removeEventListener("pointerdown", onPointerDown);
       window.removeEventListener("pointermove", onPointerMove);
       window.removeEventListener("pointerup", onPointerUp);
+      disposableMaterials.forEach((material) => material.dispose());
+      disposableTextures.forEach((texture) => texture.dispose());
       renderer.dispose();
     },
   };

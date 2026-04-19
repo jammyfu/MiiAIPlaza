@@ -1,7 +1,7 @@
 # TODO Backlog
 
 - Integrate existing Mii body and head assets into the plaza runtime
-- Introduce a live `OpenClaw` adapter behind the plaza contracts
+- Fetch live `OpenClaw` provider data once endpoint details and auth shape are confirmed
 - Add proper animation states for walking, idling, and emotes
 - Add navmesh or waypoint routing for resident agents
 - Add day/night and seasonal world variants

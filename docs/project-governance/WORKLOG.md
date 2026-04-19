@@ -11,3 +11,6 @@
 - Added `AGENTS.md` and tightened the repository loop so heartbeat automation has a single first-read entrypoint.
 - Replaced the old mixed bootstrap/current-slice plan with a narrower single-goal plan for Mii-based resident embodiment.
 - Hardened `tools/verify.py` to resolve `bun` from explicit fallback locations for non-interactive automation environments.
+- Added a resident avatar adapter with deterministic Mii presets for the mock plaza residents.
+- Upgraded plaza residents from colored proxy bodies to Mii-rendered billboard residents while preserving prompts and detail panels.
+- Verified the new avatar path with adapter tests, the provider tests, and a one-shot build.

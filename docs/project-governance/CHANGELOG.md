@@ -11,3 +11,4 @@
 - Added a third-person Three.js plaza prototype with resident inspection and mobile-safe touch controls.
 - Added `AGENTS.md` and aligned the repository with the continuous project loop entry rules.
 - Hardened the verification script for automation-friendly `bun` resolution.
+- Added a resident avatar adapter and Mii-driven billboard residents for the plaza prototype.

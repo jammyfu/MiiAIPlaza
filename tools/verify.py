@@ -32,7 +32,15 @@ def main() -> int:
         print("bun executable not found in known locations", file=sys.stderr)
         return 1
 
-    run([bun, "test", "src/providers/mockPlazaPresence.test.ts"], repo_root)
+    run(
+        [
+            bun,
+            "test",
+            "src/providers/mockPlazaPresence.test.ts",
+            "src/game/plaza/plazaResidentAvatarAdapter.test.ts",
+        ],
+        repo_root,
+    )
     run([bun, "run", "build.ts", "--once"], repo_root)
     print("verify: ok")
     return 0

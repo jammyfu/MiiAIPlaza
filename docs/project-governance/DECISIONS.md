@@ -25,3 +25,11 @@ Use a heartbeat automation attached to the current thread every 10 minutes inste
 
 Why:
 The work benefits from preserving conversation context, current-plan state, and ongoing repository decisions in one place.
+
+### Use Mii-rendered billboards as the first resident embodiment step
+
+Decision:
+Represent plaza residents with renderer-backed Mii billboards before attempting full 3D embodied resident bodies.
+
+Why:
+This upgrades the plaza from placeholder proxy geometry to recognizable Mii presence using the existing rendering stack, while keeping the current interaction loop stable and the implementation scope small.
