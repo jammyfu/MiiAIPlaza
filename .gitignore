@@ -184,3 +184,6 @@ AFLRes*.dat
 
 # Local browser automation artifacts
 output/playwright/
+
+# Local visual brainstorming artifacts
+.superpowers/
