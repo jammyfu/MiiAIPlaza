@@ -1,5 +1,10 @@
 import { expect, test } from "bun:test";
-import { listMockHotspots, listMockResidents } from "./mockPlazaPresence";
+import {
+  createMockPlazaWorldData,
+  listMockHotspots,
+  listMockResidents,
+  mockPlazaWorldDataProvider,
+} from "./mockPlazaPresence";
 
 test("mock residents expose stable unique ids", () => {
   const residents = listMockResidents();
@@ -21,4 +26,14 @@ test("mock hotspots are uniquely placed", () => {
     (hotspot) => `${hotspot.position.x}:${hotspot.position.z}`
   );
   expect(new Set(positions).size).toBe(positions.length);
+});
+
+test("mock provider exposes plaza world data through an explicit provider seam", async () => {
+  const directData = createMockPlazaWorldData();
+  const providerData = await mockPlazaWorldDataProvider.load();
+
+  expect(providerData.source.id).toBe("mock");
+  expect(providerData.source.mode).toBe("mock");
+  expect(providerData.residents.length).toBe(directData.residents.length);
+  expect(providerData.hotspots.length).toBe(directData.hotspots.length);
 });

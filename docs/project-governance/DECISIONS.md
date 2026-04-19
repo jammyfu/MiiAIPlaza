@@ -49,3 +49,11 @@ Heartbeat automation should default to `python3 tools/sync_or_queue.py --message
 
 Why:
 The key lesson from `ai-analysis-mcp` and `AegisGraph` is not just the presence of helper scripts, but that automation should proactively choose the queueable local-terminal path to avoid `.git` write assumptions and to keep long-running loops stable.
+
+### Make plaza data providers explicit at the page boundary
+
+Decision:
+Load plaza residents and hotspots through explicit `PlazaWorldDataProvider` instances selected in `Plaza.ts`, with `mock` as the default and `openclaw-fixture` as the first alternate source.
+
+Why:
+This keeps the world runtime insulated from provider-specific payload shapes, lets fixture-backed adapters prove the contract before live network fetches exist, and gives the next live polling step a single page-boundary seam instead of scattered mock imports.

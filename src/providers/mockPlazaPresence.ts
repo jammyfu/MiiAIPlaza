@@ -1,4 +1,9 @@
-import type { PlazaHotspot, PlazaResident } from "../contracts/plaza";
+import type {
+  PlazaHotspot,
+  PlazaResident,
+  PlazaWorldData,
+  PlazaWorldDataProvider,
+} from "../contracts/plaza";
 
 export function listMockResidents(): PlazaResident[] {
   return [
@@ -134,3 +139,22 @@ export function listMockHotspots(): PlazaHotspot[] {
     },
   ];
 }
+
+export function createMockPlazaWorldData(): PlazaWorldData {
+  return {
+    source: {
+      id: "mock",
+      provider: "Mock",
+      mode: "mock",
+    },
+    residents: listMockResidents(),
+    hotspots: listMockHotspots(),
+  };
+}
+
+export const mockPlazaWorldDataProvider: PlazaWorldDataProvider = {
+  id: "mock",
+  async load() {
+    return createMockPlazaWorldData();
+  },
+};

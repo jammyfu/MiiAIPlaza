@@ -2,28 +2,29 @@
 
 ## Goal
 
-Introduce an `OpenClaw` presence adapter seam behind the plaza contracts so the client can graduate from mock-only residents toward live provider-backed residents.
+Expose provider source and freshness diagnostics in the plaza HUD so fixture-backed and future live providers can degrade gracefully.
 
 ## In Scope
 
-- Add a provider-facing adapter interface for turning external status payloads into `PlazaResident[]`
-- Add an `OpenClaw` adapter that can normalize fixture data through the same seam
-- Preserve the current mock provider and plaza runtime behavior
-- Keep verification automation-friendly and fixture-based until live endpoint details are confirmed
+- Surface the currently selected plaza data provider in the runtime HUD
+- Add freshness and staleness derivation from `PlazaPresenceSnapshot.updatedAt`
+- Make stale or blocked residents visually legible without breaking the current interaction loop
+- Extend tests and docs for provider diagnostics before live polling arrives
 
 ## Tasks
 
-- [ ] Add a provider adapter interface for plaza residents and presence snapshots
-- [ ] Add an `OpenClaw` adapter that maps fixture payloads into `PlazaResident[]`
-- [ ] Keep `Plaza.ts` able to boot with mock data now while making the provider swap explicit
-- [ ] Extend tests and documentation for the adapter seam and fixture normalization path
+- [ ] Add a small provider metadata surface to the plaza shell so users can tell which source hydrated the world
+- [ ] Derive resident freshness from `updatedAt` values and classify stale snapshots
+- [ ] Reflect blocked or stale state in the resident list and inspection card without disturbing movement flow
+- [ ] Extend tests and governance docs for provider diagnostics and future live polling handoff
 
 ## Acceptance
 
 - `python3 tools/verify.py` succeeds locally
-- The plaza still boots with the current mock provider without breaking the existing editor flow
-- The repository contains a tested `OpenClaw` adapter that normalizes fixture data through the same client contract as the mock provider
-- The next step from fixture data to live provider data is explicit in code and docs
+- The plaza continues to boot from the current mock provider without breaking the editor flow
+- The plaza can label which provider source hydrated the current resident view
+- Residents with stale fixture timestamps can be detected through the same contract that future live polling will use
+- The next step from diagnostics to live provider polling remains explicit in code and docs
 
 ## Out Of Scope
 

@@ -39,6 +39,7 @@ def verification_commands(repo_root: Path) -> list[list[str]]:
             bun,
             "test",
             "src/providers/mockPlazaPresence.test.ts",
+            "src/providers/openClawPresenceAdapter.test.ts",
             "src/game/plaza/plazaResidentAvatarAdapter.test.ts",
         ],
         [

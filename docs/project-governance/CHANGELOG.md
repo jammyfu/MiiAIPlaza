@@ -14,3 +14,5 @@
 - Added a resident avatar adapter and Mii-driven billboard residents for the plaza prototype.
 - Added safe-sync automation tools and tests modeled after `ai-analysis-mcp` and `AegisGraph`, including queued local git sync fallback support.
 - Updated the automation guidance so heartbeat runs default to the queued local safe-sync path instead of raw commit/push behavior.
+- Added explicit plaza world-data provider contracts plus a tested `OpenClaw` fixture adapter behind the shared resident contract.
+- Updated the plaza page to choose its data source through a provider seam while keeping mock boot as the default path.

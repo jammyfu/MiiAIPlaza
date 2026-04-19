@@ -38,6 +38,13 @@ export interface PlazaResident {
   };
 }
 
+export interface PlazaPresenceAdapter<TPayload = unknown> {
+  id: string;
+  provider: string;
+  listSnapshots(payload: TPayload): PlazaPresenceSnapshot[];
+  listResidents(payload: TPayload): PlazaResident[];
+}
+
 export interface PlazaHotspot {
   id: string;
   name: string;
@@ -49,4 +56,21 @@ export interface PlazaHotspot {
     x: number;
     z: number;
   };
+}
+
+export interface PlazaWorldDataSource {
+  id: string;
+  provider: string;
+  mode: "mock" | "fixture" | "live";
+}
+
+export interface PlazaWorldData {
+  source: PlazaWorldDataSource;
+  residents: PlazaResident[];
+  hotspots: PlazaHotspot[];
+}
+
+export interface PlazaWorldDataProvider {
+  id: string;
+  load(): Promise<PlazaWorldData>;
 }

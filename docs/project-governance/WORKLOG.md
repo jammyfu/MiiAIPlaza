@@ -18,3 +18,7 @@
 - Added safe sync, local queue, local flush, LaunchAgent install, and git-writable probe tools to support long-running automation.
 - Expanded verification to cover the new sync automation tests and documented the preferred submission flow.
 - Tightened the automation rule so heartbeat submissions default to `sync_or_queue --prefer-local` instead of generic commit/push wording.
+- Added provider-facing plaza contracts for adapter and world-data seams so runtime data can load through explicit providers instead of hardcoded mock calls.
+- Added a tested `OpenClaw` fixture adapter and world-data provider that normalize external-style payloads into the shared plaza resident contract.
+- Updated `Plaza.ts` to resolve a named provider explicitly, keeping mock boot as the default while enabling fixture-backed provider swaps.
+- Advanced `CURRENT_PLAN.md` to the next provider-diagnostics slice after verifying the new adapter seam with the repository standard verification command.
