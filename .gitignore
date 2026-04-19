@@ -187,3 +187,6 @@ output/playwright/
 
 # Local visual brainstorming artifacts
 .superpowers/
+
+# Local git sync control files
+.codex-local/

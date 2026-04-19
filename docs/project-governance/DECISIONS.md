@@ -33,3 +33,11 @@ Represent plaza residents with renderer-backed Mii billboards before attempting 
 
 Why:
 This upgrades the plaza from placeholder proxy geometry to recognizable Mii presence using the existing rendering stack, while keeping the current interaction loop stable and the implementation scope small.
+
+### Reuse the ai-analysis-mcp and AegisGraph safe-sync pattern
+
+Decision:
+Adopt the same `check_git_writable -> git_safe_sync` primary path plus `sync_or_queue -> queue_local_git_sync -> local_git_flush` fallback path used in `ai-analysis-mcp` and `AegisGraph`.
+
+Why:
+This repository now relies on heartbeat-style automation, so it benefits from a submission path that can safely commit and push when `.git` is writable, but can also queue a local terminal sync request instead of getting stuck in restricted environments.

@@ -8,12 +8,14 @@
 
 1. Read `CURRENT_PLAN.md`
 2. Read `docs/project-governance/WORKLOG.md`
-3. Check `git status --short` and close any existing stable diff before starting new work
-4. Run `python3 tools/verify.py`
-5. Execute the bounded slice only
-6. Re-run verification
-7. Update worklog, changelog, backlog, and acceptance notes
-8. Run `python3 tools/next_plan.py`
+3. If only `.codex-local/git_sync_request.json` exists while `git status --short` is empty, run `python3 tools/local_git_flush.py` and continue
+4. Check `git status --short` and close any existing stable diff before starting new work
+5. Run `python3 tools/verify.py`
+6. Execute the bounded slice only
+7. Re-run verification
+8. Update worklog, changelog, backlog, and acceptance notes
+9. If a stable closure exists, prefer `python3 tools/sync_or_queue.py --message "<stable-closure>"` and use `--prefer-local` in sandboxed automation
+10. Run `python3 tools/next_plan.py`
 
 ## Heartbeat Cadence
 
@@ -31,3 +33,4 @@
 - replacing the editor flow before the plaza shell is stable
 - coupling client rendering directly to provider-specific schemas
 - introducing realtime infrastructure before the polling and mock path is solid
+- treating `.codex-local/git_sync_request.json` as application work instead of sync control state

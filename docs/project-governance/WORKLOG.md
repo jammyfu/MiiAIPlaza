@@ -14,3 +14,6 @@
 - Added a resident avatar adapter with deterministic Mii presets for the mock plaza residents.
 - Upgraded plaza residents from colored proxy bodies to Mii-rendered billboard residents while preserving prompts and detail panels.
 - Verified the new avatar path with adapter tests, the provider tests, and a one-shot build.
+- Studied `ai-analysis-mcp` and `AegisGraph` git submission logic and imported their safe-sync pattern into this repository.
+- Added safe sync, local queue, local flush, LaunchAgent install, and git-writable probe tools to support long-running automation.
+- Expanded verification to cover the new sync automation tests and documented the preferred submission flow.

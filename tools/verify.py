@@ -25,23 +25,45 @@ def resolve_bun(repo_root: Path) -> str | None:
     return None
 
 
-def main() -> int:
-    repo_root = Path(__file__).resolve().parent.parent
+def repo_root_from_script() -> Path:
+    return Path(__file__).resolve().parent.parent
+
+
+def verification_commands(repo_root: Path) -> list[list[str]]:
     bun = resolve_bun(repo_root)
     if bun is None:
-        print("bun executable not found in known locations", file=sys.stderr)
-        return 1
+        raise RuntimeError("bun executable not found in known locations")
 
-    run(
+    return [
         [
             bun,
             "test",
             "src/providers/mockPlazaPresence.test.ts",
             "src/game/plaza/plazaResidentAvatarAdapter.test.ts",
         ],
-        repo_root,
-    )
-    run([bun, "run", "build.ts", "--once"], repo_root)
+        [
+            sys.executable,
+            "-m",
+            "unittest",
+            "tools.test_sync_or_queue",
+            "tools.test_queue_local_git_sync",
+            "tools.test_verify",
+        ],
+        [bun, "run", "build.ts", "--once"],
+    ]
+
+
+def main() -> int:
+    repo_root = repo_root_from_script()
+    try:
+        commands = verification_commands(repo_root)
+    except RuntimeError as error:
+        print(str(error), file=sys.stderr)
+        return 1
+
+    for command in commands:
+        run(command, repo_root)
+
     print("verify: ok")
     return 0
 

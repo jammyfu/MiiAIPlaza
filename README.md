@@ -23,6 +23,16 @@ Recommended reading order:
 - Classic editor and library flow at `/`
 - Early plaza prototype at `/?plaza=1`
 
+## Submission Workflow
+
+This repository now follows the same safe-sync pattern used in `ai-analysis-mcp` and `AegisGraph`:
+
+- verify first with `python3 tools/verify.py`
+- sync through `python3 tools/sync_or_queue.py --message "<stable-closure>"`
+- fall back to local queue + flush when `.git` is not directly writable
+
+See [docs/AUTOMATION_COMMANDS.md](docs/AUTOMATION_COMMANDS.md) and [docs/LONG_RUNNING_AUTONOMY.md](docs/LONG_RUNNING_AUTONOMY.md) for the full loop.
+
 ## Upstream Reference
 
 This repository is based on the original [datkat21/mii-creator](https://github.com/datkat21/mii-creator) project.

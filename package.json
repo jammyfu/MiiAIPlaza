@@ -6,8 +6,11 @@
     "build-ts": "bun build.ts",
     "build-once": "bun run build.ts --once",
     "serve": "bunx serve -l 3000 -C ./public",
-    "test": "bun test src/providers/mockPlazaPresence.test.ts",
-    "verify": "python3 tools/verify.py"
+    "test": "bun test src/providers/mockPlazaPresence.test.ts src/game/plaza/plazaResidentAvatarAdapter.test.ts && python3 -m unittest tools.test_sync_or_queue tools.test_queue_local_git_sync tools.test_verify",
+    "verify": "python3 tools/verify.py",
+    "sync": "python3 tools/sync_or_queue.py --message \"chore: sync stable closure\"",
+    "sync:local": "python3 tools/sync_or_queue.py --message \"chore: sync stable closure\" --prefer-local",
+    "flush:local": "python3 tools/local_git_flush.py"
   },
   "devDependencies": {
     "@types/bun": "latest"

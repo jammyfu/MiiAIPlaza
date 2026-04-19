@@ -44,9 +44,24 @@ Supporting commands:
 
 ```bash
 python3 tools/next_plan.py
+python3 tools/sync_or_queue.py --message "<stable-closure>"
+python3 tools/check_git_writable.py
+python3 tools/queue_local_git_sync.py --message "<stable-closure>"
+python3 tools/local_git_flush.py
+python3 tools/install_local_git_sync_agent.py
+python3 tools/git_safe_sync.py --message "<stable-closure>"
 bun test src/providers/mockPlazaPresence.test.ts
 bun run build.ts --once
 ```
+
+## Sync and submission logic
+
+- Prefer one stable closure per commit.
+- Run `python3 tools/verify.py` before any commit or sync attempt.
+- If `.git` is writable, prefer `python3 tools/sync_or_queue.py --message "<stable-closure>"`.
+- In automation or sandboxed contexts, prefer `python3 tools/sync_or_queue.py --message "<stable-closure>" --prefer-local`.
+- Treat `.codex-local/git_sync_request.json` as a sync control file, not as product work.
+- If `git status --short` is empty but a sync request remains, run `python3 tools/local_git_flush.py` before deciding the repo is blocked.
 
 ## Current product direction
 
