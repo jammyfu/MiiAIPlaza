@@ -4,6 +4,7 @@ import {
   createOpenClawPresenceFixture,
   createOpenClawFixtureWorldData,
   createOpenClawLiveRequestConfig,
+  resolveOpenClawLiveRequestOverrides,
   openClawPresenceAdapter,
   openClawPresenceFixture,
   openClawFixtureWorldDataProvider,
@@ -72,4 +73,35 @@ test("openclaw fixture carries a typed live-request configuration seam", () => {
   expect(requestConfig.liveEnabled).toBe(false);
   expect(requestConfig.endpointLabel).toContain("pending");
   expect(worldData.source.request).toEqual(requestConfig);
+});
+
+test("openclaw request overrides resolve endpoint and auth posture without enabling fetches by default", () => {
+  expect(
+    resolveOpenClawLiveRequestOverrides({
+      endpointUrl: "https://openclaw.example.com/presence",
+      authTokenName: "OPENCLAW_TOKEN",
+      workspaceHint: "mii-plaza-client",
+    })
+  ).toEqual({
+    transport: "http",
+    endpointLabel: "https://openclaw.example.com/presence",
+    authKind: "token",
+    liveEnabled: false,
+    workspaceHint: "mii-plaza-client",
+  });
+});
+
+test("openclaw request overrides can opt into a session-backed live configuration", () => {
+  expect(
+    resolveOpenClawLiveRequestOverrides({
+      endpointUrl: "https://openclaw.example.com/presence",
+      authKind: "session",
+      liveEnabled: true,
+    })
+  ).toEqual({
+    transport: "http",
+    endpointLabel: "https://openclaw.example.com/presence",
+    authKind: "session",
+    liveEnabled: true,
+  });
 });

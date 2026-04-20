@@ -142,16 +142,36 @@ export function createOpenClawPresenceFixture(
 export const openClawPresenceFixture: OpenClawFixturePayload =
   createOpenClawPresenceFixture("2026-04-20T10:12:00Z");
 
+export interface OpenClawLiveRequestOverrides {
+  endpointUrl?: string;
+  authKind?: PlazaWorldDataRequest["authKind"];
+  authTokenName?: string;
+  liveEnabled?: boolean;
+  workspaceHint?: string;
+}
+
+export function resolveOpenClawLiveRequestOverrides(
+  overrides: OpenClawLiveRequestOverrides = {}
+): PlazaWorldDataRequest {
+  const authKind =
+    overrides.authKind ?? (overrides.authTokenName ? "token" : "token");
+
+  return {
+    transport: "http",
+    endpointLabel:
+      overrides.endpointUrl ?? "OpenClaw live endpoint pending configuration",
+    authKind,
+    liveEnabled: overrides.liveEnabled ?? false,
+    ...(overrides.workspaceHint
+      ? { workspaceHint: overrides.workspaceHint }
+      : {}),
+  };
+}
+
 export function createOpenClawLiveRequestConfig(
   overrides: Partial<PlazaWorldDataRequest> = {}
 ): PlazaWorldDataRequest {
-  return {
-    transport: "http",
-    endpointLabel: "OpenClaw live endpoint pending configuration",
-    authKind: "token",
-    liveEnabled: false,
-    ...overrides,
-  };
+  return resolveOpenClawLiveRequestOverrides(overrides);
 }
 
 function normalizeState(state: OpenClawFixtureAgent["state"]): PlazaAgentStatus {

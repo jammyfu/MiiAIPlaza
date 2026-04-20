@@ -19,6 +19,7 @@
 - The plaza now exposes a player-facing manual refresh affordance that reuses the shared controller and keeps provider-status inspection aligned.
 - The plaza controller now exposes typed polling-plan metadata so future scheduled refreshes can reuse the current refresh boundary without adding timers yet.
 - The plaza source contract now carries typed live-request metadata so future `OpenClaw` endpoint/auth setup is visible without making network calls.
+- The `OpenClaw` provider now resolves typed endpoint/auth overrides through a single helper before any live fetch execution exists.
 
 ## Current Verification Evidence
 
@@ -43,3 +44,4 @@
 - The plaza HUD now exposes a `Refresh Provider` action, and the provider-status inspection path reflects the same refresh boundary.
 - The plaza HUD and provider-status inspection now expose typed polling-posture copy derived from the shared controller cadence plan.
 - The `OpenClaw` fixture source now exposes typed live-request metadata, and provider diagnostics render that request posture without requiring a real endpoint.
+- The `OpenClaw` request seam now has a dedicated override resolver so future live executors can consume one normalized endpoint/auth configuration path.

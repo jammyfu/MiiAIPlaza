@@ -129,3 +129,11 @@ Represent future `OpenClaw` live-request posture directly on `PlazaWorldDataSour
 
 Why:
 This keeps live-provider setup explicit and testable, aligns fixture-backed data with future request-shape assumptions, and prevents the eventual live fetch path from smuggling endpoint/auth concerns into ad-hoc page state.
+
+### Normalize `OpenClaw` endpoint and auth overrides through one resolver
+
+Decision:
+Resolve future `OpenClaw` endpoint/auth overrides through a single typed provider-layer helper and reuse that helper for fixture-backed request metadata.
+
+Why:
+This keeps override precedence explicit before live fetches exist, avoids multiple partial interpretations of endpoint/auth setup, and gives the future live executor one canonical source of request configuration truth.

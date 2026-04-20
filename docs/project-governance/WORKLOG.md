@@ -51,3 +51,6 @@
 - Added a typed `OpenClaw` live-request configuration seam on the world-data source contract without introducing any network fetches.
 - Kept fixture-backed `OpenClaw` world data aligned with the same request metadata and surfaced that posture in both the HUD and `Provider Status` inspection details.
 - Expanded verification to cover request metadata copy and advanced `CURRENT_PLAN.md` to the next auth/endpoint override resolution slice.
+- Added a typed `OpenClaw` endpoint/auth override resolver so future live request configuration now has one normalization path.
+- Reused the resolver inside the existing fixture request metadata seam, keeping provider diagnostics and HUD copy unchanged while auth/endpoint assumptions became explicit.
+- Expanded verification to cover override resolution behavior and advanced `CURRENT_PLAN.md` to the next live-fetch executor preparation slice.
