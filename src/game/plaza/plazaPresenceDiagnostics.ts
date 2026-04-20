@@ -122,6 +122,13 @@ export interface PlazaWorldDataRequestCopy {
   fetchExecutionSourceLabel: string | null;
   fetchExecutionTargetLabel: string | null;
   fetchExecutionModeLabel: string | null;
+  executionDelegateLabel: string | null;
+  executionDelegateSummary: string | null;
+  executionDelegateStatusLabel: string | null;
+  executionDelegatePayloadLabel: string | null;
+  executionDelegateSourceLabel: string | null;
+  executionDelegateTargetLabel: string | null;
+  executionDelegateModeLabel: string | null;
   executorLabel: string | null;
   executorSummary: string | null;
 }
@@ -547,6 +554,29 @@ export function describeWorldDataRequest(
     fetchExecutionModeLabel: request.fetchExecution
       ? `Execution mode: ${
           request.fetchExecution.runnerMode === "live" ? "Live" : "Preview"
+        }`
+      : null,
+    executionDelegateLabel: request.executionDelegate?.label ?? null,
+    executionDelegateSummary: request.executionDelegate?.summary ?? null,
+    executionDelegateStatusLabel: request.executionDelegate
+      ? `Execution delegate status: ${
+          request.executionDelegate.status === "live-ready"
+            ? "Live ready"
+            : "Preview payload"
+        }`
+      : null,
+    executionDelegatePayloadLabel: request.executionDelegate
+      ? `Delegate payload: ${request.executionDelegate.payloadLabel}`
+      : null,
+    executionDelegateSourceLabel: request.executionDelegate
+      ? `Delegate source execution: ${request.executionDelegate.sourceFetchExecutionLabel}`
+      : null,
+    executionDelegateTargetLabel: request.executionDelegate
+      ? `Delegate target: ${request.executionDelegate.delegateTargetLabel}`
+      : null,
+    executionDelegateModeLabel: request.executionDelegate
+      ? `Delegate mode: ${
+          request.executionDelegate.runnerMode === "live" ? "Live" : "Preview"
         }`
       : null,
     executorLabel: executorCopy?.label ?? null,

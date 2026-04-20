@@ -126,3 +126,6 @@
 - Added a typed `OpenClaw` live fetch-execution record so transport-call output now resolves into one network-execution-boundary placeholder shape without network calls.
 - Taught preview and live-capable stub runners to carry the shared fetch-execution record alongside transport-call metadata so future live transport implementation can reuse one execution handoff shape.
 - Surfaced fetch-execution metadata through plaza diagnostics, HUD provider metadata, and the shared `Provider Status` hotspot, then advanced `CURRENT_PLAN.md` to the next live execution-delegate slice.
+- Added a typed `OpenClaw` live execution-delegate record so fetch-execution output now resolves into one transport-implementation-boundary placeholder shape without network calls.
+- Taught preview and live-capable stub runners to carry the shared execution-delegate record alongside fetch-execution metadata so future live transport runners can reuse one delegate handoff shape.
+- Surfaced execution-delegate metadata through plaza diagnostics, HUD provider metadata, and the shared `Provider Status` hotspot, then advanced `CURRENT_PLAN.md` to the next live transport-implementation slice.

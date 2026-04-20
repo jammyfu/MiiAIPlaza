@@ -97,6 +97,7 @@ export interface PlazaWorldDataRequest {
   fetchDispatch?: PlazaWorldDataRequestFetchDispatch;
   transportCall?: PlazaWorldDataRequestTransportCall;
   fetchExecution?: PlazaWorldDataRequestFetchExecution;
+  executionDelegate?: PlazaWorldDataRequestExecutionDelegate;
   executor?: PlazaWorldDataRequestExecutor;
 }
 
@@ -254,6 +255,17 @@ export interface PlazaWorldDataRequestFetchExecution {
   payloadLabel: string;
   sourceTransportCallLabel: string;
   executionTargetLabel: string;
+  runnerMode: "preview" | "live";
+}
+
+export interface PlazaWorldDataRequestExecutionDelegate {
+  id: string;
+  label: string;
+  summary: string;
+  status: PlazaWorldDataRequestFetchExecution["status"];
+  payloadLabel: string;
+  sourceFetchExecutionLabel: string;
+  delegateTargetLabel: string;
   runnerMode: "preview" | "live";
 }
 

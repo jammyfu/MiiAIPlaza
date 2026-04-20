@@ -281,6 +281,18 @@ test("openclaw request overrides resolve endpoint and auth posture without enabl
       executionTargetLabel: "OpenClaw live network execution",
       runnerMode: "preview",
     },
+    executionDelegate: {
+      id: "openclaw-live-execution-delegate",
+      label: "OpenClaw live execution delegate",
+      summary:
+        "Represents the placeholder transport-implementation-boundary record derived from the fetch execution before actual live network transport implementation runs.",
+      status: "preview-payload",
+      payloadLabel: "Preview payload available from no-network live-preview execution.",
+      sourceFetchExecutionLabel:
+        "Preview payload from GET https://openclaw.example.com/presence?view=plaza&workspace=mii-plaza-client",
+      delegateTargetLabel: "OpenClaw live transport implementation",
+      runnerMode: "preview",
+    },
     executor: {
       status: "ready",
       mode: "dry-run",
@@ -468,6 +480,18 @@ test("openclaw request overrides can opt into a session-backed live configuratio
       sourceTransportCallLabel:
         "Live-ready placeholder from GET https://openclaw.example.com/presence?view=plaza",
       executionTargetLabel: "OpenClaw live network execution",
+      runnerMode: "live",
+    },
+    executionDelegate: {
+      id: "openclaw-live-execution-delegate",
+      label: "OpenClaw live execution delegate",
+      summary:
+        "Represents the placeholder transport-implementation-boundary record derived from the fetch execution before actual live network transport implementation runs.",
+      status: "live-ready",
+      payloadLabel: "Awaiting a real transport response once live network execution is enabled.",
+      sourceFetchExecutionLabel:
+        "Live-ready placeholder from GET https://openclaw.example.com/presence?view=plaza",
+      delegateTargetLabel: "OpenClaw live transport implementation",
       runnerMode: "live",
     },
     executor: {
@@ -722,6 +746,7 @@ test("openclaw preview fetch-runner factory selects the preview runner contract"
   expect(runner.fetchDispatch).toEqual(request.fetchDispatch);
   expect(runner.transportCall).toEqual(request.transportCall);
   expect(runner.fetchExecution).toEqual(request.fetchExecution);
+  expect(runner.executionDelegate).toEqual(request.executionDelegate);
   const payload = await runner.run("2026-04-20T10:12:00Z");
   expect(payload.generated_at).toBe("2026-04-20T10:12:00.000Z");
   expect(payload.workspace).toBe("mii-plaza-client");
@@ -758,6 +783,7 @@ test("openclaw fetch-runner factory can select the live-capable stub when live m
   expect(runner.fetchDispatch).toEqual(request.fetchDispatch);
   expect(runner.transportCall).toEqual(request.transportCall);
   expect(runner.fetchExecution).toEqual(request.fetchExecution);
+  expect(runner.executionDelegate).toEqual(request.executionDelegate);
 
   const payload = await runner.run("2026-04-20T10:12:00Z");
   expect(payload.generated_at).toBe("2026-04-20T10:12:00.000Z");
@@ -792,6 +818,7 @@ test("openclaw preview fetch runner provides the injected preview payload seam",
   expect(runner.fetchDispatch).toEqual(request.fetchDispatch);
   expect(runner.transportCall).toEqual(request.transportCall);
   expect(runner.fetchExecution).toEqual(request.fetchExecution);
+  expect(runner.executionDelegate).toEqual(request.executionDelegate);
 
   const payload = await runner.run("2026-04-20T10:12:00Z");
 
