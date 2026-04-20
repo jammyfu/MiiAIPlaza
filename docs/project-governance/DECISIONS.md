@@ -217,3 +217,11 @@ Extend the current preview fetch runner metadata so it explicitly declares it is
 
 Why:
 This keeps the future live-runner swap additive instead of structural. A later network-capable implementation can reuse the same request and delegate seams, while diagnostics already know how to describe contract posture instead of only one-off preview behavior.
+
+### Select fetch runners through a factory before introducing live-capable implementations
+
+Decision:
+Introduce a dedicated fetch-runner factory so the executor contract obtains the current preview runner through an explicit selection seam instead of constructing it directly.
+
+Why:
+The next step will add a live-capable runner stub. Putting selection behind a factory now means that new runner can be introduced as a policy choice, not as a structural rewrite of the executor or transport delegate layers.

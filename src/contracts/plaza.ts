@@ -84,6 +84,7 @@ export interface PlazaWorldDataRequest {
   descriptor?: PlazaWorldDataRequestDescriptor;
   transportDelegate?: PlazaWorldDataRequestTransportDelegate;
   fetchRunner?: PlazaWorldDataRequestFetchRunner;
+  fetchRunnerFactory?: PlazaWorldDataRequestFetchRunnerFactory;
   executor?: PlazaWorldDataRequestExecutor;
 }
 
@@ -106,6 +107,12 @@ export interface PlazaWorldDataRequestFetchRunner {
   label: string;
   contract: "network-capable";
   mode: "preview" | "live";
+  summary: string;
+}
+
+export interface PlazaWorldDataRequestFetchRunnerFactory {
+  id: string;
+  label: string;
   summary: string;
 }
 

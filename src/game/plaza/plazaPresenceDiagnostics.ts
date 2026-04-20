@@ -46,6 +46,8 @@ export interface PlazaWorldDataRequestCopy {
   fetchRunnerLabel: string | null;
   fetchRunnerContractLabel: string | null;
   fetchRunnerSummary: string | null;
+  fetchRunnerFactoryLabel: string | null;
+  fetchRunnerFactorySummary: string | null;
   executorLabel: string | null;
   executorSummary: string | null;
 }
@@ -239,6 +241,8 @@ export function describeWorldDataRequest(
         } ${request.fetchRunner.mode} runner`
       : null,
     fetchRunnerSummary: request.fetchRunner?.summary ?? null,
+    fetchRunnerFactoryLabel: request.fetchRunnerFactory?.label ?? null,
+    fetchRunnerFactorySummary: request.fetchRunnerFactory?.summary ?? null,
     executorLabel: executorCopy?.label ?? null,
     executorSummary: executorCopy?.summary ?? null,
   };

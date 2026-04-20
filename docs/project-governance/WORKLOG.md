@@ -84,3 +84,6 @@
 - Added network-capable contract metadata to the preview fetch runner so the current preview implementation now explicitly declares it satisfies the future live-runner contract shape.
 - Surfaced runner-contract posture through plaza diagnostics, HUD provider metadata, and the shared `Provider Status` hotspot without introducing any network traffic.
 - Expanded verification to cover runner-contract metadata and advanced `CURRENT_PLAN.md` to the next runner-factory slice.
+- Added a preview fetch-runner factory for `OpenClaw` so the executor now acquires runners through an explicit selection seam instead of constructing them inline.
+- Surfaced runner-factory metadata through plaza diagnostics, HUD provider metadata, and the shared `Provider Status` hotspot so future live-capable runner selection already has a visible slot.
+- Expanded verification to cover runner-factory behavior and advanced `CURRENT_PLAN.md` to the next live-capable runner-stub slice.

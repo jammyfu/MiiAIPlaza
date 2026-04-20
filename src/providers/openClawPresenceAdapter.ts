@@ -6,6 +6,7 @@ import type {
   PlazaWorldData,
   PlazaWorldDataRequestDescriptor,
   PlazaWorldDataRequestFetchRunner,
+  PlazaWorldDataRequestFetchRunnerFactory,
   PlazaWorldDataRequestTransportDelegate,
   PlazaWorldDataRequestExecutor,
   PlazaWorldDataRequest,
@@ -95,6 +96,7 @@ export interface OpenClawNetworkReadyExecution<TPayload> {
 export interface OpenClawNetworkReadyExecutorContract<TPayload> {
   contract: "network-ready";
   request: PlazaWorldDataRequest;
+  fetchRunnerFactory: OpenClawFetchRunnerFactory<TPayload>;
   transportDelegate: OpenClawTransportDelegate<TPayload>;
   execute(
     now?: Date | string | number
@@ -109,6 +111,11 @@ export interface OpenClawTransportDelegate<TPayload> {
 export interface OpenClawFetchRunner<TPayload> {
   metadata: PlazaWorldDataRequestFetchRunner;
   run(now?: Date | string | number): Promise<TPayload>;
+}
+
+export interface OpenClawFetchRunnerFactory<TPayload> {
+  metadata: PlazaWorldDataRequestFetchRunnerFactory;
+  createRunner(): OpenClawFetchRunner<TPayload>;
 }
 
 export interface OpenClawLivePreviewExecution {
@@ -251,10 +258,15 @@ export function createOpenClawLivePreviewResponsePayload(
 export function createOpenClawPreviewExecutorContract(
   request: PlazaWorldDataRequest
 ): OpenClawNetworkReadyExecutorContract<OpenClawLiveResponsePayload> {
-  const transportDelegate = createOpenClawPreviewTransportDelegate(request);
+  const fetchRunnerFactory = createOpenClawPreviewFetchRunnerFactory(request);
+  const transportDelegate = createOpenClawPreviewTransportDelegate(
+    request,
+    fetchRunnerFactory.createRunner()
+  );
   return {
     contract: "network-ready",
     request,
+    fetchRunnerFactory,
     transportDelegate,
     async execute(now: Date | string | number = Date.now()) {
       return {
@@ -263,6 +275,23 @@ export function createOpenClawPreviewExecutorContract(
         request,
         payload: await transportDelegate.execute(now),
       };
+    },
+  };
+}
+
+export function createOpenClawPreviewFetchRunnerFactory(
+  request: PlazaWorldDataRequest
+): OpenClawFetchRunnerFactory<OpenClawLiveResponsePayload> {
+  return {
+    metadata:
+      request.fetchRunnerFactory ?? {
+        id: "openclaw-preview-runner-factory",
+        label: "Preview fetch-runner factory",
+        summary:
+          "Chooses the preview fetch runner now and leaves room for future live-capable runner selection.",
+      },
+    createRunner() {
+      return createOpenClawPreviewFetchRunner(request);
     },
   };
 }
@@ -423,6 +452,12 @@ export function resolveOpenClawLiveRequestOverrides(
     summary:
       "Provides preview payloads for the transport delegate without invoking a real network fetch.",
   };
+  const fetchRunnerFactory: PlazaWorldDataRequestFetchRunnerFactory = {
+    id: "openclaw-preview-runner-factory",
+    label: "Preview fetch-runner factory",
+    summary:
+      "Chooses the preview fetch runner now and leaves room for future live-capable runner selection.",
+  };
   const executor = planOpenClawLiveFetchExecutor({
     transport: "http",
     endpointLabel,
@@ -431,6 +466,7 @@ export function resolveOpenClawLiveRequestOverrides(
     descriptor,
     transportDelegate,
     fetchRunner,
+    fetchRunnerFactory,
     ...(overrides.workspaceHint
       ? { workspaceHint: overrides.workspaceHint }
       : {}),
@@ -444,6 +480,7 @@ export function resolveOpenClawLiveRequestOverrides(
     descriptor,
     transportDelegate,
     fetchRunner,
+    fetchRunnerFactory,
     ...(overrides.workspaceHint
       ? { workspaceHint: overrides.workspaceHint }
       : {}),

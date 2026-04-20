@@ -5,6 +5,7 @@ import {
   createOpenClawFixtureWorldData,
   createOpenClawLiveRequestConfig,
   createOpenClawPreviewExecutorContract,
+  createOpenClawPreviewFetchRunnerFactory,
   createOpenClawPreviewFetchRunner,
   createOpenClawPreviewTransportDelegate,
   createOpenClawLiveProviderSkeleton,
@@ -121,6 +122,12 @@ test("openclaw request overrides resolve endpoint and auth posture without enabl
       summary:
         "Provides preview payloads for the transport delegate without invoking a real network fetch.",
     },
+    fetchRunnerFactory: {
+      id: "openclaw-preview-runner-factory",
+      label: "Preview fetch-runner factory",
+      summary:
+        "Chooses the preview fetch runner now and leaves room for future live-capable runner selection.",
+    },
     executor: {
       status: "ready",
       mode: "dry-run",
@@ -161,6 +168,12 @@ test("openclaw request overrides can opt into a session-backed live configuratio
       mode: "preview",
       summary:
         "Provides preview payloads for the transport delegate without invoking a real network fetch.",
+    },
+    fetchRunnerFactory: {
+      id: "openclaw-preview-runner-factory",
+      label: "Preview fetch-runner factory",
+      summary:
+        "Chooses the preview fetch runner now and leaves room for future live-capable runner selection.",
     },
     executor: {
       status: "ready",
@@ -349,6 +362,7 @@ test("openclaw preview executor contract exposes a network-ready async execute s
 
   expect(contract.contract).toBe("network-ready");
   expect(contract.request).toEqual(request);
+  expect(contract.fetchRunnerFactory.metadata).toEqual(request.fetchRunnerFactory);
   expect(contract.transportDelegate.metadata).toEqual(request.transportDelegate);
 
   const result = await contract.execute("2026-04-20T10:12:00Z");
@@ -381,6 +395,28 @@ test("openclaw preview transport delegate consumes request descriptors without n
 
   expect(payload.generated_at).toBe("2026-04-20T10:12:00.000Z");
   expect(payload.agents[0]?.agent_id).toBe("openclaw");
+});
+
+test("openclaw preview fetch-runner factory selects the preview runner contract", async () => {
+  const request = resolveOpenClawLiveRequestOverrides({
+    endpointUrl: "https://openclaw.example.com/presence",
+    authTokenName: "OPENCLAW_TOKEN",
+    workspaceHint: "mii-plaza-client",
+  });
+  const factory = createOpenClawPreviewFetchRunnerFactory(request);
+
+  expect(factory.metadata).toEqual({
+    id: "openclaw-preview-runner-factory",
+    label: "Preview fetch-runner factory",
+    summary:
+      "Chooses the preview fetch runner now and leaves room for future live-capable runner selection.",
+  });
+
+  const runner = factory.createRunner();
+
+  expect(runner.metadata).toEqual(request.fetchRunner);
+  const payload = await runner.run("2026-04-20T10:12:00Z");
+  expect(payload.generated_at).toBe("2026-04-20T10:12:00.000Z");
 });
 
 test("openclaw preview fetch runner provides the injected preview payload seam", async () => {
