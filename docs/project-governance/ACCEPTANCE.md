@@ -33,6 +33,7 @@
 - The `OpenClaw` executor now acquires its preview fetch runner through a dedicated runner factory instead of constructing the runner inline.
 - The `OpenClaw` runner factory now selects a live-mode stub runner for `liveEnabled` requests while still avoiding real network I/O.
 - The shared `OpenClaw` request contract now carries a typed runner request envelope so preview and future live-capable runners consume one normalized input shape.
+- The shared `OpenClaw` request contract now carries a typed live request builder so runner envelopes resolve into concrete request URL, method, and header metadata without network calls.
 
 ## Current Verification Evidence
 
@@ -71,3 +72,4 @@
 - The preview executor now reuses a named fetch-runner factory so future live-capable runner selection can remain additive behind the same delegate boundary.
 - The live path now exercises runner selection through a live-capable stub so future live fetch execution can replace behavior instead of redesigning the runner boundary.
 - The live path now resolves a shared runner request envelope and surfaces that envelope through diagnostics, HUD provider metadata, and `Provider Status` details before concrete request-building or network execution exists.
+- The live path now resolves a shared request builder and surfaces that fetch-ready request posture through diagnostics, HUD provider metadata, and `Provider Status` details before transport attempts or network execution exist.

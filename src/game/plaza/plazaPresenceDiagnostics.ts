@@ -51,6 +51,10 @@ export interface PlazaWorldDataRequestCopy {
   runnerEnvelopeLabel: string | null;
   runnerEnvelopeSummary: string | null;
   runnerEnvelopeTargetLabel: string | null;
+  requestBuilderLabel: string | null;
+  requestBuilderSummary: string | null;
+  requestBuilderTargetLabel: string | null;
+  requestBuilderHeadersLabel: string | null;
   executorLabel: string | null;
   executorSummary: string | null;
 }
@@ -251,6 +255,15 @@ export function describeWorldDataRequest(
     runnerEnvelopeTargetLabel: request.runnerEnvelope
       ? `Envelope target: ${request.runnerEnvelope.descriptor.method} ${request.runnerEnvelope.descriptor.pathLabel} via ${request.runnerEnvelope.endpointLabel}`
       : null,
+    requestBuilderLabel: request.requestBuilder?.label ?? null,
+    requestBuilderSummary: request.requestBuilder?.summary ?? null,
+    requestBuilderTargetLabel: request.requestBuilder
+      ? `Request build: ${request.requestBuilder.method} ${request.requestBuilder.urlLabel}`
+      : null,
+    requestBuilderHeadersLabel:
+      request.requestBuilder && request.requestBuilder.headerLabels.length > 0
+        ? `Headers: ${request.requestBuilder.headerLabels.join("; ")}`
+        : null,
     executorLabel: executorCopy?.label ?? null,
     executorSummary: executorCopy?.summary ?? null,
   };

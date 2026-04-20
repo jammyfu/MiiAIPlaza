@@ -226,6 +226,14 @@ Represent preview and future live-capable runner inputs as one typed runner requ
 Why:
 This keeps runner selection additive behind the factory seam, gives diagnostics one stable place to describe runner-consumable input posture, and lets the next request-builder slice focus on translating one normalized shape into fetch-ready inputs instead of re-deriving request state in multiple runner implementations.
 
+### Resolve request builders from runner envelopes before adding transport attempts
+
+Decision:
+Represent concrete `OpenClaw` request URL, method, and header posture as a typed request-builder artifact derived from the shared runner envelope, and carry that builder on the shared request contract before adding fetch-attempt execution.
+
+Why:
+This keeps the runner envelope focused on normalized intent while giving future transport work one fetch-ready shape to consume. Diagnostics can now show the exact future request posture without forcing preview runners or page code to reconstruct URL and header rules ad hoc.
+
 ### Select fetch runners through a factory before introducing live-capable implementations
 
 Decision:

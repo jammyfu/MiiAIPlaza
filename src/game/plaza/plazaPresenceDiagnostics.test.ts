@@ -181,6 +181,19 @@ test("world data request copy stays readable in the hud and provider status flow
         authHeaderLabel: "Authorization: Bearer OPENCLAW_TOKEN",
       },
     },
+    requestBuilder: {
+      id: "openclaw-live-request-builder",
+      label: "OpenClaw live request builder",
+      summary:
+        "Resolves the runner envelope into a concrete fetch-ready request shape without executing network calls.",
+      method: "GET",
+      urlLabel:
+        "OpenClaw live endpoint pending configuration?view=plaza&workspace=mii-plaza-client",
+      headerLabels: [
+        "Accept: application/json",
+        "Authorization: Bearer OPENCLAW_TOKEN",
+      ],
+    },
     executor: {
       status: "needs-config",
       mode: "dry-run",
@@ -213,6 +226,13 @@ test("world data request copy stays readable in the hud and provider status flow
       "Normalizes endpoint, auth, and descriptor inputs into one runner-consumable shape before live fetches exist.",
     runnerEnvelopeTargetLabel:
       "Envelope target: GET /presence via OpenClaw live endpoint pending configuration",
+    requestBuilderLabel: "OpenClaw live request builder",
+    requestBuilderSummary:
+      "Resolves the runner envelope into a concrete fetch-ready request shape without executing network calls.",
+    requestBuilderTargetLabel:
+      "Request build: GET OpenClaw live endpoint pending configuration?view=plaza&workspace=mii-plaza-client",
+    requestBuilderHeadersLabel:
+      "Headers: Accept: application/json; Authorization: Bearer OPENCLAW_TOKEN",
     executorLabel: "Dry run needs config",
     executorSummary: "Configure a live OpenClaw endpoint before enabling fetch execution.",
   });

@@ -7,6 +7,7 @@ import type {
   PlazaWorldDataRequestDescriptor,
   PlazaWorldDataRequestFetchRunner,
   PlazaWorldDataRequestFetchRunnerFactory,
+  PlazaWorldDataRequestBuilder,
   PlazaWorldDataRequestRunnerEnvelope,
   PlazaWorldDataRequestTransportDelegate,
   PlazaWorldDataRequestExecutor,
@@ -112,6 +113,7 @@ export interface OpenClawTransportDelegate<TPayload> {
 export interface OpenClawFetchRunner<TPayload> {
   metadata: PlazaWorldDataRequestFetchRunner;
   envelope: PlazaWorldDataRequestRunnerEnvelope;
+  requestBuilder: PlazaWorldDataRequestBuilder;
   run(now?: Date | string | number): Promise<TPayload>;
 }
 
@@ -292,6 +294,8 @@ export function createOpenClawFetchRunnerFactory(
 ): OpenClawFetchRunnerFactory<OpenClawLiveResponsePayload> {
   const envelope =
     request.runnerEnvelope ?? createOpenClawRunnerRequestEnvelope(request);
+  const requestBuilder =
+    request.requestBuilder ?? createOpenClawLiveRequestBuilder(envelope);
 
   return {
     metadata:
@@ -303,8 +307,8 @@ export function createOpenClawFetchRunnerFactory(
       },
     createRunner() {
       return request.liveEnabled
-        ? createOpenClawLiveStubFetchRunner(request, envelope)
-        : createOpenClawPreviewFetchRunner(request, envelope);
+        ? createOpenClawLiveStubFetchRunner(request, envelope, requestBuilder)
+        : createOpenClawPreviewFetchRunner(request, envelope, requestBuilder);
     },
   };
 }
@@ -334,7 +338,9 @@ export function createOpenClawPreviewTransportDelegate(
 export function createOpenClawPreviewFetchRunner(
   request: PlazaWorldDataRequest,
   envelope: PlazaWorldDataRequestRunnerEnvelope =
-    request.runnerEnvelope ?? createOpenClawRunnerRequestEnvelope(request)
+    request.runnerEnvelope ?? createOpenClawRunnerRequestEnvelope(request),
+  requestBuilder: PlazaWorldDataRequestBuilder =
+    request.requestBuilder ?? createOpenClawLiveRequestBuilder(envelope)
 ): OpenClawFetchRunner<OpenClawLiveResponsePayload> {
   return {
     metadata:
@@ -347,6 +353,7 @@ export function createOpenClawPreviewFetchRunner(
           "Provides preview payloads for the transport delegate without invoking a real network fetch.",
       },
     envelope,
+    requestBuilder,
     async run(now: Date | string | number = Date.now()) {
       return createOpenClawLivePreviewResponsePayload(now, {
         workspace: envelope.workspaceHint,
@@ -358,7 +365,9 @@ export function createOpenClawPreviewFetchRunner(
 export function createOpenClawLiveStubFetchRunner(
   request: PlazaWorldDataRequest,
   envelope: PlazaWorldDataRequestRunnerEnvelope =
-    request.runnerEnvelope ?? createOpenClawRunnerRequestEnvelope(request)
+    request.runnerEnvelope ?? createOpenClawRunnerRequestEnvelope(request),
+  requestBuilder: PlazaWorldDataRequestBuilder =
+    request.requestBuilder ?? createOpenClawLiveRequestBuilder(envelope)
 ): OpenClawFetchRunner<OpenClawLiveResponsePayload> {
   return {
     metadata:
@@ -371,6 +380,7 @@ export function createOpenClawLiveStubFetchRunner(
           "Represents the future live fetch runner while still returning preview payloads without network I/O.",
       },
     envelope,
+    requestBuilder,
     async run(now: Date | string | number = Date.now()) {
       return createOpenClawLivePreviewResponsePayload(now, {
         workspace: envelope.workspaceHint,
@@ -492,6 +502,30 @@ export function createOpenClawRunnerRequestEnvelope(
   };
 }
 
+export function createOpenClawLiveRequestBuilder(
+  envelope: PlazaWorldDataRequestRunnerEnvelope
+): PlazaWorldDataRequestBuilder {
+  const urlLabel = envelope.descriptor.queryLabel
+    ? `${envelope.endpointLabel}?${envelope.descriptor.queryLabel}`
+    : envelope.endpointLabel;
+  const headerLabels = [
+    `Accept: ${envelope.descriptor.acceptLabel}`,
+    ...(envelope.descriptor.authHeaderLabel
+      ? [envelope.descriptor.authHeaderLabel]
+      : []),
+  ];
+
+  return {
+    id: "openclaw-live-request-builder",
+    label: "OpenClaw live request builder",
+    summary:
+      "Resolves the runner envelope into a concrete fetch-ready request shape without executing network calls.",
+    method: envelope.descriptor.method,
+    urlLabel,
+    headerLabels,
+  };
+}
+
 export function resolveOpenClawLiveRequestOverrides(
   overrides: OpenClawLiveRequestOverrides = {}
 ): PlazaWorldDataRequest {
@@ -541,6 +575,7 @@ export function resolveOpenClawLiveRequestOverrides(
       ? { workspaceHint: overrides.workspaceHint }
       : {}),
   });
+  const requestBuilder = createOpenClawLiveRequestBuilder(runnerEnvelope);
   const executor = planOpenClawLiveFetchExecutor({
     transport: "http",
     endpointLabel,
@@ -551,6 +586,7 @@ export function resolveOpenClawLiveRequestOverrides(
     fetchRunner,
     fetchRunnerFactory,
     runnerEnvelope,
+    requestBuilder,
     ...(overrides.workspaceHint
       ? { workspaceHint: overrides.workspaceHint }
       : {}),
@@ -566,6 +602,7 @@ export function resolveOpenClawLiveRequestOverrides(
     fetchRunner,
     fetchRunnerFactory,
     runnerEnvelope,
+    requestBuilder,
     ...(overrides.workspaceHint
       ? { workspaceHint: overrides.workspaceHint }
       : {}),
