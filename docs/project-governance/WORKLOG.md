@@ -138,3 +138,6 @@
 - Added an injectable `OpenClaw` live network-execution seam so transport-runner metadata now resolves into a real preview/live stub execution boundary instead of direct payload helpers.
 - Taught preview and live-capable runners to execute through the shared network-execution seam while keeping the same preview payload behavior and request-shape assumptions.
 - Surfaced network-execution metadata through plaza diagnostics, HUD provider metadata, and the shared `Provider Status` hotspot, then advanced `CURRENT_PLAN.md` to the next request-dispatch slice.
+- Added an injectable `OpenClaw` live request-dispatch handler so network-execution now delegates through a real handler boundary instead of constructing preview payloads inline.
+- Taught preview and live-capable runners to reuse the same request-dispatch contract while keeping the same dry-run/live-preview payload behavior and request-shape assumptions.
+- Surfaced request-dispatch metadata through plaza diagnostics, HUD provider metadata, and the shared `Provider Status` hotspot, then advanced `CURRENT_PLAN.md` to the next HTTP-bridge slice.

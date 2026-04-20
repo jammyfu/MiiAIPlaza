@@ -150,6 +150,13 @@ export interface PlazaWorldDataRequestCopy {
   networkExecutionSourceLabel: string | null;
   networkExecutionImplementationLabel: string | null;
   networkExecutionModeLabel: string | null;
+  requestDispatchLabel: string | null;
+  requestDispatchSummary: string | null;
+  requestDispatchStatusLabel: string | null;
+  requestDispatchPayloadLabel: string | null;
+  requestDispatchSourceLabel: string | null;
+  requestDispatchImplementationLabel: string | null;
+  requestDispatchModeLabel: string | null;
   executorLabel: string | null;
   executorSummary: string | null;
 }
@@ -671,6 +678,29 @@ export function describeWorldDataRequest(
     networkExecutionModeLabel: request.networkExecution
       ? `Network mode: ${
           request.networkExecution.runnerMode === "live" ? "Live" : "Preview"
+        }`
+      : null,
+    requestDispatchLabel: request.requestDispatch?.label ?? null,
+    requestDispatchSummary: request.requestDispatch?.summary ?? null,
+    requestDispatchStatusLabel: request.requestDispatch
+      ? `Request dispatch status: ${
+          request.requestDispatch.status === "live-ready"
+            ? "Live ready"
+            : "Preview payload"
+        }`
+      : null,
+    requestDispatchPayloadLabel: request.requestDispatch
+      ? `Dispatch payload: ${request.requestDispatch.payloadLabel}`
+      : null,
+    requestDispatchSourceLabel: request.requestDispatch
+      ? `Dispatch source execution: ${request.requestDispatch.sourceNetworkExecutionLabel}`
+      : null,
+    requestDispatchImplementationLabel: request.requestDispatch
+      ? `Dispatch implementation: ${request.requestDispatch.implementationLabel}`
+      : null,
+    requestDispatchModeLabel: request.requestDispatch
+      ? `Dispatch mode: ${
+          request.requestDispatch.runnerMode === "live" ? "Live" : "Preview"
         }`
       : null,
     executorLabel: executorCopy?.label ?? null,

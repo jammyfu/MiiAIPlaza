@@ -370,6 +370,20 @@ test("world data request copy stays readable in the hud and provider status flow
         "Preview payload injection selected without network I/O.",
       runnerMode: "preview",
     },
+    requestDispatch: {
+      id: "openclaw-live-request-dispatch",
+      label: "OpenClaw live request dispatch",
+      summary:
+        "Represents the injectable request-dispatch handler selected by the network-execution seam before actual live HTTP transport is enabled.",
+      status: "preview-payload",
+      payloadLabel:
+        "Preview payload available from no-network live-preview execution.",
+      sourceNetworkExecutionLabel:
+        "Preview payload from GET OpenClaw live endpoint pending configuration?view=plaza&workspace=mii-plaza-client",
+      implementationLabel:
+        "Preview payload injection selected without network I/O.",
+      runnerMode: "preview",
+    },
     executor: {
       status: "needs-config",
       mode: "dry-run",
@@ -559,6 +573,17 @@ test("world data request copy stays readable in the hud and provider status flow
     networkExecutionImplementationLabel:
       "Network implementation: Preview payload injection selected without network I/O.",
     networkExecutionModeLabel: "Network mode: Preview",
+    requestDispatchLabel: "OpenClaw live request dispatch",
+    requestDispatchSummary:
+      "Represents the injectable request-dispatch handler selected by the network-execution seam before actual live HTTP transport is enabled.",
+    requestDispatchStatusLabel: "Request dispatch status: Preview payload",
+    requestDispatchPayloadLabel:
+      "Dispatch payload: Preview payload available from no-network live-preview execution.",
+    requestDispatchSourceLabel:
+      "Dispatch source execution: Preview payload from GET OpenClaw live endpoint pending configuration?view=plaza&workspace=mii-plaza-client",
+    requestDispatchImplementationLabel:
+      "Dispatch implementation: Preview payload injection selected without network I/O.",
+    requestDispatchModeLabel: "Dispatch mode: Preview",
     executorLabel: "Dry run needs config",
     executorSummary: "Configure a live OpenClaw endpoint before enabling fetch execution.",
   });

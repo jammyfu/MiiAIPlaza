@@ -234,6 +234,14 @@ Represent the next `OpenClaw` execution step as a typed network-execution seam s
 Why:
 This turns the final pre-network boundary into a true injectable behavior seam, keeps preview/live-stub behavior aligned on one execution contract, and makes the next step toward a real request-dispatch handler additive instead of structural.
 
+### Route network execution through a shared request-dispatch handler before real HTTP transport exists
+
+Decision:
+Represent the next `OpenClaw` execution step as a typed request-dispatch handler selected from network-execution metadata, and make the network-execution seam call that handler instead of emitting preview payloads directly.
+
+Why:
+This creates a clean handoff point for the future concrete HTTP bridge, keeps preview and live-stub execution aligned on one injectable handler contract, and ensures the eventual move to real transport remains additive rather than rewriting the network-execution seam itself.
+
 ### Put execution-boundary payload posture on the shared request contract before real live execution exists
 
 Decision:

@@ -262,6 +262,20 @@ test("loadPlazaWorldData passes through successful provider results", async () =
                 "Preview payload injection selected without network I/O.",
               runnerMode: "preview",
             },
+            requestDispatch: {
+              id: "openclaw-live-request-dispatch",
+              label: "OpenClaw live request dispatch",
+              summary:
+                "Represents the injectable request-dispatch handler selected by the network-execution seam before actual live HTTP transport is enabled.",
+              status: "preview-payload",
+              payloadLabel:
+                "Preview payload available from no-network live-preview execution.",
+              sourceNetworkExecutionLabel:
+                "Preview payload from GET Configured via future live request seam?view=plaza&workspace=mii-plaza-client",
+              implementationLabel:
+                "Preview payload injection selected without network I/O.",
+              runnerMode: "preview",
+            },
             executor: {
               status: "ready",
               mode: "dry-run",
@@ -533,6 +547,22 @@ test("loadPlazaWorldData passes through successful provider results", async () =
     "Network implementation: Preview payload injection selected without network I/O."
   );
   expect(world.hotspots[0]?.details).toContain("Network mode: Preview");
+  expect(world.hotspots[0]?.details).toContain(
+    "Request dispatch: OpenClaw live request dispatch"
+  );
+  expect(world.hotspots[0]?.details).toContain(
+    "Request dispatch status: Preview payload"
+  );
+  expect(world.hotspots[0]?.details).toContain(
+    "Dispatch payload: Preview payload available from no-network live-preview execution."
+  );
+  expect(world.hotspots[0]?.details).toContain(
+    "Dispatch source execution: Preview payload from GET Configured via future live request seam?view=plaza&workspace=mii-plaza-client"
+  );
+  expect(world.hotspots[0]?.details).toContain(
+    "Dispatch implementation: Preview payload injection selected without network I/O."
+  );
+  expect(world.hotspots[0]?.details).toContain("Dispatch mode: Preview");
   expect(world.hotspots[0]?.details).toContain("Live request: Config only");
   expect(world.hotspots[0]?.details).toContain("Executor: Dry run ready");
   expect(world.hotspots[0]?.details).toContain(
