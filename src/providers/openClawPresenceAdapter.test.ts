@@ -6,6 +6,7 @@ import {
   createOpenClawLiveRequestConfig,
   createOpenClawLiveProviderSkeleton,
   normalizeOpenClawLiveResponsePayload,
+  openClawLivePreviewWorldDataProvider,
   resolveOpenClawLiveRequestOverrides,
   openClawPresenceAdapter,
   openClawPresenceFixture,
@@ -283,4 +284,21 @@ test("openclaw live provider skeleton composes request, normalization, and world
   expect(worldData.source.request).toEqual(skeleton.request);
   expect(worldData.residents[0]?.agent.id).toBe("openclaw-live");
   expect(worldData.residents[0]?.presence.status).toBe("active");
+});
+
+test("openclaw live preview provider exposes a selectable live-mode entrypoint without network calls", async () => {
+  const providerData = await openClawLivePreviewWorldDataProvider.load();
+
+  expect(openClawLivePreviewWorldDataProvider.id).toBe("openclaw-live-preview");
+  expect(openClawLivePreviewWorldDataProvider.mode).toBe("live");
+  expect(providerData.source.id).toBe("openclaw-live-preview");
+  expect(providerData.source.mode).toBe("live");
+  expect(providerData.source.provider).toBe("OpenClaw");
+  expect(providerData.source.request?.liveEnabled).toBe(false);
+  expect(providerData.source.request?.executor).toEqual({
+    status: "ready",
+    mode: "dry-run",
+    summary: "Executor seam is ready; enable live requests when network fetches are introduced.",
+  });
+  expect(providerData.residents.length).toBeGreaterThan(0);
 });

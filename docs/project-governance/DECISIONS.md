@@ -161,3 +161,11 @@ Represent the future live `OpenClaw` provider as a composition of request resolu
 
 Why:
 This keeps the eventual live provider implementation thin, makes each pre-network seam independently testable, and ensures live data will reuse the same downstream contract path already proven by fixture data.
+
+### Add the live provider as a selectable entrypoint before real execution
+
+Decision:
+Expose a selectable `openclaw-live-preview` provider entrypoint that advertises `mode: live` while still routing through the composed no-network provider skeleton.
+
+Why:
+This lets the page layer exercise the future live-provider branch without introducing fetch behavior yet, keeps provider selection explicit, and gives later executor work a stable live-mode entrypoint instead of retrofitting one after the fact.

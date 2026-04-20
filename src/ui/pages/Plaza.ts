@@ -2,11 +2,15 @@ import type { PlazaWorldDataProvider } from "../../contracts/plaza";
 import { createPlazaExperience } from "../../game/plaza/createPlazaExperience";
 import { createPlazaWorldDataController } from "../../game/plaza/createPlazaWorldDataController";
 import { mockPlazaWorldDataProvider } from "../../providers/mockPlazaPresence";
-import { openClawFixtureWorldDataProvider } from "../../providers/openClawPresenceAdapter";
+import {
+  openClawFixtureWorldDataProvider,
+  openClawLivePreviewWorldDataProvider,
+} from "../../providers/openClawPresenceAdapter";
 
 const plazaWorldDataProviders: Record<string, PlazaWorldDataProvider> = {
   mock: mockPlazaWorldDataProvider,
   "openclaw-fixture": openClawFixtureWorldDataProvider,
+  "openclaw-live-preview": openClawLivePreviewWorldDataProvider,
 };
 
 function resolvePlazaWorldDataProvider(): PlazaWorldDataProvider {

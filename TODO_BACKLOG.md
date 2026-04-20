@@ -7,6 +7,7 @@
 - Add a typed `OpenClaw` live response normalizer ahead of real network calls
 - Add a composed `OpenClaw` live provider skeleton ahead of real network calls
 - Add a selectable `OpenClaw` live provider entrypoint ahead of real network calls
+- Add the first no-network `OpenClaw` executor implementation behind the live provider entrypoint
 - Add background provider polling on top of the shared refresh controller
 - Add proper animation states for walking, idling, and emotes
 - Add navmesh or waypoint routing for resident agents

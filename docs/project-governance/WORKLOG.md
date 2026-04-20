@@ -63,3 +63,6 @@
 - Added a composed `OpenClaw` live provider skeleton that wires together request resolution, executor posture, response normalization, and world-data hydration without network traffic.
 - Verified that the composed skeleton reuses the existing fixture-backed contract path end to end while keeping live configuration explicit.
 - Expanded verification to cover live-provider composition and advanced `CURRENT_PLAN.md` to the next selectable live-provider entrypoint slice.
+- Added a selectable `openclaw-live-preview` provider entrypoint that exposes `mode: live` while still routing through the composed no-network skeleton.
+- Hooked the new live-preview provider into the plaza page provider map so the entrypoint can be selected without changing the runtime shell.
+- Expanded verification to cover the live-preview entrypoint and advanced `CURRENT_PLAN.md` to the next no-network executor implementation slice.

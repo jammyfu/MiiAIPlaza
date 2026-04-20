@@ -184,6 +184,34 @@ export function createOpenClawPresenceFixture(
 export const openClawPresenceFixture: OpenClawFixturePayload =
   createOpenClawPresenceFixture("2026-04-20T10:12:00Z");
 
+export function createOpenClawLivePreviewResponsePayload(
+  now: Date | string | number = Date.now()
+): OpenClawLiveResponsePayload {
+  const fixture = createOpenClawPresenceFixture(now);
+  return {
+    generated_at: fixture.generatedAt,
+    workspace: fixture.workspace,
+    agents: fixture.agents.map((agent) => ({
+      agent_id: agent.id,
+      display_name: agent.name,
+      role_name: agent.occupation,
+      state: agent.state,
+      summary: agent.summary,
+      task: agent.task,
+      mood: agent.vibe,
+      updated_at: agent.seenAt,
+      location: agent.zone,
+      activity_score: agent.score,
+      tags: agent.tags,
+      palette: agent.palette,
+      bio: agent.bio,
+      prompt: agent.prompt,
+      highlights: agent.highlights,
+      position: agent.plazaPosition,
+    })),
+  };
+}
+
 export function normalizeOpenClawLiveResponsePayload(
   payload: OpenClawLiveResponsePayload
 ): OpenClawFixturePayload {
@@ -400,5 +428,31 @@ export const openClawFixtureWorldDataProvider: PlazaWorldDataProvider = {
   mode: "fixture",
   async load() {
     return createOpenClawFixtureWorldData(createOpenClawPresenceFixture());
+  },
+};
+
+export const openClawLivePreviewWorldDataProvider: PlazaWorldDataProvider = {
+  id: "openclaw-live-preview",
+  provider: "OpenClaw",
+  mode: "live",
+  async load() {
+    const skeleton = createOpenClawLiveProviderSkeleton({
+      endpointUrl: "https://openclaw.example.com/presence",
+      authTokenName: "OPENCLAW_TOKEN",
+      workspaceHint: "mii-plaza-client",
+    });
+    const worldData = skeleton.createWorldDataFromResponse(
+      createOpenClawLivePreviewResponsePayload()
+    );
+
+    return {
+      ...worldData,
+      source: {
+        ...worldData.source,
+        id: "openclaw-live-preview",
+        mode: "live",
+        provider: "OpenClaw",
+      },
+    };
   },
 };
