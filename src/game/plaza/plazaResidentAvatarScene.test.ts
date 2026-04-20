@@ -3,6 +3,7 @@ import { Box3, Group, Mesh, BoxGeometry, MeshBasicMaterial } from "three";
 import { listMockResidents } from "../../providers/mockPlazaPresence";
 import {
   createResidentAvatarRig,
+  createResidentAvatarHeadModelUrl,
   describeResidentAvatarSceneMode,
   normalizeResidentAvatarHeadModel,
 } from "./plazaResidentAvatarScene";
@@ -35,6 +36,18 @@ test("resident avatar scene mode stays readable for supported and unsupported re
   expect(describeResidentAvatarSceneMode(unsupportedResident)).toBe(
     "Fallback proxy geometry"
   );
+});
+
+test("resident head model urls use the stable remote renderer path", () => {
+  const supportedResident = listMockResidents()[0]!;
+  const url = createResidentAvatarHeadModelUrl(supportedResident);
+  expect(url).not.toBeNull();
+  expect(url!).toContain(
+    "https://mii-unsecure.ariankordi.net/miis/image.glb"
+  );
+  expect(url!).toContain("shaderType=miitomo");
+  expect(url!).toContain("type=face");
+  expect(url!).toContain("verifyCharInfo=0");
 });
 
 test("resident head normalization recenters and scales the imported head model", () => {

@@ -3,6 +3,7 @@ import {
   BoxGeometry,
   Clock,
   Color,
+  CylinderGeometry,
   DirectionalLight,
   Fog,
   Group,
@@ -929,11 +930,12 @@ export function createPlazaExperience({
     const freshnessLabel = describePresenceFreshness(diagnostics.freshness);
     const group = new Group();
     const body = new Mesh(
-      new BoxGeometry(0.75, 1.25, 0.65),
+      new CylinderGeometry(0.26, 0.34, 1.05, 18),
       new MeshStandardMaterial({ color: resident.agent.themeColor })
     );
-    body.position.y = 0.8;
+    body.position.y = 0.58;
     body.castShadow = true;
+    body.receiveShadow = true;
     const head = new Mesh(
       new SphereGeometry(0.34, 18, 14),
       new MeshStandardMaterial({ color: "#f0cfaf" })

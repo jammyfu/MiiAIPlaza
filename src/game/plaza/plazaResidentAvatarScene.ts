@@ -4,13 +4,17 @@ import {
   Vector3,
   type Mesh,
   type Object3D,
-  type WebGLRenderer,
 } from "three";
+import type { WebGLRenderer } from "three";
+import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import type { PlazaResident } from "../../contracts/plaza";
 import {
   createResidentAvatarMii,
   supportsResidentAvatar,
 } from "./plazaResidentAvatarAdapter";
+
+const REMOTE_RENDERER_BASE_URL =
+  "https://mii-unsecure.ariankordi.net/miis/image";
 
 export type ResidentAvatarRig = {
   mode: "three-head";
@@ -73,9 +77,9 @@ export function normalizeResidentAvatarHeadModel(
   headScene.updateMatrixWorld(true);
 }
 
-type RendererBridge = {
-  getRenderer(): WebGLRenderer;
-};
+function bytesToHex(bytes: Uint8Array) {
+  return Array.from(bytes, (byte) => byte.toString(16).padStart(2, "0")).join("");
+}
 
 function flagResidentAvatarMeshes(object: Object3D) {
   object.traverse((child) => {
@@ -89,28 +93,35 @@ function flagResidentAvatarMeshes(object: Object3D) {
   });
 }
 
+export function createResidentAvatarHeadModelUrl(
+  resident: PlazaResident
+): string | null {
+  const avatarMii = createResidentAvatarMii(resident);
+  if (!avatarMii) {
+    return null;
+  }
+
+  return `${REMOTE_RENDERER_BASE_URL}.glb?shaderType=miitomo&type=face&width=260&verifyCharInfo=0&data=${bytesToHex(
+    avatarMii.encodeStudio()
+  )}`;
+}
+
 export async function buildResidentAvatarHeadModel(
   resident: PlazaResident,
-  renderer: WebGLRenderer
+  _renderer: WebGLRenderer
 ): Promise<Group | null> {
   const rig = createResidentAvatarRig(resident);
   if (!rig) {
     return null;
   }
 
-  const avatarMii = createResidentAvatarMii(resident);
-  if (!avatarMii) {
+  const gltfUrl = createResidentAvatarHeadModelUrl(resident);
+  if (!gltfUrl) {
     return null;
   }
 
-  const renderBridge: RendererBridge = {
-    getRenderer() {
-      return renderer;
-    },
-  };
-
-  const { getHeadModel } = await import("../../util/MiiRendering");
-  const headModel = await getHeadModel(avatarMii, renderBridge as never, "NORMAL");
+  const loader = new GLTFLoader();
+  const headModel = await loader.loadAsync(gltfUrl);
   headModel.scene.name = "PlazaResidentHead";
   normalizeResidentAvatarHeadModel(headModel.scene, {
     anchorY: rig.headAnchorY,
