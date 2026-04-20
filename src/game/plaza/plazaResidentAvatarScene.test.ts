@@ -12,7 +12,7 @@ test("supported residents use the 3D head rig in the plaza scene", () => {
     const rig = createResidentAvatarRig(resident);
     expect(rig).not.toBeNull();
     expect(rig!.mode).toBe("three-head");
-    expect(rig!.headModelScale).toBeGreaterThan(0);
+    expect(rig!.headTargetHeight).toBeGreaterThan(0);
     expect(rig!.headAnchorY).toBeGreaterThan(0);
     expect(rig!.markerY).toBeGreaterThan(rig!.headAnchorY);
   }
