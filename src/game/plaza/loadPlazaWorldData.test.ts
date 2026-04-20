@@ -144,6 +144,19 @@ test("loadPlazaWorldData passes through successful provider results", async () =
               executionTargetLabel: "OpenClaw live execution bridge",
               runnerMode: "preview",
             },
+            executionBridge: {
+              id: "openclaw-live-execution-bridge",
+              label: "OpenClaw live execution bridge",
+              summary:
+                "Represents the placeholder bridge-boundary record derived from the execution payload before actual live fetch execution runs.",
+              status: "preview-payload",
+              payloadLabel:
+                "Preview payload available from no-network live-preview execution.",
+              sourceExecutionPayloadLabel:
+                "Preview payload from GET Configured via future live request seam?view=plaza&workspace=mii-plaza-client",
+              bridgeTargetLabel: "OpenClaw live fetch entrypoint",
+              runnerMode: "preview",
+            },
             executor: {
               status: "ready",
               mode: "dry-run",
@@ -271,6 +284,22 @@ test("loadPlazaWorldData passes through successful provider results", async () =
     "Execution target: OpenClaw live execution bridge"
   );
   expect(world.hotspots[0]?.details).toContain("Execution mode: Preview");
+  expect(world.hotspots[0]?.details).toContain(
+    "Execution bridge: OpenClaw live execution bridge"
+  );
+  expect(world.hotspots[0]?.details).toContain(
+    "Execution bridge status: Preview payload"
+  );
+  expect(world.hotspots[0]?.details).toContain(
+    "Bridge payload: Preview payload available from no-network live-preview execution."
+  );
+  expect(world.hotspots[0]?.details).toContain(
+    "Bridge source payload: Preview payload from GET Configured via future live request seam?view=plaza&workspace=mii-plaza-client"
+  );
+  expect(world.hotspots[0]?.details).toContain(
+    "Bridge target: OpenClaw live fetch entrypoint"
+  );
+  expect(world.hotspots[0]?.details).toContain("Bridge mode: Preview");
   expect(world.hotspots[0]?.details).toContain("Live request: Config only");
   expect(world.hotspots[0]?.details).toContain("Executor: Dry run ready");
   expect(world.hotspots[0]?.details).toContain(

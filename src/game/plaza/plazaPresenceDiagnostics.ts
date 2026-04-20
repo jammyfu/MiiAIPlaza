@@ -87,6 +87,13 @@ export interface PlazaWorldDataRequestCopy {
   executionPayloadSourceLabel: string | null;
   executionPayloadTargetLabel: string | null;
   executionPayloadModeLabel: string | null;
+  executionBridgeLabel: string | null;
+  executionBridgeSummary: string | null;
+  executionBridgeStatusLabel: string | null;
+  executionBridgePayloadLabel: string | null;
+  executionBridgeSourceLabel: string | null;
+  executionBridgeTargetLabel: string | null;
+  executionBridgeModeLabel: string | null;
   executorLabel: string | null;
   executorSummary: string | null;
 }
@@ -397,6 +404,29 @@ export function describeWorldDataRequest(
     executionPayloadModeLabel: request.executionPayload
       ? `Execution mode: ${
           request.executionPayload.runnerMode === "live" ? "Live" : "Preview"
+        }`
+      : null,
+    executionBridgeLabel: request.executionBridge?.label ?? null,
+    executionBridgeSummary: request.executionBridge?.summary ?? null,
+    executionBridgeStatusLabel: request.executionBridge
+      ? `Execution bridge status: ${
+          request.executionBridge.status === "live-ready"
+            ? "Live ready"
+            : "Preview payload"
+        }`
+      : null,
+    executionBridgePayloadLabel: request.executionBridge
+      ? `Bridge payload: ${request.executionBridge.payloadLabel}`
+      : null,
+    executionBridgeSourceLabel: request.executionBridge
+      ? `Bridge source payload: ${request.executionBridge.sourceExecutionPayloadLabel}`
+      : null,
+    executionBridgeTargetLabel: request.executionBridge
+      ? `Bridge target: ${request.executionBridge.bridgeTargetLabel}`
+      : null,
+    executionBridgeModeLabel: request.executionBridge
+      ? `Bridge mode: ${
+          request.executionBridge.runnerMode === "live" ? "Live" : "Preview"
         }`
       : null,
     executorLabel: executorCopy?.label ?? null,

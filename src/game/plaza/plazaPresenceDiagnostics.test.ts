@@ -255,6 +255,18 @@ test("world data request copy stays readable in the hud and provider status flow
       executionTargetLabel: "OpenClaw live execution bridge",
       runnerMode: "preview",
     },
+    executionBridge: {
+      id: "openclaw-live-execution-bridge",
+      label: "OpenClaw live execution bridge",
+      summary:
+        "Represents the placeholder bridge-boundary record derived from the execution payload before actual live fetch execution runs.",
+      status: "preview-payload",
+      payloadLabel: "Preview payload available from no-network live-preview execution.",
+      sourceExecutionPayloadLabel:
+        "Preview payload from GET OpenClaw live endpoint pending configuration?view=plaza&workspace=mii-plaza-client",
+      bridgeTargetLabel: "OpenClaw live fetch entrypoint",
+      runnerMode: "preview",
+    },
     executor: {
       status: "needs-config",
       mode: "dry-run",
@@ -344,6 +356,17 @@ test("world data request copy stays readable in the hud and provider status flow
     executionPayloadTargetLabel:
       "Execution target: OpenClaw live execution bridge",
     executionPayloadModeLabel: "Execution mode: Preview",
+    executionBridgeLabel: "OpenClaw live execution bridge",
+    executionBridgeSummary:
+      "Represents the placeholder bridge-boundary record derived from the execution payload before actual live fetch execution runs.",
+    executionBridgeStatusLabel: "Execution bridge status: Preview payload",
+    executionBridgePayloadLabel:
+      "Bridge payload: Preview payload available from no-network live-preview execution.",
+    executionBridgeSourceLabel:
+      "Bridge source payload: Preview payload from GET OpenClaw live endpoint pending configuration?view=plaza&workspace=mii-plaza-client",
+    executionBridgeTargetLabel:
+      "Bridge target: OpenClaw live fetch entrypoint",
+    executionBridgeModeLabel: "Bridge mode: Preview",
     executorLabel: "Dry run needs config",
     executorSummary: "Configure a live OpenClaw endpoint before enabling fetch execution.",
   });

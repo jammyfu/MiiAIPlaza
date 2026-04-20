@@ -226,6 +226,14 @@ Resolve a typed execution-payload record from the current normalizer-handoff sea
 Why:
 This keeps the final handoff into future live execution explicit and testable, lets preview and live-capable stub runners share one execution-boundary placeholder shape, and prevents the later live-execution slice from having to rediscover how normalized payload posture should cross the provider boundary.
 
+### Put fetch-call bridge posture on the shared request contract before real live fetches exist
+
+Decision:
+Resolve a typed execution-bridge record from the current execution-payload seam and surface it through the shared request contract before any real live fetch call is introduced.
+
+Why:
+This keeps the final bridge into actual live fetch execution explicit and testable, lets preview and live-capable stub runners share one fetch-call-boundary placeholder shape, and prevents the later networked slice from having to rediscover how execution payload posture should cross into the eventual fetch entrypoint.
+
 ### Normalize runner inputs into a shared request envelope before concrete request building
 
 Decision:
