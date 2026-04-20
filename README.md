@@ -1,162 +1,310 @@
-# Mii Creator App
+# Mii Plaza Client
 
 ![Preview image](public/assets/images/preview_dark.png)
 
-Create and share Mii characters online with just a few clicks!
+`mii-creator` is now being developed as a `Mii Plaza Client`: a browser-based 3D plaza built on top of the existing Mii editor, renderer, and local asset pipeline.
 
-## Project Direction
+The repository still ships the original Mii editing and library experience, but the current product direction is larger than a standalone avatar editor:
 
-This fork is now evolving into a `Mii Plaza Client`: a world-first 3D plaza built on top of the existing Mii editor and renderer stack.
+- `/` keeps the classic Mii editor and local library flow
+- `/?plaza=1` runs the early third-person plaza prototype
+- provider-driven presence data is being prepared for `OpenClaw` and other future agent backends
+
+## What This Repo Owns
+
+This repository is the client plane of the project.
+
+It owns:
+
+- Mii editing, rendering, and identity presentation
+- the playable browser plaza runtime
+- HUD, diagnostics, and player interaction shells
+- provider-facing client contracts for agent presence
+
+It does not own:
+
+- agent orchestration itself
+- social persistence or mailbox/board storage
+- realtime fanout or multiplayer backend services
+
+Those pieces are planned behind stable contracts and a separate service plane.
+
+## Current Architecture Direction
+
+The current fork is following a layered platform path:
+
+- `Mii Plaza Client` in this repo
+- provider adapters for `OpenClaw` and future agent systems
+- contract-first integration before real network dependencies are turned on
+- continuous project governance through `CURRENT_PLAN.md`, `MASTER_PLAN.md`, and `docs/project-governance/`
 
 Recommended reading order:
 
-- [Project brief](PROJECT_BRIEF.md)
-- [Current plan](CURRENT_PLAN.md)
-- [Master plan](MASTER_PLAN.md)
-- [Platform roadmap](docs/architecture/PLATFORM_ROADMAP.md)
-- [Automation commands](docs/AUTOMATION_COMMANDS.md)
-- [Long-running autonomy rules](docs/LONG_RUNNING_AUTONOMY.md)
-- [Design spec](docs/superpowers/specs/2026-04-20-mii-plaza-platform-design.md)
+- [PROJECT_BRIEF.md](/Users/jammyfu/works/AI/Tools/mii-creator/PROJECT_BRIEF.md)
+- [CURRENT_PLAN.md](/Users/jammyfu/works/AI/Tools/mii-creator/CURRENT_PLAN.md)
+- [MASTER_PLAN.md](/Users/jammyfu/works/AI/Tools/mii-creator/MASTER_PLAN.md)
+- [docs/architecture/PLATFORM_ROADMAP.md](/Users/jammyfu/works/AI/Tools/mii-creator/docs/architecture/PLATFORM_ROADMAP.md)
+- [docs/AUTOMATION_COMMANDS.md](/Users/jammyfu/works/AI/Tools/mii-creator/docs/AUTOMATION_COMMANDS.md)
+- [docs/LONG_RUNNING_AUTONOMY.md](/Users/jammyfu/works/AI/Tools/mii-creator/docs/LONG_RUNNING_AUTONOMY.md)
+- [docs/superpowers/specs/2026-04-20-mii-plaza-platform-design.md](/Users/jammyfu/works/AI/Tools/mii-creator/docs/superpowers/specs/2026-04-20-mii-plaza-platform-design.md)
 
-## Current Modes
+## Open Source Base And Attribution
 
-- Classic editor and library flow at `/`
-- Early plaza prototype at `/?plaza=1`
+This project is based on the open source repository [datkat21/mii-creator](https://github.com/datkat21/mii-creator).
 
-## Submission Workflow
+This fork keeps that codebase as its foundation and extends it toward a playable Mii plaza experience.
 
-This repository now follows the same safe-sync pattern used in `ai-analysis-mcp` and `AegisGraph`:
+The current repo also builds on or references the following open source projects:
 
-- verify first with `python3 tools/verify.py`
-- sync through `python3 tools/sync_or_queue.py --message "<stable-closure>"`
-- fall back to local queue + flush when `.git` is not directly writable
+- [ariankordi/FFL-Testing](https://github.com/ariankordi/FFL-Testing) for the renderer-server prototype ideas and local rendering workflow
+- [datkat21/FFL-Testing-with-hats](https://github.com/datkat21/FFL-Testing-with-hats) for hat-enabled local rendering support
+- [PretendoNetwork/mii-js](https://github.com/PretendoNetwork/mii-js) for JavaScript-friendly Mii data handling
 
-See [docs/AUTOMATION_COMMANDS.md](docs/AUTOMATION_COMMANDS.md) and [docs/LONG_RUNNING_AUTONOMY.md](docs/LONG_RUNNING_AUTONOMY.md) for the full loop.
+Additional attribution from the original project remains relevant:
 
-## Upstream Reference
-
-This repository is based on the original [datkat21/mii-creator](https://github.com/datkat21/mii-creator) project.
-
-The current fork keeps the original project as the upstream reference and adds:
-
-- Local `ffl.js` rendering support for browser-side head generation
-- Local renderer stack scripts for app and renderer workflows
-- Performance roadmap and first-phase scene/render caching improvements
+- some utility code in `src/external/mii-frontend` is adapted from arian's public website/tooling
+- custom Mii Maker music is by [objecty](https://x.com/objecty)
 
 Please keep upstream attribution intact when reusing or redistributing this fork.
 
-## Credits
+## Current Feature Surface
 
-- Uses a locally hosted version of the [mii-unsecure.ariankordi.net](https://mii-unsecure.ariankordi.net) [API](https://github.com/ariankordi/FFL-Testing/tree/renderer-server-prototype) by [ariankordi](https://github.com/ariankordi) used to generate 3D Mii heads and icons.
-  - A [fork](https://github.com/datkat21/FFL-Testing-with-hats) is used that adds hat support.
-- [mii-js](https://github.com/PretendoNetwork/mii-js) library used for interacting with Mii data in a JavaScript-friendly way
-- [Some utility code](https://github.com/datkat21/mii-creator/tree/master/src/external/mii-frontend) "borrowed" from arian's website for conversion, QR codes, etc.
-- Custom Mii Maker music by [objecty](https://x.com/objecty)
+### Editor And Renderer
 
-## Features
+- real 3D Mii rendering
+- Mii editing with extended colors and accessories
+- local library save/load flows
+- QR export
+- PNG export
+- `.ffsd` and `.miic` import/export
+- custom render creation inside the app
+- browser-local `ffl.js` rendering on localhost
+- optional native local renderer server workflow
 
-This app uses a custom, extended version of the FFSD Mii format that I call the MiiCreator format (.miic), allowing for extra colors and glasses from the Switch, while still allowing you to convert back to FFSD for 3DS/Wii U.
+### Plaza Prototype
 
-- [x] Real 3D rendering unlike Mii Studio
-- [x] Change parts and colors of the Mii
-- [x] Save and load Miis in your library
-- [x] Save a Mii QR code
-- [x] Render to PNG file
-- [x] Save/load .FFSD/.miic
-- [x] Create your own renders inside the app
-- [x] Custom hats (for fun!)
+- third-person playable plaza shell at `/?plaza=1`
+- mock provider-backed plaza residents and hotspots
+- provider diagnostics in HUD and `Provider Status`
+- typed provider seams for `OpenClaw` live integration
+- refresh/fallback/status handling for evolving provider pipelines
+
+## Getting Started
+
+### Prerequisites
+
+- [Bun](https://bun.sh/)
+- Python 3
+- macOS is the best-supported local renderer environment in the current scripts
+
+Install dependencies:
+
+```bash
+bun i
+```
+
+## Running The App
+
+### Fastest local frontend loop
+
+Run the TypeScript build watcher:
+
+```bash
+bun run build-ts
+```
+
+Serve the static app in another terminal:
+
+```bash
+bun run serve
+```
+
+Then open:
+
+- [http://127.0.0.1:3000/](http://127.0.0.1:3000/) for the classic editor
+- [http://127.0.0.1:3000/?plaza=1](http://127.0.0.1:3000/?plaza=1) for the plaza prototype
+
+If you prefer a one-shot compile instead of the watcher:
+
+```bash
+bun run build-once
+```
+
+### Local renderer stack
+
+This repo supports two local rendering modes:
+
+- browser-local `ffl.js` rendering, now the default on `localhost` and `127.0.0.1`
+- native local renderer server mode using `/miis/*`
+
+Native prerequisites on macOS:
+
+```bash
+brew install cmake pkg-config glfw go
+```
+
+Set up renderer resources:
+
+```bash
+./scripts/setup-local-renderer.sh
+```
+
+Start only the app:
+
+```bash
+./scripts/start-local-app.sh
+```
+
+Useful companion commands:
+
+```bash
+./scripts/status-local-app.sh
+./scripts/stop-local-app.sh
+./scripts/start-local-app.sh restart
+```
+
+Start the native renderer server too:
+
+```bash
+./scripts/start-local-renderer.sh
+```
+
+Open the app in server renderer mode:
+
+- [http://127.0.0.1:3000/?rendererBackend=server](http://127.0.0.1:3000/?rendererBackend=server)
+
+Start everything together:
+
+```bash
+./scripts/start-local-stack.sh
+```
+
+Check or stop the full stack:
+
+```bash
+./scripts/status-local-stack.sh
+./scripts/stop-local-stack.sh
+```
+
+### Useful runtime overrides
+
+- `MII_RENDERER_BACKEND=ffljs`
+- `MII_RENDERER_BACKEND=server`
+- `MII_RENDERER_BACKEND=both`
+- `MII_RENDERER_REPO=/absolute/path/to/FFL-Testing-with-hats`
+- `MII_RENDERER_PORT=5001`
+- `MII_APP_PORT=3001`
+- `MII_RENDERER_UPSTREAM_PORT=12347`
+- `?renderer=remote`
+- `?renderer=local`
+- `?rendererBackend=ffljs`
+- `?rendererBackend=server`
+
+## Running Tests And Verification
+
+### Quick test entrypoint
+
+Run the default test script:
+
+```bash
+bun test
+```
+
+Or through `package.json`:
+
+```bash
+bun run test
+```
+
+This currently covers:
+
+- core plaza provider tests
+- resident avatar adapter tests
+- local sync helper tests
+
+### Full repository verification
+
+The main verification entrypoint for this project is:
+
+```bash
+python3 tools/verify.py
+```
+
+That command runs the broader repository checks used by the project loop, including:
+
+- Bun test suites for plaza/provider/runtime coverage
+- Python unittest coverage for sync tooling
+- one-shot frontend build verification
+
+You can also call the package shortcut:
+
+```bash
+bun run verify
+```
+
+### Useful individual commands
+
+```bash
+bun run build-once
+bun test src/providers/openClawPresenceAdapter.test.ts
+bun test src/game/plaza/loadPlazaWorldData.test.ts
+python3 -m unittest tools.test_sync_or_queue tools.test_queue_local_git_sync tools.test_verify
+```
+
+## Automation And Safe Sync
+
+This repository uses the same safe-sync submission pattern adopted from `ai-analysis-mcp` and `AegisGraph`.
+
+The preferred automation flow is:
+
+1. finish one stable closure
+2. run `python3 tools/verify.py`
+3. submit through safe sync instead of raw `git commit && git push`
+
+Primary commands:
+
+```bash
+python3 tools/sync_or_queue.py --message "feat: your stable closure"
+python3 tools/sync_or_queue.py --message "feat: your stable closure" --prefer-local
+python3 tools/local_git_flush.py
+```
+
+Package shortcuts:
+
+```bash
+bun run sync
+bun run sync:local
+bun run flush:local
+```
+
+See:
+
+- [AGENTS.md](/Users/jammyfu/works/AI/Tools/mii-creator/AGENTS.md)
+- [docs/AUTOMATION_COMMANDS.md](/Users/jammyfu/works/AI/Tools/mii-creator/docs/AUTOMATION_COMMANDS.md)
+- [docs/LONG_RUNNING_AUTONOMY.md](/Users/jammyfu/works/AI/Tools/mii-creator/docs/LONG_RUNNING_AUTONOMY.md)
 
 ## Contributing
 
-I'm open to contributions if you want to help on the project!
+Contributions are welcome, especially in these areas:
+
+- plaza gameplay and player interaction
+- provider adapters and diagnostics
+- Mii rendering improvements
+- local tooling and automation reliability
+- social/world systems once the service contracts are ready
+
+If you contribute, please align with the repository loop files and verify before syncing changes.
 
 ## Model Credits
 
-Some of the custom hat models are provided by the Models Resource:
+Some custom hat models are provided by The Models Resource:
 
 - [Top Hat](https://www.models-resource.com/nintendo_switch/supersmashbrosultimate/model/30314/)
 - [Ribbon & Bow](https://www.models-resource.com/3ds/nintendogscats/model/30239/)
 
-Thanks to [Timimimi](https://github.com/Timiimiimii) for creating the new hat models:
+Thanks to [Timimimi](https://github.com/Timiimiimii) for creating additional hat models:
 
 - Cat Ears
 - Straw Hat
 - Hijab
 - Bike Helmet
-
-## Setting up development
-
-1. Make sure you have [Bun](https://bun.sh/) installed on your device. This is used for compiling all of the TypeScript code into JavaScript for the client.
-2. Clone this repository, and run the `bun i` command to install dependencies.
-3. In one terminal, run `bun build-ts` (if this doesn't work, try running `bun build.ts` to run the file), and in another, run `bun run serve`. If that doesn't work, try `bunx serve -l 3000 -C ./public`. (There is also an optional Go server if you want to use that over the bun server. Both seem to have a strange issue on Windows where you have to wait 5 seconds before you are allowed to refresh the page..)
-4. Any changes you make should log in the build-ts terminal, and check the server on the second terminal to find the port. Live server is not advised when using my build script because it sometimes can refresh too much.
-
-## Local renderer stack
-
-This repo now supports two local rendering modes:
-
-- Browser-local `ffl.js` rendering, which is now the default on `localhost` and `127.0.0.1`
-- Native local renderer server mode, which keeps using the `/miis/*` HTTP API
-
-Native prerequisites on macOS:
-
-- `brew install cmake pkg-config glfw go`
-
-1. Run `./scripts/setup-local-renderer.sh`
-2. Run `./scripts/start-local-app.sh`
-3. Open [http://127.0.0.1:3000](http://127.0.0.1:3000)
-
-`setup-local-renderer.sh` now also copies `FFLResHigh.dat` into `public/FFLResHigh.dat`, which the browser-side `ffl.js` renderer needs.
-`start-local-app.sh` will automatically prepare that resource if it is missing, and it now waits for the main frontend bundles before reporting ready.
-If a previous app-only session is still recorded, `start-local-app.sh` now stops it before relaunching. If the target port is owned by some other process, the script exits with a clear error instead of silently colliding.
-
-Check app-only status:
-
-- `./scripts/status-local-app.sh`
-- `./scripts/start-local-app.sh status`
-
-The status command now also reports whether the `.local-app` tracking state exists and which process currently owns the app port.
-
-Stop the app-only workflow:
-
-- `./scripts/stop-local-app.sh`
-- `./scripts/start-local-app.sh stop`
-
-Restart the app-only workflow:
-
-- `./scripts/start-local-app.sh restart`
-
-If you want the native renderer server too:
-
-1. Run `./scripts/start-local-renderer.sh`
-2. Open [http://127.0.0.1:3000/?rendererBackend=server](http://127.0.0.1:3000/?rendererBackend=server)
-
-Or run everything together:
-
-- `./scripts/start-local-stack.sh`
-
-Stop the stack:
-
-- `./scripts/stop-local-stack.sh`
-
-Check stack status:
-
-- `./scripts/status-local-stack.sh`
-
-When the app is served from `localhost` or `127.0.0.1`, it now defaults to browser-local `ffl.js` rendering.
-
-Useful overrides:
-
-- `MII_RENDERER_BACKEND=ffljs` to run only the browser-local renderer path
-- `MII_RENDERER_BACKEND=server` to run the native renderer server and open the app in server mode
-- `MII_RENDERER_BACKEND=both` to run both local modes at once
-- `MII_RENDERER_REPO=/absolute/path/to/FFL-Testing-with-hats`
-- `MII_RENDERER_PORT=5001` and open `http://127.0.0.1:3000/?rendererPort=5001`
-- `MII_APP_PORT=3001` to serve the frontend on another local port
-- `MII_RENDERER_UPSTREAM_PORT=12347` to change the native renderer TCP port
-- `?renderer=remote` to force the public renderer even on localhost
-- `?renderer=local` to force the local renderer URL
-- `?rendererBackend=ffljs` to force browser-local rendering
-- `?rendererBackend=server` to force the local or remote `/miis/*` renderer path
-
-If you omit the port env vars when using `start-local-stack.sh`, the script now auto-picks free ports and writes them to `.local-stack/stack.env`.
