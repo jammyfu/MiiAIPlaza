@@ -60,6 +60,12 @@ export interface PlazaWorldDataRequestCopy {
   fetchAttemptTargetLabel: string | null;
   fetchAttemptHeadersLabel: string | null;
   fetchAttemptModeLabel: string | null;
+  fetchResultLabel: string | null;
+  fetchResultSummary: string | null;
+  fetchResultStatusLabel: string | null;
+  fetchResultPayloadLabel: string | null;
+  fetchResultSourceLabel: string | null;
+  fetchResultModeLabel: string | null;
   executorLabel: string | null;
   executorSummary: string | null;
 }
@@ -281,6 +287,26 @@ export function describeWorldDataRequest(
     fetchAttemptModeLabel: request.fetchAttempt
       ? `Attempt mode: ${
           request.fetchAttempt.runnerMode === "live" ? "Live" : "Preview"
+        }`
+      : null,
+    fetchResultLabel: request.fetchResult?.label ?? null,
+    fetchResultSummary: request.fetchResult?.summary ?? null,
+    fetchResultStatusLabel: request.fetchResult
+      ? `Fetch result status: ${
+          request.fetchResult.status === "live-ready"
+            ? "Live ready"
+            : "Preview payload"
+        }`
+      : null,
+    fetchResultPayloadLabel: request.fetchResult
+      ? `Result payload: ${request.fetchResult.payloadLabel}`
+      : null,
+    fetchResultSourceLabel: request.fetchResult
+      ? `Result source attempt: ${request.fetchResult.sourceAttemptLabel}`
+      : null,
+    fetchResultModeLabel: request.fetchResult
+      ? `Result mode: ${
+          request.fetchResult.runnerMode === "live" ? "Live" : "Preview"
         }`
       : null,
     executorLabel: executorCopy?.label ?? null,

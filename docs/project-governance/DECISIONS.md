@@ -242,6 +242,14 @@ Represent the next transport-consumable `OpenClaw` input as a typed fetch-attemp
 Why:
 This keeps request building and transport execution separated by one explicit seam. Future runners can consume a stable attempt shape, while diagnostics and HUD surfaces can show the exact pre-execution transport input without implying that a network call already happened.
 
+### Resolve fetch results from attempts before normalization handoff exists
+
+Decision:
+Represent the immediate post-attempt `OpenClaw` state as a typed fetch-result record derived from the shared fetch-attempt seam, and carry that result on the shared request contract before adding normalization-handoff or real network response plumbing.
+
+Why:
+This keeps pre-execution transport input separate from post-attempt response posture. Future live execution can move from attempt to result without redesigning diagnostics, while the current preview path can already expose whether a result is just a placeholder preview payload or a live-ready waiting state.
+
 ### Select fetch runners through a factory before introducing live-capable implementations
 
 Decision:

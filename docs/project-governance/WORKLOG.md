@@ -99,3 +99,6 @@
 - Added a typed `OpenClaw` live fetch-attempt record so request-builder output now resolves into one runner-consumable transport input without network calls.
 - Taught preview and live-capable stub runners to carry the shared fetch-attempt record alongside request builders so future transport execution can consume one attempt shape.
 - Surfaced fetch-attempt metadata through plaza diagnostics, HUD provider metadata, and the shared `Provider Status` hotspot, then advanced `CURRENT_PLAN.md` to the next live fetch-result slice.
+- Added a typed `OpenClaw` live fetch-result record so fetch-attempt output now resolves into one placeholder transport-response shape without network calls.
+- Taught preview and live-capable stub runners to carry the shared fetch-result record alongside fetch attempts so future transport execution can hand off one stable result shape.
+- Surfaced fetch-result metadata through plaza diagnostics, HUD provider metadata, and the shared `Provider Status` hotspot, then advanced `CURRENT_PLAN.md` to the next live response-envelope slice.

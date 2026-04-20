@@ -88,6 +88,7 @@ export interface PlazaWorldDataRequest {
   runnerEnvelope?: PlazaWorldDataRequestRunnerEnvelope;
   requestBuilder?: PlazaWorldDataRequestBuilder;
   fetchAttempt?: PlazaWorldDataRequestFetchAttempt;
+  fetchResult?: PlazaWorldDataRequestFetchResult;
   executor?: PlazaWorldDataRequestExecutor;
 }
 
@@ -147,6 +148,16 @@ export interface PlazaWorldDataRequestFetchAttempt {
   method: PlazaWorldDataRequestBuilder["method"];
   urlLabel: string;
   headerLabels: string[];
+  runnerMode: "preview" | "live";
+}
+
+export interface PlazaWorldDataRequestFetchResult {
+  id: string;
+  label: string;
+  summary: string;
+  status: "preview-payload" | "live-ready";
+  payloadLabel: string;
+  sourceAttemptLabel: string;
   runnerMode: "preview" | "live";
 }
 

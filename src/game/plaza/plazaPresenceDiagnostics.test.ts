@@ -208,6 +208,17 @@ test("world data request copy stays readable in the hud and provider status flow
       ],
       runnerMode: "preview",
     },
+    fetchResult: {
+      id: "openclaw-live-fetch-result",
+      label: "OpenClaw live fetch result",
+      summary:
+        "Represents the placeholder transport response shape that future live fetches will hydrate after a fetch attempt.",
+      status: "preview-payload",
+      payloadLabel: "Preview payload available from no-network live-preview execution.",
+      sourceAttemptLabel:
+        "GET OpenClaw live endpoint pending configuration?view=plaza&workspace=mii-plaza-client",
+      runnerMode: "preview",
+    },
     executor: {
       status: "needs-config",
       mode: "dry-run",
@@ -255,6 +266,15 @@ test("world data request copy stays readable in the hud and provider status flow
     fetchAttemptHeadersLabel:
       "Attempt headers: Accept: application/json; Authorization: Bearer OPENCLAW_TOKEN",
     fetchAttemptModeLabel: "Attempt mode: Preview",
+    fetchResultLabel: "OpenClaw live fetch result",
+    fetchResultSummary:
+      "Represents the placeholder transport response shape that future live fetches will hydrate after a fetch attempt.",
+    fetchResultStatusLabel: "Fetch result status: Preview payload",
+    fetchResultPayloadLabel:
+      "Result payload: Preview payload available from no-network live-preview execution.",
+    fetchResultSourceLabel:
+      "Result source attempt: GET OpenClaw live endpoint pending configuration?view=plaza&workspace=mii-plaza-client",
+    fetchResultModeLabel: "Result mode: Preview",
     executorLabel: "Dry run needs config",
     executorSummary: "Configure a live OpenClaw endpoint before enabling fetch execution.",
   });

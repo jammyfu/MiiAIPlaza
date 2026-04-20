@@ -93,6 +93,18 @@ test("loadPlazaWorldData passes through successful provider results", async () =
               ],
               runnerMode: "preview",
             },
+            fetchResult: {
+              id: "openclaw-live-fetch-result",
+              label: "OpenClaw live fetch result",
+              summary:
+                "Represents the placeholder transport response shape that future live fetches will hydrate after a fetch attempt.",
+              status: "preview-payload",
+              payloadLabel:
+                "Preview payload available from no-network live-preview execution.",
+              sourceAttemptLabel:
+                "GET Configured via future live request seam?view=plaza&workspace=mii-plaza-client",
+              runnerMode: "preview",
+            },
             executor: {
               status: "ready",
               mode: "dry-run",
@@ -159,6 +171,19 @@ test("loadPlazaWorldData passes through successful provider results", async () =
     "Attempt headers: Accept: application/json; Authorization: Bearer OPENCLAW_TOKEN"
   );
   expect(world.hotspots[0]?.details).toContain("Attempt mode: Preview");
+  expect(world.hotspots[0]?.details).toContain(
+    "Fetch result: OpenClaw live fetch result"
+  );
+  expect(world.hotspots[0]?.details).toContain(
+    "Fetch result status: Preview payload"
+  );
+  expect(world.hotspots[0]?.details).toContain(
+    "Result payload: Preview payload available from no-network live-preview execution."
+  );
+  expect(world.hotspots[0]?.details).toContain(
+    "Result source attempt: GET Configured via future live request seam?view=plaza&workspace=mii-plaza-client"
+  );
+  expect(world.hotspots[0]?.details).toContain("Result mode: Preview");
   expect(world.hotspots[0]?.details).toContain("Live request: Config only");
   expect(world.hotspots[0]?.details).toContain("Executor: Dry run ready");
   expect(world.hotspots[0]?.details).toContain(

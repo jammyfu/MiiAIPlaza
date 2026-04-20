@@ -8,6 +8,7 @@ import type {
   PlazaWorldDataRequestFetchRunner,
   PlazaWorldDataRequestFetchRunnerFactory,
   PlazaWorldDataRequestFetchAttempt,
+  PlazaWorldDataRequestFetchResult,
   PlazaWorldDataRequestBuilder,
   PlazaWorldDataRequestRunnerEnvelope,
   PlazaWorldDataRequestTransportDelegate,
@@ -116,6 +117,7 @@ export interface OpenClawFetchRunner<TPayload> {
   envelope: PlazaWorldDataRequestRunnerEnvelope;
   requestBuilder: PlazaWorldDataRequestBuilder;
   fetchAttempt: PlazaWorldDataRequestFetchAttempt;
+  fetchResult: PlazaWorldDataRequestFetchResult;
   run(now?: Date | string | number): Promise<TPayload>;
 }
 
@@ -301,6 +303,8 @@ export function createOpenClawFetchRunnerFactory(
   const fetchAttempt =
     request.fetchAttempt ??
     createOpenClawLiveFetchAttempt(requestBuilder, envelope.runnerMode);
+  const fetchResult =
+    request.fetchResult ?? createOpenClawLiveFetchResult(fetchAttempt);
 
   return {
     metadata:
@@ -316,13 +320,15 @@ export function createOpenClawFetchRunnerFactory(
             request,
             envelope,
             requestBuilder,
-            fetchAttempt
+            fetchAttempt,
+            fetchResult
           )
         : createOpenClawPreviewFetchRunner(
             request,
             envelope,
             requestBuilder,
-            fetchAttempt
+            fetchAttempt,
+            fetchResult
           );
     },
   };
@@ -358,7 +364,9 @@ export function createOpenClawPreviewFetchRunner(
     request.requestBuilder ?? createOpenClawLiveRequestBuilder(envelope),
   fetchAttempt: PlazaWorldDataRequestFetchAttempt =
     request.fetchAttempt ??
-    createOpenClawLiveFetchAttempt(requestBuilder, envelope.runnerMode)
+    createOpenClawLiveFetchAttempt(requestBuilder, envelope.runnerMode),
+  fetchResult: PlazaWorldDataRequestFetchResult =
+    request.fetchResult ?? createOpenClawLiveFetchResult(fetchAttempt)
 ): OpenClawFetchRunner<OpenClawLiveResponsePayload> {
   return {
     metadata:
@@ -373,6 +381,7 @@ export function createOpenClawPreviewFetchRunner(
     envelope,
     requestBuilder,
     fetchAttempt,
+    fetchResult,
     async run(now: Date | string | number = Date.now()) {
       return createOpenClawLivePreviewResponsePayload(now, {
         workspace: envelope.workspaceHint,
@@ -389,7 +398,9 @@ export function createOpenClawLiveStubFetchRunner(
     request.requestBuilder ?? createOpenClawLiveRequestBuilder(envelope),
   fetchAttempt: PlazaWorldDataRequestFetchAttempt =
     request.fetchAttempt ??
-    createOpenClawLiveFetchAttempt(requestBuilder, envelope.runnerMode)
+    createOpenClawLiveFetchAttempt(requestBuilder, envelope.runnerMode),
+  fetchResult: PlazaWorldDataRequestFetchResult =
+    request.fetchResult ?? createOpenClawLiveFetchResult(fetchAttempt)
 ): OpenClawFetchRunner<OpenClawLiveResponsePayload> {
   return {
     metadata:
@@ -404,6 +415,7 @@ export function createOpenClawLiveStubFetchRunner(
     envelope,
     requestBuilder,
     fetchAttempt,
+    fetchResult,
     async run(now: Date | string | number = Date.now()) {
       return createOpenClawLivePreviewResponsePayload(now, {
         workspace: envelope.workspaceHint,
@@ -565,6 +577,24 @@ export function createOpenClawLiveFetchAttempt(
   };
 }
 
+export function createOpenClawLiveFetchResult(
+  fetchAttempt: PlazaWorldDataRequestFetchAttempt
+): PlazaWorldDataRequestFetchResult {
+  const isLive = fetchAttempt.runnerMode === "live";
+  return {
+    id: "openclaw-live-fetch-result",
+    label: "OpenClaw live fetch result",
+    summary:
+      "Represents the placeholder transport response shape that future live fetches will hydrate after a fetch attempt.",
+    status: isLive ? "live-ready" : "preview-payload",
+    payloadLabel: isLive
+      ? "Awaiting a real transport response once live network execution is enabled."
+      : "Preview payload available from no-network live-preview execution.",
+    sourceAttemptLabel: `${fetchAttempt.method} ${fetchAttempt.urlLabel}`,
+    runnerMode: fetchAttempt.runnerMode,
+  };
+}
+
 export function resolveOpenClawLiveRequestOverrides(
   overrides: OpenClawLiveRequestOverrides = {}
 ): PlazaWorldDataRequest {
@@ -619,6 +649,7 @@ export function resolveOpenClawLiveRequestOverrides(
     requestBuilder,
     runnerEnvelope.runnerMode
   );
+  const fetchResult = createOpenClawLiveFetchResult(fetchAttempt);
   const executor = planOpenClawLiveFetchExecutor({
     transport: "http",
     endpointLabel,
@@ -631,6 +662,7 @@ export function resolveOpenClawLiveRequestOverrides(
     runnerEnvelope,
     requestBuilder,
     fetchAttempt,
+    fetchResult,
     ...(overrides.workspaceHint
       ? { workspaceHint: overrides.workspaceHint }
       : {}),
@@ -648,6 +680,7 @@ export function resolveOpenClawLiveRequestOverrides(
     runnerEnvelope,
     requestBuilder,
     fetchAttempt,
+    fetchResult,
     ...(overrides.workspaceHint
       ? { workspaceHint: overrides.workspaceHint }
       : {}),
