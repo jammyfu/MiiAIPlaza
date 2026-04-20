@@ -290,6 +290,20 @@ test("loadPlazaWorldData passes through successful provider results", async () =
                 "Preview payload injection selected without network I/O.",
               runnerMode: "preview",
             },
+            transportCallable: {
+              id: "openclaw-live-transport-callable",
+              label: "OpenClaw live transport callable",
+              summary:
+                "Represents the future-facing transport callable selected by the HTTP bridge before actual live fetch transport is enabled.",
+              status: "preview-payload",
+              payloadLabel:
+                "Preview payload available from no-network live-preview execution.",
+              sourceHttpBridgeLabel:
+                "Preview payload from GET Configured via future live request seam?view=plaza&workspace=mii-plaza-client",
+              implementationLabel:
+                "Preview payload injection selected without network I/O.",
+              runnerMode: "preview",
+            },
             executor: {
               status: "ready",
               mode: "dry-run",
@@ -593,6 +607,22 @@ test("loadPlazaWorldData passes through successful provider results", async () =
     "HTTP implementation: Preview payload injection selected without network I/O."
   );
   expect(world.hotspots[0]?.details).toContain("HTTP mode: Preview");
+  expect(world.hotspots[0]?.details).toContain(
+    "Transport callable: OpenClaw live transport callable"
+  );
+  expect(world.hotspots[0]?.details).toContain(
+    "Transport callable status: Preview payload"
+  );
+  expect(world.hotspots[0]?.details).toContain(
+    "Transport callable payload: Preview payload available from no-network live-preview execution."
+  );
+  expect(world.hotspots[0]?.details).toContain(
+    "Transport callable source bridge: Preview payload from GET Configured via future live request seam?view=plaza&workspace=mii-plaza-client"
+  );
+  expect(world.hotspots[0]?.details).toContain(
+    "Transport callable implementation: Preview payload injection selected without network I/O."
+  );
+  expect(world.hotspots[0]?.details).toContain("Transport callable mode: Preview");
   expect(world.hotspots[0]?.details).toContain("Live request: Config only");
   expect(world.hotspots[0]?.details).toContain("Executor: Dry run ready");
   expect(world.hotspots[0]?.details).toContain(

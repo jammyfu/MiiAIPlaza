@@ -56,3 +56,4 @@
 - Added a typed `OpenClaw` live network-execution seam so preview/live-stub runners now flow through an injectable execution boundary before any real HTTP calls exist.
 - Added a typed `OpenClaw` live request-dispatch handler so network execution now flows through an injectable handler boundary before any real HTTP calls exist.
 - Added a typed `OpenClaw` live HTTP-bridge handler so request dispatch now flows through an injectable bridge boundary before any real HTTP calls exist.
+- Added a typed `OpenClaw` live transport-callable handler so the HTTP bridge now flows through an injectable callable boundary before any real HTTP calls exist.

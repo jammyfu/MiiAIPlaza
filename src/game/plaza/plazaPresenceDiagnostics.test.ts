@@ -398,6 +398,20 @@ test("world data request copy stays readable in the hud and provider status flow
         "Preview payload injection selected without network I/O.",
       runnerMode: "preview",
     },
+    transportCallable: {
+      id: "openclaw-live-transport-callable",
+      label: "OpenClaw live transport callable",
+      summary:
+        "Represents the future-facing transport callable selected by the HTTP bridge before actual live fetch transport is enabled.",
+      status: "preview-payload",
+      payloadLabel:
+        "Preview payload available from no-network live-preview execution.",
+      sourceHttpBridgeLabel:
+        "Preview payload from GET OpenClaw live endpoint pending configuration?view=plaza&workspace=mii-plaza-client",
+      implementationLabel:
+        "Preview payload injection selected without network I/O.",
+      runnerMode: "preview",
+    },
     executor: {
       status: "needs-config",
       mode: "dry-run",
@@ -609,6 +623,17 @@ test("world data request copy stays readable in the hud and provider status flow
     httpBridgeImplementationLabel:
       "HTTP implementation: Preview payload injection selected without network I/O.",
     httpBridgeModeLabel: "HTTP mode: Preview",
+    transportCallableLabel: "OpenClaw live transport callable",
+    transportCallableSummary:
+      "Represents the future-facing transport callable selected by the HTTP bridge before actual live fetch transport is enabled.",
+    transportCallableStatusLabel: "Transport callable status: Preview payload",
+    transportCallablePayloadLabel:
+      "Transport callable payload: Preview payload available from no-network live-preview execution.",
+    transportCallableSourceLabel:
+      "Transport callable source bridge: Preview payload from GET OpenClaw live endpoint pending configuration?view=plaza&workspace=mii-plaza-client",
+    transportCallableImplementationLabel:
+      "Transport callable implementation: Preview payload injection selected without network I/O.",
+    transportCallableModeLabel: "Transport callable mode: Preview",
     executorLabel: "Dry run needs config",
     executorSummary: "Configure a live OpenClaw endpoint before enabling fetch execution.",
   });

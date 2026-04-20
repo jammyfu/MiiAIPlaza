@@ -23,6 +23,7 @@ import type {
   PlazaWorldDataRequestNetworkExecution,
   PlazaWorldDataRequestDispatchHandler,
   PlazaWorldDataRequestHttpBridge,
+  PlazaWorldDataRequestTransportCallable,
   PlazaWorldDataRequestBuilder,
   PlazaWorldDataRequestRunnerEnvelope,
   PlazaWorldDataRequestTransportDelegate,
@@ -161,7 +162,13 @@ export interface OpenClawRequestDispatchHandler<TPayload> {
 
 export interface OpenClawHttpBridge<TPayload> {
   metadata: PlazaWorldDataRequestHttpBridge;
+  transportCallable: OpenClawTransportCallable<TPayload>;
   bridge(now?: Date | string | number): Promise<TPayload>;
+}
+
+export interface OpenClawTransportCallable<TPayload> {
+  metadata: PlazaWorldDataRequestTransportCallable;
+  call(now?: Date | string | number): Promise<TPayload>;
 }
 
 export interface OpenClawFetchRunnerFactory<TPayload> {
@@ -1019,18 +1026,73 @@ export function createOpenClawLiveHttpBridgeMetadata(
   };
 }
 
+export function createOpenClawLiveTransportCallableMetadata(
+  httpBridge: PlazaWorldDataRequestHttpBridge
+): PlazaWorldDataRequestTransportCallable {
+  return {
+    id: "openclaw-live-transport-callable",
+    label: "OpenClaw live transport callable",
+    summary:
+      "Represents the future-facing transport callable selected by the HTTP bridge before actual live fetch transport is enabled.",
+    status: httpBridge.status,
+    payloadLabel: httpBridge.payloadLabel,
+    sourceHttpBridgeLabel: httpBridge.sourceRequestDispatchLabel,
+    implementationLabel: httpBridge.implementationLabel,
+    runnerMode: httpBridge.runnerMode,
+  };
+}
+
+export function createOpenClawPreviewTransportCallable(
+  request: PlazaWorldDataRequest,
+  envelope: PlazaWorldDataRequestRunnerEnvelope,
+  httpBridge: PlazaWorldDataRequestHttpBridge
+): OpenClawTransportCallable<OpenClawLiveResponsePayload> {
+  return {
+    metadata:
+      request.transportCallable ??
+      createOpenClawLiveTransportCallableMetadata(httpBridge),
+    async call(now: Date | string | number = Date.now()) {
+      return createOpenClawLivePreviewResponsePayload(now, {
+        workspace: envelope.workspaceHint,
+      });
+    },
+  };
+}
+
+export function createOpenClawLiveStubTransportCallable(
+  request: PlazaWorldDataRequest,
+  envelope: PlazaWorldDataRequestRunnerEnvelope,
+  httpBridge: PlazaWorldDataRequestHttpBridge
+): OpenClawTransportCallable<OpenClawLiveResponsePayload> {
+  return {
+    metadata:
+      request.transportCallable ??
+      createOpenClawLiveTransportCallableMetadata(httpBridge),
+    async call(now: Date | string | number = Date.now()) {
+      return createOpenClawLivePreviewResponsePayload(now, {
+        workspace: envelope.workspaceHint,
+      });
+    },
+  };
+}
+
 export function createOpenClawPreviewHttpBridge(
   request: PlazaWorldDataRequest,
   envelope: PlazaWorldDataRequestRunnerEnvelope,
   requestDispatch: PlazaWorldDataRequestDispatchHandler
 ): OpenClawHttpBridge<OpenClawLiveResponsePayload> {
+  const metadata =
+    request.httpBridge ?? createOpenClawLiveHttpBridgeMetadata(requestDispatch);
+  const transportCallable = createOpenClawPreviewTransportCallable(
+    request,
+    envelope,
+    metadata
+  );
   return {
-    metadata:
-      request.httpBridge ?? createOpenClawLiveHttpBridgeMetadata(requestDispatch),
+    metadata,
+    transportCallable,
     async bridge(now: Date | string | number = Date.now()) {
-      return createOpenClawLivePreviewResponsePayload(now, {
-        workspace: envelope.workspaceHint,
-      });
+      return transportCallable.call(now);
     },
   };
 }
@@ -1040,13 +1102,18 @@ export function createOpenClawLiveStubHttpBridge(
   envelope: PlazaWorldDataRequestRunnerEnvelope,
   requestDispatch: PlazaWorldDataRequestDispatchHandler
 ): OpenClawHttpBridge<OpenClawLiveResponsePayload> {
+  const metadata =
+    request.httpBridge ?? createOpenClawLiveHttpBridgeMetadata(requestDispatch);
+  const transportCallable = createOpenClawLiveStubTransportCallable(
+    request,
+    envelope,
+    metadata
+  );
   return {
-    metadata:
-      request.httpBridge ?? createOpenClawLiveHttpBridgeMetadata(requestDispatch),
+    metadata,
+    transportCallable,
     async bridge(now: Date | string | number = Date.now()) {
-      return createOpenClawLivePreviewResponsePayload(now, {
-        workspace: envelope.workspaceHint,
-      });
+      return transportCallable.call(now);
     },
   };
 }
@@ -1213,6 +1280,8 @@ export function resolveOpenClawLiveRequestOverrides(
     createOpenClawLiveRequestDispatchMetadata(networkExecution);
   const httpBridge =
     createOpenClawLiveHttpBridgeMetadata(requestDispatch);
+  const transportCallable =
+    createOpenClawLiveTransportCallableMetadata(httpBridge);
   const executor = planOpenClawLiveFetchExecutor({
     transport: "http",
     endpointLabel,
@@ -1240,6 +1309,7 @@ export function resolveOpenClawLiveRequestOverrides(
     networkExecution,
     requestDispatch,
     httpBridge,
+    transportCallable,
     ...(overrides.workspaceHint
       ? { workspaceHint: overrides.workspaceHint }
       : {}),
@@ -1272,6 +1342,7 @@ export function resolveOpenClawLiveRequestOverrides(
     networkExecution,
     requestDispatch,
     httpBridge,
+    transportCallable,
     ...(overrides.workspaceHint
       ? { workspaceHint: overrides.workspaceHint }
       : {}),

@@ -164,6 +164,13 @@ export interface PlazaWorldDataRequestCopy {
   httpBridgeSourceLabel: string | null;
   httpBridgeImplementationLabel: string | null;
   httpBridgeModeLabel: string | null;
+  transportCallableLabel: string | null;
+  transportCallableSummary: string | null;
+  transportCallableStatusLabel: string | null;
+  transportCallablePayloadLabel: string | null;
+  transportCallableSourceLabel: string | null;
+  transportCallableImplementationLabel: string | null;
+  transportCallableModeLabel: string | null;
   executorLabel: string | null;
   executorSummary: string | null;
 }
@@ -731,6 +738,29 @@ export function describeWorldDataRequest(
     httpBridgeModeLabel: request.httpBridge
       ? `HTTP mode: ${
           request.httpBridge.runnerMode === "live" ? "Live" : "Preview"
+        }`
+      : null,
+    transportCallableLabel: request.transportCallable?.label ?? null,
+    transportCallableSummary: request.transportCallable?.summary ?? null,
+    transportCallableStatusLabel: request.transportCallable
+      ? `Transport callable status: ${
+          request.transportCallable.status === "live-ready"
+            ? "Live ready"
+            : "Preview payload"
+        }`
+      : null,
+    transportCallablePayloadLabel: request.transportCallable
+      ? `Transport callable payload: ${request.transportCallable.payloadLabel}`
+      : null,
+    transportCallableSourceLabel: request.transportCallable
+      ? `Transport callable source bridge: ${request.transportCallable.sourceHttpBridgeLabel}`
+      : null,
+    transportCallableImplementationLabel: request.transportCallable
+      ? `Transport callable implementation: ${request.transportCallable.implementationLabel}`
+      : null,
+    transportCallableModeLabel: request.transportCallable
+      ? `Transport callable mode: ${
+          request.transportCallable.runnerMode === "live" ? "Live" : "Preview"
         }`
       : null,
     executorLabel: executorCopy?.label ?? null,

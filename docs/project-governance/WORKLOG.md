@@ -144,3 +144,6 @@
 - Added a future-facing `OpenClaw` live HTTP-bridge handler so request dispatch now delegates through a real bridge boundary instead of emitting preview payloads directly.
 - Taught preview and live-capable runners to reuse the same HTTP-bridge contract while keeping the same dry-run/live-preview payload behavior and request-shape assumptions.
 - Surfaced HTTP-bridge metadata through plaza diagnostics, HUD provider metadata, and the shared `Provider Status` hotspot, then advanced `CURRENT_PLAN.md` to the next transport-callable slice.
+- Added a future-facing `OpenClaw` live transport-callable handler so the HTTP bridge now delegates through a real callable boundary instead of emitting preview payloads directly.
+- Taught preview and live-capable runners to reuse the same transport-callable contract while keeping the same dry-run/live-preview payload behavior and request-shape assumptions.
+- Surfaced transport-callable metadata through plaza diagnostics, HUD provider metadata, and the shared `Provider Status` hotspot, then advanced `CURRENT_PLAN.md` to the next fetch-adapter slice.

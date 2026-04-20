@@ -103,6 +103,7 @@ export interface PlazaWorldDataRequest {
   networkExecution?: PlazaWorldDataRequestNetworkExecution;
   requestDispatch?: PlazaWorldDataRequestDispatchHandler;
   httpBridge?: PlazaWorldDataRequestHttpBridge;
+  transportCallable?: PlazaWorldDataRequestTransportCallable;
   executor?: PlazaWorldDataRequestExecutor;
 }
 
@@ -325,6 +326,17 @@ export interface PlazaWorldDataRequestHttpBridge {
   status: PlazaWorldDataRequestDispatchHandler["status"];
   payloadLabel: string;
   sourceRequestDispatchLabel: string;
+  implementationLabel: string;
+  runnerMode: "preview" | "live";
+}
+
+export interface PlazaWorldDataRequestTransportCallable {
+  id: string;
+  label: string;
+  summary: string;
+  status: PlazaWorldDataRequestHttpBridge["status"];
+  payloadLabel: string;
+  sourceHttpBridgeLabel: string;
   implementationLabel: string;
   runnerMode: "preview" | "live";
 }

@@ -250,6 +250,14 @@ Represent the next `OpenClaw` execution step as a typed HTTP-bridge handler sele
 Why:
 This creates the final pre-fetch handoff point for a future concrete transport implementation, keeps preview and live-stub behavior aligned on one injectable bridge contract, and makes the eventual swap to real HTTP execution additive rather than structural.
 
+### Route the HTTP bridge through a shared transport-callable handler before real fetch implementation exists
+
+Decision:
+Represent the next `OpenClaw` execution step as a typed transport-callable handler selected from HTTP-bridge metadata, and make the HTTP-bridge seam call that handler instead of constructing preview payloads directly.
+
+Why:
+This creates a stable pre-fetch handoff point for a future concrete fetch adapter, keeps preview and live-stub behavior aligned on one injectable callable contract, and makes the eventual swap to real HTTP execution additive rather than structural.
+
 ### Put execution-boundary payload posture on the shared request contract before real live execution exists
 
 Decision:
