@@ -222,6 +222,19 @@ test("loadPlazaWorldData passes through successful provider results", async () =
               delegateTargetLabel: "OpenClaw live transport implementation",
               runnerMode: "preview",
             },
+            transportImplementation: {
+              id: "openclaw-live-transport-implementation",
+              label: "OpenClaw live transport implementation",
+              summary:
+                "Represents the placeholder network-runner-boundary record derived from the execution delegate before actual live transport runners execute.",
+              status: "preview-payload",
+              payloadLabel:
+                "Preview payload available from no-network live-preview execution.",
+              sourceExecutionDelegateLabel:
+                "Preview payload from GET Configured via future live request seam?view=plaza&workspace=mii-plaza-client",
+              runnerTargetLabel: "OpenClaw live transport runner",
+              runnerMode: "preview",
+            },
             executor: {
               status: "ready",
               mode: "dry-run",
@@ -445,6 +458,22 @@ test("loadPlazaWorldData passes through successful provider results", async () =
     "Delegate target: OpenClaw live transport implementation"
   );
   expect(world.hotspots[0]?.details).toContain("Delegate mode: Preview");
+  expect(world.hotspots[0]?.details).toContain(
+    "Transport implementation: OpenClaw live transport implementation"
+  );
+  expect(world.hotspots[0]?.details).toContain(
+    "Transport implementation status: Preview payload"
+  );
+  expect(world.hotspots[0]?.details).toContain(
+    "Implementation payload: Preview payload available from no-network live-preview execution."
+  );
+  expect(world.hotspots[0]?.details).toContain(
+    "Implementation source delegate: Preview payload from GET Configured via future live request seam?view=plaza&workspace=mii-plaza-client"
+  );
+  expect(world.hotspots[0]?.details).toContain(
+    "Implementation target: OpenClaw live transport runner"
+  );
+  expect(world.hotspots[0]?.details).toContain("Implementation mode: Preview");
   expect(world.hotspots[0]?.details).toContain("Live request: Config only");
   expect(world.hotspots[0]?.details).toContain("Executor: Dry run ready");
   expect(world.hotspots[0]?.details).toContain(

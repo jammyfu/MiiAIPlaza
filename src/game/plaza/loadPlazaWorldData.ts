@@ -355,6 +355,27 @@ function createProviderStatusHotspot(world: PlazaWorldData): PlazaHotspot {
       ...(requestCopy?.executionDelegateModeLabel
         ? [requestCopy.executionDelegateModeLabel]
         : []),
+      ...(requestCopy?.transportImplementationLabel
+        ? [`Transport implementation: ${requestCopy.transportImplementationLabel}`]
+        : []),
+      ...(requestCopy?.transportImplementationSummary
+        ? [requestCopy.transportImplementationSummary]
+        : []),
+      ...(requestCopy?.transportImplementationStatusLabel
+        ? [requestCopy.transportImplementationStatusLabel]
+        : []),
+      ...(requestCopy?.transportImplementationPayloadLabel
+        ? [requestCopy.transportImplementationPayloadLabel]
+        : []),
+      ...(requestCopy?.transportImplementationSourceLabel
+        ? [requestCopy.transportImplementationSourceLabel]
+        : []),
+      ...(requestCopy?.transportImplementationTargetLabel
+        ? [requestCopy.transportImplementationTargetLabel]
+        : []),
+      ...(requestCopy?.transportImplementationModeLabel
+        ? [requestCopy.transportImplementationModeLabel]
+        : []),
       ...(requestCopy?.executorLabel ? [`Executor: ${requestCopy.executorLabel}`] : []),
       ...(requestCopy?.executorSummary ? [requestCopy.executorSummary] : []),
       ...(healthCopy.nextRetryLabel ? [healthCopy.nextRetryLabel] : []),

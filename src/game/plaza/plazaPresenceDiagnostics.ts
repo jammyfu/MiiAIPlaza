@@ -129,6 +129,13 @@ export interface PlazaWorldDataRequestCopy {
   executionDelegateSourceLabel: string | null;
   executionDelegateTargetLabel: string | null;
   executionDelegateModeLabel: string | null;
+  transportImplementationLabel: string | null;
+  transportImplementationSummary: string | null;
+  transportImplementationStatusLabel: string | null;
+  transportImplementationPayloadLabel: string | null;
+  transportImplementationSourceLabel: string | null;
+  transportImplementationTargetLabel: string | null;
+  transportImplementationModeLabel: string | null;
   executorLabel: string | null;
   executorSummary: string | null;
 }
@@ -577,6 +584,33 @@ export function describeWorldDataRequest(
     executionDelegateModeLabel: request.executionDelegate
       ? `Delegate mode: ${
           request.executionDelegate.runnerMode === "live" ? "Live" : "Preview"
+        }`
+      : null,
+    transportImplementationLabel:
+      request.transportImplementation?.label ?? null,
+    transportImplementationSummary:
+      request.transportImplementation?.summary ?? null,
+    transportImplementationStatusLabel: request.transportImplementation
+      ? `Transport implementation status: ${
+          request.transportImplementation.status === "live-ready"
+            ? "Live ready"
+            : "Preview payload"
+        }`
+      : null,
+    transportImplementationPayloadLabel: request.transportImplementation
+      ? `Implementation payload: ${request.transportImplementation.payloadLabel}`
+      : null,
+    transportImplementationSourceLabel: request.transportImplementation
+      ? `Implementation source delegate: ${request.transportImplementation.sourceExecutionDelegateLabel}`
+      : null,
+    transportImplementationTargetLabel: request.transportImplementation
+      ? `Implementation target: ${request.transportImplementation.runnerTargetLabel}`
+      : null,
+    transportImplementationModeLabel: request.transportImplementation
+      ? `Implementation mode: ${
+          request.transportImplementation.runnerMode === "live"
+            ? "Live"
+            : "Preview"
         }`
       : null,
     executorLabel: executorCopy?.label ?? null,

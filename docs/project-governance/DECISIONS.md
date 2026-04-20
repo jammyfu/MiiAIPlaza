@@ -337,3 +337,11 @@ Represent the next network-runner-boundary `OpenClaw` state as a typed transport
 
 Why:
 This keeps transport-implementation posture separate from the eventual runnable network code while giving preview and future live-capable runners one stable implementation handoff shape. Diagnostics can show the runner boundary that would execute next without implying that a real transport runner already exists.
+
+### Resolve transport-runner records from transport-implementation metadata before real network execution exists
+
+Decision:
+Represent the next fetch-runner-boundary `OpenClaw` state as a typed transport-runner record derived from the shared transport-implementation seam, and carry that record on the shared request contract before wiring any concrete live network execution.
+
+Why:
+This keeps network-runner posture separate from the eventual executable transport code while giving preview and future live-capable runners one stable runner handoff shape. Diagnostics can show the final no-network runner boundary without implying that a real network fetch has already happened.
