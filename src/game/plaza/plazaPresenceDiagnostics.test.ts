@@ -291,6 +291,19 @@ test("world data request copy stays readable in the hud and provider status flow
       dispatchTargetLabel: "OpenClaw live network invocation",
       runnerMode: "preview",
     },
+    transportCall: {
+      id: "openclaw-live-transport-call",
+      label: "OpenClaw live transport call",
+      summary:
+        "Represents the placeholder transport-invocation-boundary record derived from the fetch dispatch before actual live network calls run.",
+      status: "preview-payload",
+      payloadLabel:
+        "Preview payload available from no-network live-preview execution.",
+      sourceFetchDispatchLabel:
+        "Preview payload from GET OpenClaw live endpoint pending configuration?view=plaza&workspace=mii-plaza-client",
+      transportTargetLabel: "OpenClaw live transport invocation",
+      runnerMode: "preview",
+    },
     executor: {
       status: "needs-config",
       mode: "dry-run",
@@ -413,6 +426,17 @@ test("world data request copy stays readable in the hud and provider status flow
     fetchDispatchTargetLabel:
       "Dispatch target: OpenClaw live network invocation",
     fetchDispatchModeLabel: "Dispatch mode: Preview",
+    transportCallLabel: "OpenClaw live transport call",
+    transportCallSummary:
+      "Represents the placeholder transport-invocation-boundary record derived from the fetch dispatch before actual live network calls run.",
+    transportCallStatusLabel: "Transport call status: Preview payload",
+    transportCallPayloadLabel:
+      "Transport payload: Preview payload available from no-network live-preview execution.",
+    transportCallSourceLabel:
+      "Transport source dispatch: Preview payload from GET OpenClaw live endpoint pending configuration?view=plaza&workspace=mii-plaza-client",
+    transportCallTargetLabel:
+      "Transport target: OpenClaw live transport invocation",
+    transportCallModeLabel: "Transport mode: Preview",
     executorLabel: "Dry run needs config",
     executorSummary: "Configure a live OpenClaw endpoint before enabling fetch execution.",
   });

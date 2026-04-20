@@ -88,3 +88,4 @@
 - The live path now resolves a shared execution-bridge record and surfaces that fetch-call-boundary placeholder posture through diagnostics, HUD provider metadata, and `Provider Status` details before actual live fetch execution exists.
 - The live path now resolves a shared fetch-entry record and surfaces that network-invocation-boundary placeholder posture through diagnostics, HUD provider metadata, and `Provider Status` details before actual live network execution exists.
 - The live path now resolves a shared fetch-dispatch record and surfaces that transport-invocation-boundary placeholder posture through diagnostics, HUD provider metadata, and `Provider Status` details before actual live transport calls exist.
+- The live path now resolves a shared transport-call record and surfaces that network-execution-boundary placeholder posture through diagnostics, HUD provider metadata, and `Provider Status` details before actual live network execution exists.

@@ -48,3 +48,4 @@
 - Added a typed `OpenClaw` live execution-bridge record so future live fetch work can inspect fetch-call-boundary placeholder posture before any network calls exist.
 - Added a typed `OpenClaw` live fetch-entry record so future live network work can inspect network-invocation-boundary placeholder posture before any network calls exist.
 - Added a typed `OpenClaw` live fetch-dispatch record so future live transport invocation work can inspect transport-invocation-boundary placeholder posture before any network calls exist.
+- Added a typed `OpenClaw` live transport-call record so future live network execution work can inspect network-execution-boundary placeholder posture before any network calls exist.

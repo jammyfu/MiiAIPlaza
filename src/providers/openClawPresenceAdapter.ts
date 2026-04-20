@@ -15,6 +15,7 @@ import type {
   PlazaWorldDataRequestExecutionBridge,
   PlazaWorldDataRequestFetchEntry,
   PlazaWorldDataRequestFetchDispatch,
+  PlazaWorldDataRequestTransportCall,
   PlazaWorldDataRequestBuilder,
   PlazaWorldDataRequestRunnerEnvelope,
   PlazaWorldDataRequestTransportDelegate,
@@ -130,6 +131,7 @@ export interface OpenClawFetchRunner<TPayload> {
   executionBridge: PlazaWorldDataRequestExecutionBridge;
   fetchEntry: PlazaWorldDataRequestFetchEntry;
   fetchDispatch: PlazaWorldDataRequestFetchDispatch;
+  transportCall: PlazaWorldDataRequestTransportCall;
   run(now?: Date | string | number): Promise<TPayload>;
 }
 
@@ -335,6 +337,9 @@ export function createOpenClawFetchRunnerFactory(
   const fetchDispatch =
     request.fetchDispatch ??
     createOpenClawLiveFetchDispatch(fetchEntry);
+  const transportCall =
+    request.transportCall ??
+    createOpenClawLiveTransportCall(fetchDispatch);
 
   return {
     metadata:
@@ -357,7 +362,8 @@ export function createOpenClawFetchRunnerFactory(
             executionPayload,
             executionBridge,
             fetchEntry,
-            fetchDispatch
+            fetchDispatch,
+            transportCall
           )
         : createOpenClawPreviewFetchRunner(
             request,
@@ -370,7 +376,8 @@ export function createOpenClawFetchRunnerFactory(
             executionPayload,
             executionBridge,
             fetchEntry,
-            fetchDispatch
+            fetchDispatch,
+            transportCall
           );
     },
   };
@@ -425,7 +432,10 @@ export function createOpenClawPreviewFetchRunner(
     createOpenClawLiveFetchEntry(executionBridge),
   fetchDispatch: PlazaWorldDataRequestFetchDispatch =
     request.fetchDispatch ??
-    createOpenClawLiveFetchDispatch(fetchEntry)
+    createOpenClawLiveFetchDispatch(fetchEntry),
+  transportCall: PlazaWorldDataRequestTransportCall =
+    request.transportCall ??
+    createOpenClawLiveTransportCall(fetchDispatch)
 ): OpenClawFetchRunner<OpenClawLiveResponsePayload> {
   return {
     metadata:
@@ -447,6 +457,7 @@ export function createOpenClawPreviewFetchRunner(
     executionBridge,
     fetchEntry,
     fetchDispatch,
+    transportCall,
     async run(now: Date | string | number = Date.now()) {
       return createOpenClawLivePreviewResponsePayload(now, {
         workspace: envelope.workspaceHint,
@@ -482,7 +493,10 @@ export function createOpenClawLiveStubFetchRunner(
     createOpenClawLiveFetchEntry(executionBridge),
   fetchDispatch: PlazaWorldDataRequestFetchDispatch =
     request.fetchDispatch ??
-    createOpenClawLiveFetchDispatch(fetchEntry)
+    createOpenClawLiveFetchDispatch(fetchEntry),
+  transportCall: PlazaWorldDataRequestTransportCall =
+    request.transportCall ??
+    createOpenClawLiveTransportCall(fetchDispatch)
 ): OpenClawFetchRunner<OpenClawLiveResponsePayload> {
   return {
     metadata:
@@ -504,6 +518,7 @@ export function createOpenClawLiveStubFetchRunner(
     executionBridge,
     fetchEntry,
     fetchDispatch,
+    transportCall,
     async run(now: Date | string | number = Date.now()) {
       return createOpenClawLivePreviewResponsePayload(now, {
         workspace: envelope.workspaceHint,
@@ -782,6 +797,22 @@ export function createOpenClawLiveFetchDispatch(
   };
 }
 
+export function createOpenClawLiveTransportCall(
+  fetchDispatch: PlazaWorldDataRequestFetchDispatch
+): PlazaWorldDataRequestTransportCall {
+  return {
+    id: "openclaw-live-transport-call",
+    label: "OpenClaw live transport call",
+    summary:
+      "Represents the placeholder transport-invocation-boundary record derived from the fetch dispatch before actual live network calls run.",
+    status: fetchDispatch.status,
+    payloadLabel: fetchDispatch.payloadLabel,
+    sourceFetchDispatchLabel: fetchDispatch.sourceFetchEntryLabel,
+    transportTargetLabel: "OpenClaw live transport invocation",
+    runnerMode: fetchDispatch.runnerMode,
+  };
+}
+
 export function resolveOpenClawLiveRequestOverrides(
   overrides: OpenClawLiveRequestOverrides = {}
 ): PlazaWorldDataRequest {
@@ -848,6 +879,8 @@ export function resolveOpenClawLiveRequestOverrides(
     createOpenClawLiveFetchEntry(executionBridge);
   const fetchDispatch =
     createOpenClawLiveFetchDispatch(fetchEntry);
+  const transportCall =
+    createOpenClawLiveTransportCall(fetchDispatch);
   const executor = planOpenClawLiveFetchExecutor({
     transport: "http",
     endpointLabel,
@@ -867,6 +900,7 @@ export function resolveOpenClawLiveRequestOverrides(
     executionBridge,
     fetchEntry,
     fetchDispatch,
+    transportCall,
     ...(overrides.workspaceHint
       ? { workspaceHint: overrides.workspaceHint }
       : {}),
@@ -891,6 +925,7 @@ export function resolveOpenClawLiveRequestOverrides(
     executionBridge,
     fetchEntry,
     fetchDispatch,
+    transportCall,
     ...(overrides.workspaceHint
       ? { workspaceHint: overrides.workspaceHint }
       : {}),
