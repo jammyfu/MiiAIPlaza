@@ -20,6 +20,7 @@
 - The plaza controller now exposes typed polling-plan metadata so future scheduled refreshes can reuse the current refresh boundary without adding timers yet.
 - The plaza source contract now carries typed live-request metadata so future `OpenClaw` endpoint/auth setup is visible without making network calls.
 - The `OpenClaw` provider now resolves typed endpoint/auth overrides through a single helper before any live fetch execution exists.
+- The `OpenClaw` request seam now carries typed executor posture so future live fetch readiness is visible without making network calls.
 
 ## Current Verification Evidence
 
@@ -45,3 +46,4 @@
 - The plaza HUD and provider-status inspection now expose typed polling-posture copy derived from the shared controller cadence plan.
 - The `OpenClaw` fixture source now exposes typed live-request metadata, and provider diagnostics render that request posture without requiring a real endpoint.
 - The `OpenClaw` request seam now has a dedicated override resolver so future live executors can consume one normalized endpoint/auth configuration path.
+- The plaza HUD and provider-status diagnostics now expose typed `OpenClaw` executor posture without requiring a real fetch implementation.

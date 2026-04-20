@@ -26,3 +26,4 @@
 - Added typed polling-plan metadata so the plaza can describe future scheduled refresh posture without starting background timers.
 - Added typed live-request metadata for `OpenClaw` so future endpoint/auth setup is visible in plaza diagnostics before real fetches exist.
 - Added a typed `OpenClaw` endpoint/auth override resolver so future live request setup flows through one normalized provider-layer seam.
+- Added typed `OpenClaw` executor posture so future live fetch readiness is visible in the HUD and provider diagnostics before network calls exist.

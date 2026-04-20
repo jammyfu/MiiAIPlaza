@@ -137,3 +137,11 @@ Resolve future `OpenClaw` endpoint/auth overrides through a single typed provide
 
 Why:
 This keeps override precedence explicit before live fetches exist, avoids multiple partial interpretations of endpoint/auth setup, and gives the future live executor one canonical source of request configuration truth.
+
+### Put executor posture on request metadata before adding network calls
+
+Decision:
+Represent future live-fetch executor posture directly on `PlazaWorldDataRequest` and render it through HUD/provider-status diagnostics before any real HTTP execution exists.
+
+Why:
+This makes the executor seam explicit and testable, keeps dry-run versus live-ready behavior visible without network traffic, and gives the eventual live provider implementation a stable place to expose execution readiness.

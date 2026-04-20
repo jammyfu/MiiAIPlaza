@@ -72,6 +72,11 @@ test("openclaw fixture carries a typed live-request configuration seam", () => {
   expect(requestConfig.authKind).toBe("token");
   expect(requestConfig.liveEnabled).toBe(false);
   expect(requestConfig.endpointLabel).toContain("pending");
+  expect(requestConfig.executor).toEqual({
+    status: "needs-config",
+    mode: "dry-run",
+    summary: "Configure a live OpenClaw endpoint before enabling fetch execution.",
+  });
   expect(worldData.source.request).toEqual(requestConfig);
 });
 
@@ -88,6 +93,11 @@ test("openclaw request overrides resolve endpoint and auth posture without enabl
     authKind: "token",
     liveEnabled: false,
     workspaceHint: "mii-plaza-client",
+    executor: {
+      status: "ready",
+      mode: "dry-run",
+      summary: "Executor seam is ready; enable live requests when network fetches are introduced.",
+    },
   });
 });
 
@@ -103,5 +113,10 @@ test("openclaw request overrides can opt into a session-backed live configuratio
     endpointLabel: "https://openclaw.example.com/presence",
     authKind: "session",
     liveEnabled: true,
+    executor: {
+      status: "ready",
+      mode: "live",
+      summary: "Executor seam is configured for live OpenClaw fetches once network calls are allowed.",
+    },
   });
 });

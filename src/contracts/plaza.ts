@@ -81,6 +81,13 @@ export interface PlazaWorldDataRequest {
   authKind: "none" | "token" | "session";
   liveEnabled: boolean;
   workspaceHint?: string;
+  executor?: PlazaWorldDataRequestExecutor;
+}
+
+export interface PlazaWorldDataRequestExecutor {
+  status: "needs-config" | "ready";
+  mode: "dry-run" | "live";
+  summary: string;
 }
 
 export interface PlazaWorldData {

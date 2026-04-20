@@ -85,6 +85,8 @@ function createProviderStatusHotspot(world: PlazaWorldData): PlazaHotspot {
       ...(requestCopy ? [`Request auth: ${requestCopy.authLabel}`] : []),
       ...(requestCopy ? [`Live request: ${requestCopy.liveLabel}`] : []),
       ...(requestCopy?.workspaceLabel ? [requestCopy.workspaceLabel] : []),
+      ...(requestCopy?.executorLabel ? [`Executor: ${requestCopy.executorLabel}`] : []),
+      ...(requestCopy?.executorSummary ? [requestCopy.executorSummary] : []),
       ...(healthCopy.nextRetryLabel ? [healthCopy.nextRetryLabel] : []),
       ...(healthCopy.lastUpdatedLabel ? [healthCopy.lastUpdatedLabel] : []),
       ...(healthCopy.fallbackHint ? [healthCopy.fallbackHint] : []),

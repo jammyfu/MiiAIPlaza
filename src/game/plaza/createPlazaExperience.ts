@@ -134,6 +134,12 @@ export function createPlazaExperience({
                 : ""
             }
             ${requestCopy?.workspaceLabel ? `<small>${requestCopy.workspaceLabel}</small>` : ""}
+            ${requestCopy?.executorLabel ? `<small>${requestCopy.executorLabel}</small>` : ""}
+            ${
+              requestCopy?.executorSummary
+                ? `<small>${requestCopy.executorSummary}</small>`
+                : ""
+            }
             ${
               refreshUiState ? `<small>${refreshUiState.statusLabel}</small>` : ""
             }

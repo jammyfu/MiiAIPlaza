@@ -54,3 +54,6 @@
 - Added a typed `OpenClaw` endpoint/auth override resolver so future live request configuration now has one normalization path.
 - Reused the resolver inside the existing fixture request metadata seam, keeping provider diagnostics and HUD copy unchanged while auth/endpoint assumptions became explicit.
 - Expanded verification to cover override resolution behavior and advanced `CURRENT_PLAN.md` to the next live-fetch executor preparation slice.
+- Added typed live-fetch executor metadata to the `OpenClaw` request seam so future network execution now has an explicit dry-run/live posture.
+- Surfaced executor posture in both HUD provider metadata and `Provider Status` inspection details without introducing any real network calls.
+- Expanded verification to cover executor copy and advanced `CURRENT_PLAN.md` to the next live response-normalization preparation slice.

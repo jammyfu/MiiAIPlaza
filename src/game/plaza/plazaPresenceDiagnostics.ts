@@ -1,5 +1,6 @@
 import type {
   PlazaWorldDataHealth,
+  PlazaWorldDataRequestExecutor,
   PlazaWorldDataRequest,
   PlazaPresenceSnapshot,
   PlazaResident,
@@ -36,6 +37,13 @@ export interface PlazaWorldDataRequestCopy {
   authLabel: string;
   liveLabel: string;
   workspaceLabel: string | null;
+  executorLabel: string | null;
+  executorSummary: string | null;
+}
+
+export interface PlazaWorldDataRequestExecutorCopy {
+  label: string;
+  summary: string;
 }
 
 const DEFAULT_FRESH_FOR_MS = 2 * 60 * 1000;
@@ -182,6 +190,10 @@ export function describeWorldDataHealth(
 export function describeWorldDataRequest(
   request: PlazaWorldDataRequest
 ): PlazaWorldDataRequestCopy {
+  const executorCopy = request.executor
+    ? describeWorldDataRequestExecutor(request.executor)
+    : null;
+
   return {
     transportLabel: request.transport.toUpperCase(),
     endpointLabel: request.endpointLabel,
@@ -195,6 +207,19 @@ export function describeWorldDataRequest(
     workspaceLabel: request.workspaceHint
       ? `Workspace: ${request.workspaceHint}`
       : null,
+    executorLabel: executorCopy?.label ?? null,
+    executorSummary: executorCopy?.summary ?? null,
+  };
+}
+
+export function describeWorldDataRequestExecutor(
+  executor: PlazaWorldDataRequestExecutor
+): PlazaWorldDataRequestExecutorCopy {
+  const modeLabel = executor.mode === "live" ? "Live" : "Dry run";
+  const statusLabel = executor.status === "ready" ? "ready" : "needs config";
+  return {
+    label: `${modeLabel} ${statusLabel}`,
+    summary: executor.summary,
   };
 }
 

@@ -22,6 +22,12 @@ test("loadPlazaWorldData passes through successful provider results", async () =
             endpointLabel: "Configured via future live request seam",
             authKind: "token",
             liveEnabled: false,
+            executor: {
+              status: "ready",
+              mode: "dry-run",
+              summary:
+                "Executor seam is ready; enable live requests when network fetches are introduced.",
+            },
           },
         },
         residents: [],
@@ -42,6 +48,10 @@ test("loadPlazaWorldData passes through successful provider results", async () =
     "Request endpoint: Configured via future live request seam"
   );
   expect(world.hotspots[0]?.details).toContain("Live request: Config only");
+  expect(world.hotspots[0]?.details).toContain("Executor: Dry run ready");
+  expect(world.hotspots[0]?.details).toContain(
+    "Executor seam is ready; enable live requests when network fetches are introduced."
+  );
 });
 
 test("loadPlazaWorldData recovers provider failures into structured fallback world data", async () => {

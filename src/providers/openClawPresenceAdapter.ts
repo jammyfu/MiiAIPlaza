@@ -4,6 +4,7 @@ import type {
   PlazaPresenceSnapshot,
   PlazaResident,
   PlazaWorldData,
+  PlazaWorldDataRequestExecutor,
   PlazaWorldDataRequest,
   PlazaWorldDataProvider,
 } from "../contracts/plaza";
@@ -155,16 +156,27 @@ export function resolveOpenClawLiveRequestOverrides(
 ): PlazaWorldDataRequest {
   const authKind =
     overrides.authKind ?? (overrides.authTokenName ? "token" : "token");
-
-  return {
+  const endpointLabel =
+    overrides.endpointUrl ?? "OpenClaw live endpoint pending configuration";
+  const executor = planOpenClawLiveFetchExecutor({
     transport: "http",
-    endpointLabel:
-      overrides.endpointUrl ?? "OpenClaw live endpoint pending configuration",
+    endpointLabel,
     authKind,
     liveEnabled: overrides.liveEnabled ?? false,
     ...(overrides.workspaceHint
       ? { workspaceHint: overrides.workspaceHint }
       : {}),
+  });
+
+  return {
+    transport: "http",
+    endpointLabel,
+    authKind,
+    liveEnabled: overrides.liveEnabled ?? false,
+    ...(overrides.workspaceHint
+      ? { workspaceHint: overrides.workspaceHint }
+      : {}),
+    executor,
   };
 }
 
@@ -172,6 +184,35 @@ export function createOpenClawLiveRequestConfig(
   overrides: Partial<PlazaWorldDataRequest> = {}
 ): PlazaWorldDataRequest {
   return resolveOpenClawLiveRequestOverrides(overrides);
+}
+
+export function planOpenClawLiveFetchExecutor(
+  request: PlazaWorldDataRequest
+): PlazaWorldDataRequestExecutor {
+  const endpointConfigured = !request.endpointLabel.includes("pending configuration");
+  if (!endpointConfigured) {
+    return {
+      status: "needs-config",
+      mode: "dry-run",
+      summary: "Configure a live OpenClaw endpoint before enabling fetch execution.",
+    };
+  }
+
+  if (request.liveEnabled) {
+    return {
+      status: "ready",
+      mode: "live",
+      summary:
+        "Executor seam is configured for live OpenClaw fetches once network calls are allowed.",
+    };
+  }
+
+  return {
+    status: "ready",
+    mode: "dry-run",
+    summary:
+      "Executor seam is ready; enable live requests when network fetches are introduced.",
+  };
 }
 
 function normalizeState(state: OpenClawFixtureAgent["state"]): PlazaAgentStatus {

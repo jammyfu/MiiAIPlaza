@@ -7,6 +7,7 @@ import type {
 } from "../../contracts/plaza";
 import {
   describeWorldDataRequest,
+  describeWorldDataRequestExecutor,
   describePresenceFreshness,
   describeWorldDataHealth,
   describeWorldDataSource,
@@ -135,6 +136,11 @@ test("world data request copy stays readable in the hud and provider status flow
     authKind: "token",
     liveEnabled: false,
     workspaceHint: "mii-plaza-client",
+    executor: {
+      status: "needs-config",
+      mode: "dry-run",
+      summary: "Configure a live OpenClaw endpoint before enabling fetch execution.",
+    },
   };
 
   expect(describeWorldDataRequest(request)).toEqual({
@@ -143,5 +149,21 @@ test("world data request copy stays readable in the hud and provider status flow
     authLabel: "Token",
     liveLabel: "Config only",
     workspaceLabel: "Workspace: mii-plaza-client",
+    executorLabel: "Dry run needs config",
+    executorSummary: "Configure a live OpenClaw endpoint before enabling fetch execution.",
+  });
+});
+
+test("world data request executor copy stays readable in diagnostics", () => {
+  expect(
+    describeWorldDataRequestExecutor({
+      status: "ready",
+      mode: "live",
+      summary: "Executor seam is configured for live OpenClaw fetches once network calls are allowed.",
+    })
+  ).toEqual({
+    label: "Live ready",
+    summary:
+      "Executor seam is configured for live OpenClaw fetches once network calls are allowed.",
   });
 });
