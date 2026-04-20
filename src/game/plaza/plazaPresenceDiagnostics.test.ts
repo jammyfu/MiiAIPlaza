@@ -304,6 +304,19 @@ test("world data request copy stays readable in the hud and provider status flow
       transportTargetLabel: "OpenClaw live transport invocation",
       runnerMode: "preview",
     },
+    fetchExecution: {
+      id: "openclaw-live-fetch-execution",
+      label: "OpenClaw live fetch execution",
+      summary:
+        "Represents the placeholder network-execution-boundary record derived from the transport call before actual live network execution runs.",
+      status: "preview-payload",
+      payloadLabel:
+        "Preview payload available from no-network live-preview execution.",
+      sourceTransportCallLabel:
+        "Preview payload from GET OpenClaw live endpoint pending configuration?view=plaza&workspace=mii-plaza-client",
+      executionTargetLabel: "OpenClaw live network execution",
+      runnerMode: "preview",
+    },
     executor: {
       status: "needs-config",
       mode: "dry-run",
@@ -437,6 +450,17 @@ test("world data request copy stays readable in the hud and provider status flow
     transportCallTargetLabel:
       "Transport target: OpenClaw live transport invocation",
     transportCallModeLabel: "Transport mode: Preview",
+    fetchExecutionLabel: "OpenClaw live fetch execution",
+    fetchExecutionSummary:
+      "Represents the placeholder network-execution-boundary record derived from the transport call before actual live network execution runs.",
+    fetchExecutionStatusLabel: "Fetch execution status: Preview payload",
+    fetchExecutionPayloadLabel:
+      "Execution payload: Preview payload available from no-network live-preview execution.",
+    fetchExecutionSourceLabel:
+      "Execution source transport call: Preview payload from GET OpenClaw live endpoint pending configuration?view=plaza&workspace=mii-plaza-client",
+    fetchExecutionTargetLabel:
+      "Execution target: OpenClaw live network execution",
+    fetchExecutionModeLabel: "Execution mode: Preview",
     executorLabel: "Dry run needs config",
     executorSummary: "Configure a live OpenClaw endpoint before enabling fetch execution.",
   });

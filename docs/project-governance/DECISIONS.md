@@ -321,3 +321,11 @@ Represent the next network-execution-boundary `OpenClaw` state as a typed fetch-
 
 Why:
 This keeps transport-invocation posture separate from the eventual execution step while giving preview and future live-capable runners one stable execution handoff shape. Diagnostics can describe the next executable boundary without implying that a real network call has already been performed.
+
+### Resolve execution-delegate records from fetch-execution metadata before real transport implementation exists
+
+Decision:
+Represent the next transport-implementation-boundary `OpenClaw` state as a typed execution-delegate record derived from the shared fetch-execution seam, and carry that record on the shared request contract before wiring any concrete live network transport implementation.
+
+Why:
+This keeps the executable network posture separate from the eventual transport implementation while giving preview and future live-capable runners one stable delegate handoff shape. Diagnostics can show which transport boundary would receive control next without implying that a real network implementation has been invoked.

@@ -115,6 +115,13 @@ export interface PlazaWorldDataRequestCopy {
   transportCallSourceLabel: string | null;
   transportCallTargetLabel: string | null;
   transportCallModeLabel: string | null;
+  fetchExecutionLabel: string | null;
+  fetchExecutionSummary: string | null;
+  fetchExecutionStatusLabel: string | null;
+  fetchExecutionPayloadLabel: string | null;
+  fetchExecutionSourceLabel: string | null;
+  fetchExecutionTargetLabel: string | null;
+  fetchExecutionModeLabel: string | null;
   executorLabel: string | null;
   executorSummary: string | null;
 }
@@ -517,6 +524,29 @@ export function describeWorldDataRequest(
     transportCallModeLabel: request.transportCall
       ? `Transport mode: ${
           request.transportCall.runnerMode === "live" ? "Live" : "Preview"
+        }`
+      : null,
+    fetchExecutionLabel: request.fetchExecution?.label ?? null,
+    fetchExecutionSummary: request.fetchExecution?.summary ?? null,
+    fetchExecutionStatusLabel: request.fetchExecution
+      ? `Fetch execution status: ${
+          request.fetchExecution.status === "live-ready"
+            ? "Live ready"
+            : "Preview payload"
+        }`
+      : null,
+    fetchExecutionPayloadLabel: request.fetchExecution
+      ? `Execution payload: ${request.fetchExecution.payloadLabel}`
+      : null,
+    fetchExecutionSourceLabel: request.fetchExecution
+      ? `Execution source transport call: ${request.fetchExecution.sourceTransportCallLabel}`
+      : null,
+    fetchExecutionTargetLabel: request.fetchExecution
+      ? `Execution target: ${request.fetchExecution.executionTargetLabel}`
+      : null,
+    fetchExecutionModeLabel: request.fetchExecution
+      ? `Execution mode: ${
+          request.fetchExecution.runnerMode === "live" ? "Live" : "Preview"
         }`
       : null,
     executorLabel: executorCopy?.label ?? null,
