@@ -279,22 +279,27 @@ export function createOpenClawPreviewExecutorContract(
   };
 }
 
-export function createOpenClawPreviewFetchRunnerFactory(
+export function createOpenClawFetchRunnerFactory(
   request: PlazaWorldDataRequest
 ): OpenClawFetchRunnerFactory<OpenClawLiveResponsePayload> {
   return {
     metadata:
       request.fetchRunnerFactory ?? {
-        id: "openclaw-preview-runner-factory",
-        label: "Preview fetch-runner factory",
+        id: "openclaw-runner-factory",
+        label: "OpenClaw fetch-runner factory",
         summary:
-          "Chooses the preview fetch runner now and leaves room for future live-capable runner selection.",
+          "Chooses between preview and live-capable runner implementations without changing the transport delegate seam.",
       },
     createRunner() {
-      return createOpenClawPreviewFetchRunner(request);
+      return request.liveEnabled
+        ? createOpenClawLiveStubFetchRunner(request)
+        : createOpenClawPreviewFetchRunner(request);
     },
   };
 }
+
+export const createOpenClawPreviewFetchRunnerFactory =
+  createOpenClawFetchRunnerFactory;
 
 export function createOpenClawPreviewTransportDelegate(
   request: PlazaWorldDataRequest,
@@ -327,6 +332,25 @@ export function createOpenClawPreviewFetchRunner(
         mode: "preview",
         summary:
           "Provides preview payloads for the transport delegate without invoking a real network fetch.",
+      },
+    async run(now: Date | string | number = Date.now()) {
+      return createOpenClawLivePreviewResponsePayload(now);
+    },
+  };
+}
+
+export function createOpenClawLiveStubFetchRunner(
+  request: PlazaWorldDataRequest
+): OpenClawFetchRunner<OpenClawLiveResponsePayload> {
+  return {
+    metadata:
+      request.fetchRunner ?? {
+        id: "openclaw-live-runner-stub",
+        label: "Live-capable fetch runner stub",
+        contract: "network-capable",
+        mode: "live",
+        summary:
+          "Represents the future live fetch runner while still returning preview payloads without network I/O.",
       },
     async run(now: Date | string | number = Date.now()) {
       return createOpenClawLivePreviewResponsePayload(now);
@@ -445,18 +469,22 @@ export function resolveOpenClawLiveRequestOverrides(
       "Consumes the request descriptor and returns a preview payload without network I/O.",
   };
   const fetchRunner: PlazaWorldDataRequestFetchRunner = {
-    id: "openclaw-preview-runner",
-    label: "Preview fetch runner",
+    id: overrides.liveEnabled ? "openclaw-live-runner-stub" : "openclaw-preview-runner",
+    label: overrides.liveEnabled
+      ? "Live-capable fetch runner stub"
+      : "Preview fetch runner",
     contract: "network-capable",
-    mode: "preview",
+    mode: overrides.liveEnabled ? "live" : "preview",
     summary:
-      "Provides preview payloads for the transport delegate without invoking a real network fetch.",
+      overrides.liveEnabled
+        ? "Represents the future live fetch runner while still returning preview payloads without network I/O."
+        : "Provides preview payloads for the transport delegate without invoking a real network fetch.",
   };
   const fetchRunnerFactory: PlazaWorldDataRequestFetchRunnerFactory = {
-    id: "openclaw-preview-runner-factory",
-    label: "Preview fetch-runner factory",
+    id: "openclaw-runner-factory",
+    label: "OpenClaw fetch-runner factory",
     summary:
-      "Chooses the preview fetch runner now and leaves room for future live-capable runner selection.",
+      "Chooses between preview and live-capable runner implementations without changing the transport delegate seam.",
   };
   const executor = planOpenClawLiveFetchExecutor({
     transport: "http",

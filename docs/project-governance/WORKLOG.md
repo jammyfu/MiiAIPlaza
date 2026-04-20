@@ -87,3 +87,6 @@
 - Added a preview fetch-runner factory for `OpenClaw` so the executor now acquires runners through an explicit selection seam instead of constructing them inline.
 - Surfaced runner-factory metadata through plaza diagnostics, HUD provider metadata, and the shared `Provider Status` hotspot so future live-capable runner selection already has a visible slot.
 - Expanded verification to cover runner-factory behavior and advanced `CURRENT_PLAN.md` to the next live-capable runner-stub slice.
+- Added a live-capable `OpenClaw` runner stub and factory selection policy so `liveEnabled` requests now choose a live-mode runner without introducing any real network traffic.
+- Kept diagnostics, HUD provider metadata, and the shared `Provider Status` hotspot compatible with the new live-capable runner-stub posture.
+- Expanded verification to cover runner selection behavior and advanced `CURRENT_PLAN.md` to the next runner-envelope slice.

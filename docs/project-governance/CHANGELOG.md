@@ -37,3 +37,4 @@
 - Added an injected `OpenClaw` preview fetch runner so the preview transport delegate now exposes the exact runner seam future live network fetches can replace.
 - Added network-capable contract metadata to the `OpenClaw` preview fetch runner so diagnostics can distinguish the long-term runner contract from the current preview-only implementation.
 - Added a preview `OpenClaw` fetch-runner factory so the executor now selects runners through an explicit policy seam before any live-capable runner exists.
+- Added a live-capable `OpenClaw` runner stub and factory selection policy so `liveEnabled` requests now exercise the future live runner path without making network calls.

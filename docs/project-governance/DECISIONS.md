@@ -225,3 +225,11 @@ Introduce a dedicated fetch-runner factory so the executor contract obtains the 
 
 Why:
 The next step will add a live-capable runner stub. Putting selection behind a factory now means that new runner can be introduced as a policy choice, not as a structural rewrite of the executor or transport delegate layers.
+
+### Use a live-capable stub before real network fetch execution exists
+
+Decision:
+When `OpenClaw` requests are marked `liveEnabled`, have the runner factory select a live-mode stub runner that still returns preview payloads instead of attempting network access.
+
+Why:
+This lets the live path exercise runner selection and diagnostics honestly before real transport exists, while keeping the actual fetch boundary unchanged and safe in restricted environments.

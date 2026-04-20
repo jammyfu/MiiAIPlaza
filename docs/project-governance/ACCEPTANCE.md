@@ -31,6 +31,7 @@
 - The `OpenClaw` live-preview transport delegate now calls through an injected preview fetch runner instead of generating payloads inline.
 - The `OpenClaw` preview fetch runner now explicitly declares network-capable contract metadata while remaining a preview-mode implementation.
 - The `OpenClaw` executor now acquires its preview fetch runner through a dedicated runner factory instead of constructing the runner inline.
+- The `OpenClaw` runner factory now selects a live-mode stub runner for `liveEnabled` requests while still avoiding real network I/O.
 
 ## Current Verification Evidence
 
@@ -67,3 +68,4 @@
 - The preview transport delegate now reuses a named preview fetch runner so future network-capable runners can swap in behind the same transport boundary.
 - The preview fetch runner now surfaces network-capable contract posture so future runner selection can remain additive instead of restructuring diagnostics or request metadata.
 - The preview executor now reuses a named fetch-runner factory so future live-capable runner selection can remain additive behind the same delegate boundary.
+- The live path now exercises runner selection through a live-capable stub so future live fetch execution can replace behavior instead of redesigning the runner boundary.
