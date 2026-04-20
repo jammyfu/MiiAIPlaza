@@ -4,6 +4,7 @@ import {
   createOpenClawPresenceFixture,
   createOpenClawFixtureWorldData,
   createOpenClawLiveRequestConfig,
+  normalizeOpenClawLiveResponsePayload,
   resolveOpenClawLiveRequestOverrides,
   openClawPresenceAdapter,
   openClawPresenceFixture,
@@ -119,4 +120,112 @@ test("openclaw request overrides can opt into a session-backed live configuratio
       summary: "Executor seam is configured for live OpenClaw fetches once network calls are allowed.",
     },
   });
+});
+
+test("openclaw live responses normalize into the existing fixture payload shape", () => {
+  const normalized = normalizeOpenClawLiveResponsePayload({
+    generated_at: "2026-04-20T10:12:00Z",
+    workspace: "mii-plaza-client",
+    agents: [
+      {
+        agent_id: "openclaw-live",
+        display_name: "OpenClaw Live",
+        role_name: "Execution Captain",
+        state: "running",
+        summary: "Streaming a live rollout",
+        task: "Normalizing live payloads into fixture-compatible residents",
+        mood: "focused",
+        updated_at: "2026-04-20T10:11:00Z",
+        location: "Fountain Walk",
+        activity_score: 0.97,
+        tags: ["plans", "tools"],
+        palette: {
+          primary: "#ff8a4c",
+          accent: "#ffd166",
+        },
+        bio: "Carries future live provider data into the plaza contract.",
+        prompt: "Inspect how live response payloads normalize into plaza residents.",
+        highlights: [
+          "Maps future live payload fields into the shared fixture shape.",
+        ],
+        position: {
+          x: -3,
+          z: 2,
+        },
+      },
+    ],
+  });
+
+  expect(normalized).toEqual({
+    generatedAt: "2026-04-20T10:12:00Z",
+    workspace: "mii-plaza-client",
+    agents: [
+      {
+        id: "openclaw-live",
+        name: "OpenClaw Live",
+        occupation: "Execution Captain",
+        state: "running",
+        summary: "Streaming a live rollout",
+        task: "Normalizing live payloads into fixture-compatible residents",
+        vibe: "focused",
+        seenAt: "2026-04-20T10:11:00Z",
+        zone: "Fountain Walk",
+        score: 0.97,
+        tags: ["plans", "tools"],
+        palette: {
+          primary: "#ff8a4c",
+          accent: "#ffd166",
+        },
+        bio: "Carries future live provider data into the plaza contract.",
+        prompt: "Inspect how live response payloads normalize into plaza residents.",
+        highlights: [
+          "Maps future live payload fields into the shared fixture shape.",
+        ],
+        plazaPosition: {
+          x: -3,
+          z: 2,
+        },
+      },
+    ],
+  });
+});
+
+test("openclaw normalized live responses can hydrate through the existing world-data path", () => {
+  const normalized = normalizeOpenClawLiveResponsePayload({
+    generated_at: "2026-04-20T10:12:00Z",
+    workspace: "mii-plaza-client",
+    agents: [
+      {
+        agent_id: "openclaw-live",
+        display_name: "OpenClaw Live",
+        role_name: "Execution Captain",
+        state: "ready",
+        summary: "Live payload normalized",
+        task: "Passing through the existing plaza adapter seam",
+        mood: "steady",
+        updated_at: "2026-04-20T10:10:00Z",
+        location: "Board Walk",
+        activity_score: 0.72,
+        tags: ["verification"],
+        palette: {
+          primary: "#4cc9f0",
+          accent: "#90f1ef",
+        },
+        bio: "Proves that live responses can reuse the current contract path.",
+        prompt: "Inspect the normalized live response seam.",
+        highlights: ["Reuses the existing fixture-backed world-data path."],
+        position: {
+          x: 4,
+          z: 1,
+        },
+      },
+    ],
+  });
+
+  const worldData = createOpenClawFixtureWorldData(normalized);
+
+  expect(worldData.residents.length).toBe(1);
+  expect(worldData.residents[0]?.agent.id).toBe("openclaw-live");
+  expect(worldData.residents[0]?.presence.status).toBe("idle");
+  expect(worldData.source.request?.executor?.status).toBe("needs-config");
 });

@@ -21,6 +21,7 @@
 - The plaza source contract now carries typed live-request metadata so future `OpenClaw` endpoint/auth setup is visible without making network calls.
 - The `OpenClaw` provider now resolves typed endpoint/auth overrides through a single helper before any live fetch execution exists.
 - The `OpenClaw` request seam now carries typed executor posture so future live fetch readiness is visible without making network calls.
+- The `OpenClaw` provider now has a typed live response normalizer that feeds future payloads back into the existing fixture-backed contract path.
 
 ## Current Verification Evidence
 
@@ -47,3 +48,4 @@
 - The `OpenClaw` fixture source now exposes typed live-request metadata, and provider diagnostics render that request posture without requiring a real endpoint.
 - The `OpenClaw` request seam now has a dedicated override resolver so future live executors can consume one normalized endpoint/auth configuration path.
 - The plaza HUD and provider-status diagnostics now expose typed `OpenClaw` executor posture without requiring a real fetch implementation.
+- Future live `OpenClaw` responses can now normalize into the existing fixture payload shape and hydrate through the current adapter/world-data path.

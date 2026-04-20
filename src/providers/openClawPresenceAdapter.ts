@@ -41,6 +41,37 @@ export interface OpenClawFixturePayload {
   agents: OpenClawFixtureAgent[];
 }
 
+export interface OpenClawLiveResponseAgent {
+  agent_id: string;
+  display_name: string;
+  role_name: string;
+  state: OpenClawFixtureAgent["state"];
+  summary: string;
+  task: string;
+  mood: string;
+  updated_at: string;
+  location: string;
+  activity_score: number;
+  tags: string[];
+  palette: {
+    primary: string;
+    accent: string;
+  };
+  bio: string;
+  prompt: string;
+  highlights: string[];
+  position: {
+    x: number;
+    z: number;
+  };
+}
+
+export interface OpenClawLiveResponsePayload {
+  generated_at: string;
+  workspace: string;
+  agents: OpenClawLiveResponseAgent[];
+}
+
 function isoOffset(baseTimestamp: number, minutesAgo: number): string {
   return new Date(baseTimestamp - minutesAgo * 60_000).toISOString();
 }
@@ -142,6 +173,33 @@ export function createOpenClawPresenceFixture(
 
 export const openClawPresenceFixture: OpenClawFixturePayload =
   createOpenClawPresenceFixture("2026-04-20T10:12:00Z");
+
+export function normalizeOpenClawLiveResponsePayload(
+  payload: OpenClawLiveResponsePayload
+): OpenClawFixturePayload {
+  return {
+    generatedAt: payload.generated_at,
+    workspace: payload.workspace,
+    agents: payload.agents.map((agent) => ({
+      id: agent.agent_id,
+      name: agent.display_name,
+      occupation: agent.role_name,
+      state: agent.state,
+      summary: agent.summary,
+      task: agent.task,
+      vibe: agent.mood,
+      seenAt: agent.updated_at,
+      zone: agent.location,
+      score: agent.activity_score,
+      tags: agent.tags,
+      palette: agent.palette,
+      bio: agent.bio,
+      prompt: agent.prompt,
+      highlights: agent.highlights,
+      plazaPosition: agent.position,
+    })),
+  };
+}
 
 export interface OpenClawLiveRequestOverrides {
   endpointUrl?: string;

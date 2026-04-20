@@ -145,3 +145,11 @@ Represent future live-fetch executor posture directly on `PlazaWorldDataRequest`
 
 Why:
 This makes the executor seam explicit and testable, keeps dry-run versus live-ready behavior visible without network traffic, and gives the eventual live provider implementation a stable place to expose execution readiness.
+
+### Normalize future live `OpenClaw` responses into the fixture shape first
+
+Decision:
+Map future live `OpenClaw` response payloads into the existing fixture payload shape before they enter the shared adapter and world-data path.
+
+Why:
+This keeps the current runtime contracts stable, lets future live fetch work reuse the same downstream path as fixture data, and prevents the page/runtime layers from depending on raw external payload structure.
