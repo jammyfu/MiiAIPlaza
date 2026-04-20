@@ -258,6 +258,14 @@ Represent the normalization-ready `OpenClaw` handoff as a typed response-envelop
 Why:
 This keeps placeholder transport results separate from the next normalization stage. Future live execution can move from result to normalization handoff without refactoring runners or diagnostics, while the current preview path can already describe what normalization target would receive the payload.
 
+### Resolve normalizer handoffs from response envelopes before execution payloads exist
+
+Decision:
+Represent the next execution-boundary `OpenClaw` state as a typed normalizer-handoff record derived from the shared response-envelope seam, and carry that handoff on the shared request contract before wiring any concrete execution payload or live transport execution step.
+
+Why:
+This keeps normalization-target posture separate from the next execution-boundary shape. Future live execution can move from normalization handoff to execution payload without redesigning diagnostics or runner seams, while the current preview path can already describe what the normalization boundary would hand forward.
+
 ### Select fetch runners through a factory before introducing live-capable implementations
 
 Decision:

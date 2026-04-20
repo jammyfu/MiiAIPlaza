@@ -300,6 +300,41 @@ export function createPlazaExperience({
                 ? `<small>${requestCopy.responseEnvelopeModeLabel}</small>`
                 : ""
             }
+            ${
+              requestCopy?.normalizerHandoffLabel
+                ? `<small>${requestCopy.normalizerHandoffLabel}</small>`
+                : ""
+            }
+            ${
+              requestCopy?.normalizerHandoffSummary
+                ? `<small>${requestCopy.normalizerHandoffSummary}</small>`
+                : ""
+            }
+            ${
+              requestCopy?.normalizerHandoffStatusLabel
+                ? `<small>${requestCopy.normalizerHandoffStatusLabel}</small>`
+                : ""
+            }
+            ${
+              requestCopy?.normalizerHandoffPayloadLabel
+                ? `<small>${requestCopy.normalizerHandoffPayloadLabel}</small>`
+                : ""
+            }
+            ${
+              requestCopy?.normalizerHandoffSourceLabel
+                ? `<small>${requestCopy.normalizerHandoffSourceLabel}</small>`
+                : ""
+            }
+            ${
+              requestCopy?.normalizerHandoffTargetLabel
+                ? `<small>${requestCopy.normalizerHandoffTargetLabel}</small>`
+                : ""
+            }
+            ${
+              requestCopy?.normalizerHandoffModeLabel
+                ? `<small>${requestCopy.normalizerHandoffModeLabel}</small>`
+                : ""
+            }
             ${requestCopy?.executorLabel ? `<small>${requestCopy.executorLabel}</small>` : ""}
             ${
               requestCopy?.executorSummary

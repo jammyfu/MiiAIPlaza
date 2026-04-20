@@ -10,6 +10,7 @@ import type {
   PlazaWorldDataRequestFetchAttempt,
   PlazaWorldDataRequestFetchResult,
   PlazaWorldDataRequestResponseEnvelope,
+  PlazaWorldDataRequestNormalizerHandoff,
   PlazaWorldDataRequestBuilder,
   PlazaWorldDataRequestRunnerEnvelope,
   PlazaWorldDataRequestTransportDelegate,
@@ -120,6 +121,7 @@ export interface OpenClawFetchRunner<TPayload> {
   fetchAttempt: PlazaWorldDataRequestFetchAttempt;
   fetchResult: PlazaWorldDataRequestFetchResult;
   responseEnvelope: PlazaWorldDataRequestResponseEnvelope;
+  normalizerHandoff: PlazaWorldDataRequestNormalizerHandoff;
   run(now?: Date | string | number): Promise<TPayload>;
 }
 
@@ -310,6 +312,9 @@ export function createOpenClawFetchRunnerFactory(
   const responseEnvelope =
     request.responseEnvelope ??
     createOpenClawLiveResponseEnvelope(fetchResult);
+  const normalizerHandoff =
+    request.normalizerHandoff ??
+    createOpenClawLiveNormalizerHandoff(responseEnvelope);
 
   return {
     metadata:
@@ -327,7 +332,8 @@ export function createOpenClawFetchRunnerFactory(
             requestBuilder,
             fetchAttempt,
             fetchResult,
-            responseEnvelope
+            responseEnvelope,
+            normalizerHandoff
           )
         : createOpenClawPreviewFetchRunner(
             request,
@@ -335,7 +341,8 @@ export function createOpenClawFetchRunnerFactory(
             requestBuilder,
             fetchAttempt,
             fetchResult,
-            responseEnvelope
+            responseEnvelope,
+            normalizerHandoff
           );
     },
   };
@@ -375,7 +382,10 @@ export function createOpenClawPreviewFetchRunner(
   fetchResult: PlazaWorldDataRequestFetchResult =
     request.fetchResult ?? createOpenClawLiveFetchResult(fetchAttempt),
   responseEnvelope: PlazaWorldDataRequestResponseEnvelope =
-    request.responseEnvelope ?? createOpenClawLiveResponseEnvelope(fetchResult)
+    request.responseEnvelope ?? createOpenClawLiveResponseEnvelope(fetchResult),
+  normalizerHandoff: PlazaWorldDataRequestNormalizerHandoff =
+    request.normalizerHandoff ??
+    createOpenClawLiveNormalizerHandoff(responseEnvelope)
 ): OpenClawFetchRunner<OpenClawLiveResponsePayload> {
   return {
     metadata:
@@ -392,6 +402,7 @@ export function createOpenClawPreviewFetchRunner(
     fetchAttempt,
     fetchResult,
     responseEnvelope,
+    normalizerHandoff,
     async run(now: Date | string | number = Date.now()) {
       return createOpenClawLivePreviewResponsePayload(now, {
         workspace: envelope.workspaceHint,
@@ -412,7 +423,10 @@ export function createOpenClawLiveStubFetchRunner(
   fetchResult: PlazaWorldDataRequestFetchResult =
     request.fetchResult ?? createOpenClawLiveFetchResult(fetchAttempt),
   responseEnvelope: PlazaWorldDataRequestResponseEnvelope =
-    request.responseEnvelope ?? createOpenClawLiveResponseEnvelope(fetchResult)
+    request.responseEnvelope ?? createOpenClawLiveResponseEnvelope(fetchResult),
+  normalizerHandoff: PlazaWorldDataRequestNormalizerHandoff =
+    request.normalizerHandoff ??
+    createOpenClawLiveNormalizerHandoff(responseEnvelope)
 ): OpenClawFetchRunner<OpenClawLiveResponsePayload> {
   return {
     metadata:
@@ -429,6 +443,7 @@ export function createOpenClawLiveStubFetchRunner(
     fetchAttempt,
     fetchResult,
     responseEnvelope,
+    normalizerHandoff,
     async run(now: Date | string | number = Date.now()) {
       return createOpenClawLivePreviewResponsePayload(now, {
         workspace: envelope.workspaceHint,
@@ -627,6 +642,22 @@ export function createOpenClawLiveResponseEnvelope(
   };
 }
 
+export function createOpenClawLiveNormalizerHandoff(
+  responseEnvelope: PlazaWorldDataRequestResponseEnvelope
+): PlazaWorldDataRequestNormalizerHandoff {
+  return {
+    id: "openclaw-live-normalizer-handoff",
+    label: "OpenClaw live normalizer handoff",
+    summary:
+      "Represents the placeholder normalization-boundary state derived from the response envelope before payload normalization runs.",
+    status: responseEnvelope.status,
+    payloadLabel: responseEnvelope.payloadLabel,
+    sourceEnvelopeLabel: responseEnvelope.sourceResultLabel,
+    normalizationTargetLabel: responseEnvelope.normalizationTargetLabel,
+    runnerMode: responseEnvelope.runnerMode,
+  };
+}
+
 export function resolveOpenClawLiveRequestOverrides(
   overrides: OpenClawLiveRequestOverrides = {}
 ): PlazaWorldDataRequest {
@@ -683,6 +714,8 @@ export function resolveOpenClawLiveRequestOverrides(
   );
   const fetchResult = createOpenClawLiveFetchResult(fetchAttempt);
   const responseEnvelope = createOpenClawLiveResponseEnvelope(fetchResult);
+  const normalizerHandoff =
+    createOpenClawLiveNormalizerHandoff(responseEnvelope);
   const executor = planOpenClawLiveFetchExecutor({
     transport: "http",
     endpointLabel,
@@ -697,6 +730,7 @@ export function resolveOpenClawLiveRequestOverrides(
     fetchAttempt,
     fetchResult,
     responseEnvelope,
+    normalizerHandoff,
     ...(overrides.workspaceHint
       ? { workspaceHint: overrides.workspaceHint }
       : {}),
@@ -716,6 +750,7 @@ export function resolveOpenClawLiveRequestOverrides(
     fetchAttempt,
     fetchResult,
     responseEnvelope,
+    normalizerHandoff,
     ...(overrides.workspaceHint
       ? { workspaceHint: overrides.workspaceHint }
       : {}),

@@ -197,6 +197,18 @@ test("openclaw request overrides resolve endpoint and auth posture without enabl
       normalizationTargetLabel: "OpenClaw live response normalizer",
       runnerMode: "preview",
     },
+    normalizerHandoff: {
+      id: "openclaw-live-normalizer-handoff",
+      label: "OpenClaw live normalizer handoff",
+      summary:
+        "Represents the placeholder normalization-boundary state derived from the response envelope before payload normalization runs.",
+      status: "preview-payload",
+      payloadLabel: "Preview payload available from no-network live-preview execution.",
+      sourceEnvelopeLabel:
+        "Preview payload from GET https://openclaw.example.com/presence?view=plaza&workspace=mii-plaza-client",
+      normalizationTargetLabel: "OpenClaw live response normalizer",
+      runnerMode: "preview",
+    },
     executor: {
       status: "ready",
       mode: "dry-run",
@@ -298,6 +310,18 @@ test("openclaw request overrides can opt into a session-backed live configuratio
       status: "live-ready",
       payloadLabel: "Awaiting a real transport response once live network execution is enabled.",
       sourceResultLabel:
+        "Live-ready placeholder from GET https://openclaw.example.com/presence?view=plaza",
+      normalizationTargetLabel: "OpenClaw live response normalizer",
+      runnerMode: "live",
+    },
+    normalizerHandoff: {
+      id: "openclaw-live-normalizer-handoff",
+      label: "OpenClaw live normalizer handoff",
+      summary:
+        "Represents the placeholder normalization-boundary state derived from the response envelope before payload normalization runs.",
+      status: "live-ready",
+      payloadLabel: "Awaiting a real transport response once live network execution is enabled.",
+      sourceEnvelopeLabel:
         "Live-ready placeholder from GET https://openclaw.example.com/presence?view=plaza",
       normalizationTargetLabel: "OpenClaw live response normalizer",
       runnerMode: "live",
@@ -547,6 +571,7 @@ test("openclaw preview fetch-runner factory selects the preview runner contract"
   expect(runner.fetchAttempt).toEqual(request.fetchAttempt);
   expect(runner.fetchResult).toEqual(request.fetchResult);
   expect(runner.responseEnvelope).toEqual(request.responseEnvelope);
+  expect(runner.normalizerHandoff).toEqual(request.normalizerHandoff);
   const payload = await runner.run("2026-04-20T10:12:00Z");
   expect(payload.generated_at).toBe("2026-04-20T10:12:00.000Z");
   expect(payload.workspace).toBe("mii-plaza-client");
@@ -576,6 +601,7 @@ test("openclaw fetch-runner factory can select the live-capable stub when live m
   expect(runner.fetchAttempt).toEqual(request.fetchAttempt);
   expect(runner.fetchResult).toEqual(request.fetchResult);
   expect(runner.responseEnvelope).toEqual(request.responseEnvelope);
+  expect(runner.normalizerHandoff).toEqual(request.normalizerHandoff);
 
   const payload = await runner.run("2026-04-20T10:12:00Z");
   expect(payload.generated_at).toBe("2026-04-20T10:12:00.000Z");
@@ -603,6 +629,7 @@ test("openclaw preview fetch runner provides the injected preview payload seam",
   expect(runner.fetchAttempt).toEqual(request.fetchAttempt);
   expect(runner.fetchResult).toEqual(request.fetchResult);
   expect(runner.responseEnvelope).toEqual(request.responseEnvelope);
+  expect(runner.normalizerHandoff).toEqual(request.normalizerHandoff);
 
   const payload = await runner.run("2026-04-20T10:12:00Z");
 

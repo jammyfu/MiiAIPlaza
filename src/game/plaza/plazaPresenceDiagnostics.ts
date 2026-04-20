@@ -73,6 +73,13 @@ export interface PlazaWorldDataRequestCopy {
   responseEnvelopeSourceLabel: string | null;
   responseEnvelopeTargetLabel: string | null;
   responseEnvelopeModeLabel: string | null;
+  normalizerHandoffLabel: string | null;
+  normalizerHandoffSummary: string | null;
+  normalizerHandoffStatusLabel: string | null;
+  normalizerHandoffPayloadLabel: string | null;
+  normalizerHandoffSourceLabel: string | null;
+  normalizerHandoffTargetLabel: string | null;
+  normalizerHandoffModeLabel: string | null;
   executorLabel: string | null;
   executorSummary: string | null;
 }
@@ -337,6 +344,29 @@ export function describeWorldDataRequest(
     responseEnvelopeModeLabel: request.responseEnvelope
       ? `Envelope mode: ${
           request.responseEnvelope.runnerMode === "live" ? "Live" : "Preview"
+        }`
+      : null,
+    normalizerHandoffLabel: request.normalizerHandoff?.label ?? null,
+    normalizerHandoffSummary: request.normalizerHandoff?.summary ?? null,
+    normalizerHandoffStatusLabel: request.normalizerHandoff
+      ? `Normalizer handoff status: ${
+          request.normalizerHandoff.status === "live-ready"
+            ? "Live ready"
+            : "Preview payload"
+        }`
+      : null,
+    normalizerHandoffPayloadLabel: request.normalizerHandoff
+      ? `Normalizer payload: ${request.normalizerHandoff.payloadLabel}`
+      : null,
+    normalizerHandoffSourceLabel: request.normalizerHandoff
+      ? `Normalizer source envelope: ${request.normalizerHandoff.sourceEnvelopeLabel}`
+      : null,
+    normalizerHandoffTargetLabel: request.normalizerHandoff
+      ? `Normalizer target: ${request.normalizerHandoff.normalizationTargetLabel}`
+      : null,
+    normalizerHandoffModeLabel: request.normalizerHandoff
+      ? `Normalizer mode: ${
+          request.normalizerHandoff.runnerMode === "live" ? "Live" : "Preview"
         }`
       : null,
     executorLabel: executorCopy?.label ?? null,

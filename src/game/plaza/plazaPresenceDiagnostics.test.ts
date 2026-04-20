@@ -231,6 +231,18 @@ test("world data request copy stays readable in the hud and provider status flow
       normalizationTargetLabel: "OpenClaw live response normalizer",
       runnerMode: "preview",
     },
+    normalizerHandoff: {
+      id: "openclaw-live-normalizer-handoff",
+      label: "OpenClaw live normalizer handoff",
+      summary:
+        "Represents the placeholder normalization-boundary state derived from the response envelope before payload normalization runs.",
+      status: "preview-payload",
+      payloadLabel: "Preview payload available from no-network live-preview execution.",
+      sourceEnvelopeLabel:
+        "Preview payload from GET OpenClaw live endpoint pending configuration?view=plaza&workspace=mii-plaza-client",
+      normalizationTargetLabel: "OpenClaw live response normalizer",
+      runnerMode: "preview",
+    },
     executor: {
       status: "needs-config",
       mode: "dry-run",
@@ -298,6 +310,17 @@ test("world data request copy stays readable in the hud and provider status flow
     responseEnvelopeTargetLabel:
       "Normalization handoff: OpenClaw live response normalizer",
     responseEnvelopeModeLabel: "Envelope mode: Preview",
+    normalizerHandoffLabel: "OpenClaw live normalizer handoff",
+    normalizerHandoffSummary:
+      "Represents the placeholder normalization-boundary state derived from the response envelope before payload normalization runs.",
+    normalizerHandoffStatusLabel: "Normalizer handoff status: Preview payload",
+    normalizerHandoffPayloadLabel:
+      "Normalizer payload: Preview payload available from no-network live-preview execution.",
+    normalizerHandoffSourceLabel:
+      "Normalizer source envelope: Preview payload from GET OpenClaw live endpoint pending configuration?view=plaza&workspace=mii-plaza-client",
+    normalizerHandoffTargetLabel:
+      "Normalizer target: OpenClaw live response normalizer",
+    normalizerHandoffModeLabel: "Normalizer mode: Preview",
     executorLabel: "Dry run needs config",
     executorSummary: "Configure a live OpenClaw endpoint before enabling fetch execution.",
   });
