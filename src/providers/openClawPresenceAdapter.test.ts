@@ -5,6 +5,7 @@ import {
   createOpenClawFixtureWorldData,
   createOpenClawLiveRequestConfig,
   createOpenClawLiveProviderSkeleton,
+  executeOpenClawLivePreview,
   normalizeOpenClawLiveResponsePayload,
   openClawLivePreviewWorldDataProvider,
   resolveOpenClawLiveRequestOverrides,
@@ -284,6 +285,23 @@ test("openclaw live provider skeleton composes request, normalization, and world
   expect(worldData.source.request).toEqual(skeleton.request);
   expect(worldData.residents[0]?.agent.id).toBe("openclaw-live");
   expect(worldData.residents[0]?.presence.status).toBe("active");
+});
+
+test("openclaw live preview executor returns typed preview results without network calls", () => {
+  const request = resolveOpenClawLiveRequestOverrides({
+    endpointUrl: "https://openclaw.example.com/presence",
+    authTokenName: "OPENCLAW_TOKEN",
+    workspaceHint: "mii-plaza-client",
+  });
+
+  const result = executeOpenClawLivePreview(request, "2026-04-20T10:12:00Z");
+
+  expect(result.mode).toBe("preview");
+  expect(result.request).toEqual(request);
+  expect(result.payload.generated_at).toBe("2026-04-20T10:12:00.000Z");
+  expect(result.payload.workspace).toBe("mii-plaza-client");
+  expect(result.payload.agents.length).toBeGreaterThan(0);
+  expect(result.payload.agents[0]?.agent_id).toBe("openclaw");
 });
 
 test("openclaw live preview provider exposes a selectable live-mode entrypoint without network calls", async () => {

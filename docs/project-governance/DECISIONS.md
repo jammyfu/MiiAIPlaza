@@ -169,3 +169,11 @@ Expose a selectable `openclaw-live-preview` provider entrypoint that advertises 
 
 Why:
 This lets the page layer exercise the future live-provider branch without introducing fetch behavior yet, keeps provider selection explicit, and gives later executor work a stable live-mode entrypoint instead of retrofitting one after the fact.
+
+### Route live-preview loading through an explicit preview executor
+
+Decision:
+Represent the current no-network `OpenClaw` live-preview step as a typed executor function that takes resolved request metadata and returns preview payloads.
+
+Why:
+This turns the live-preview path into a true execution seam instead of a direct helper call, which makes the future jump to real transport execution smaller and keeps provider composition honest about where execution begins.

@@ -2,29 +2,29 @@
 
 ## Goal
 
-Prepare the first no-network `OpenClaw` fetch executor implementation slice behind the live provider entrypoint.
+Prepare the first network-ready `OpenClaw` executor contract without performing network calls yet.
 
 ## In Scope
 
 - Keep the current mock, fixture, and live-preview providers as the only runtime data sources
-- Add the first no-network executor implementation shape behind the typed live provider entrypoint
+- Add a network-ready executor contract that can later swap in real transport behind the existing preview executor
 - Preserve the current request metadata, executor metadata, normalization metadata, refresh controller, polling-plan metadata, and fallback behavior
-- Extend tests and docs for executor implementation preparation without adding network traffic
+- Extend tests and docs for network-ready executor preparation without adding network traffic
 
 ## Tasks
 
-- [ ] Add the first typed no-network executor implementation behind the `OpenClaw` live provider entrypoint
-- [ ] Keep fixture-backed request, executor, normalization, and live-preview seams aligned with the same implementation assumptions
-- [ ] Keep the current diagnostics and refresh UI compatible with future executor implementation metadata
-- [ ] Extend tests and governance docs for executor implementation preparation before real network calls arrive
+- [ ] Add a typed network-ready executor contract for future `OpenClaw` transport implementations
+- [ ] Keep preview, request, normalization, and live-preview seams aligned with the same executor-contract assumptions
+- [ ] Keep the current diagnostics and refresh UI compatible with future network-ready executor metadata
+- [ ] Extend tests and governance docs for executor-contract preparation before real network calls arrive
 
 ## Acceptance
 
 - `python3 tools/verify.py` succeeds locally
 - The plaza continues to boot from the current mock provider without breaking the editor flow
-- The live `OpenClaw` path has a typed no-network executor implementation behind the live provider entrypoint
-- The existing diagnostics and refresh UI remain compatible with future executor implementation metadata
-- The next step from no-network executor implementation to actual live fetch execution remains explicit in code and docs
+- The live `OpenClaw` path has a typed network-ready executor contract without performing network calls
+- The existing diagnostics and refresh UI remain compatible with future executor-contract metadata
+- The next step from executor contract to actual live fetch execution remains explicit in code and docs
 
 ## Out Of Scope
 

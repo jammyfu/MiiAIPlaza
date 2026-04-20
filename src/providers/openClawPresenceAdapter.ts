@@ -82,6 +82,12 @@ export interface OpenClawLiveProviderSkeleton {
   ) => PlazaWorldData;
 }
 
+export interface OpenClawLivePreviewExecution {
+  mode: "preview";
+  request: PlazaWorldDataRequest;
+  payload: OpenClawLiveResponsePayload;
+}
+
 function isoOffset(baseTimestamp: number, minutesAgo: number): string {
   return new Date(baseTimestamp - minutesAgo * 60_000).toISOString();
 }
@@ -209,6 +215,17 @@ export function createOpenClawLivePreviewResponsePayload(
       highlights: agent.highlights,
       position: agent.plazaPosition,
     })),
+  };
+}
+
+export function executeOpenClawLivePreview(
+  request: PlazaWorldDataRequest,
+  now: Date | string | number = Date.now()
+): OpenClawLivePreviewExecution {
+  return {
+    mode: "preview",
+    request,
+    payload: createOpenClawLivePreviewResponsePayload(now),
   };
 }
 
@@ -441,9 +458,8 @@ export const openClawLivePreviewWorldDataProvider: PlazaWorldDataProvider = {
       authTokenName: "OPENCLAW_TOKEN",
       workspaceHint: "mii-plaza-client",
     });
-    const worldData = skeleton.createWorldDataFromResponse(
-      createOpenClawLivePreviewResponsePayload()
-    );
+    const execution = executeOpenClawLivePreview(skeleton.request);
+    const worldData = skeleton.createWorldDataFromResponse(execution.payload);
 
     return {
       ...worldData,

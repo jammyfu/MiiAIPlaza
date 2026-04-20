@@ -66,3 +66,6 @@
 - Added a selectable `openclaw-live-preview` provider entrypoint that exposes `mode: live` while still routing through the composed no-network skeleton.
 - Hooked the new live-preview provider into the plaza page provider map so the entrypoint can be selected without changing the runtime shell.
 - Expanded verification to cover the live-preview entrypoint and advanced `CURRENT_PLAN.md` to the next no-network executor implementation slice.
+- Added a typed no-network `OpenClaw` preview executor that explicitly accepts request metadata and returns preview payloads without transport.
+- Wired the live-preview provider through that executor so the live-mode branch now goes through an explicit execution step instead of calling preview payload helpers directly.
+- Expanded verification to cover the preview executor and advanced `CURRENT_PLAN.md` to the next network-ready executor contract slice.

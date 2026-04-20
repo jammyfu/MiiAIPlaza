@@ -24,6 +24,7 @@
 - The `OpenClaw` provider now has a typed live response normalizer that feeds future payloads back into the existing fixture-backed contract path.
 - The `OpenClaw` provider now has a composed live-provider skeleton that wires together request, executor, normalization, and world-data seams without network traffic.
 - The plaza now has a selectable `OpenClaw` live-preview provider entrypoint that exercises the live-mode branch without network calls.
+- The `OpenClaw` live-preview path now uses a typed no-network executor step instead of calling preview payload helpers directly.
 
 ## Current Verification Evidence
 
@@ -53,3 +54,4 @@
 - Future live `OpenClaw` responses can now normalize into the existing fixture payload shape and hydrate through the current adapter/world-data path.
 - The future live `OpenClaw` path now has a composed provider skeleton that reuses the existing fixture-backed contract path end to end.
 - The page can now select a live-mode `OpenClaw` provider entrypoint while still reusing the composed no-network provider skeleton.
+- The live-preview provider now executes through a typed preview executor that accepts resolved request metadata and returns preview payloads.
