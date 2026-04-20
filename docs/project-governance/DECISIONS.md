@@ -153,3 +153,11 @@ Map future live `OpenClaw` response payloads into the existing fixture payload s
 
 Why:
 This keeps the current runtime contracts stable, lets future live fetch work reuse the same downstream path as fixture data, and prevents the page/runtime layers from depending on raw external payload structure.
+
+### Compose the live provider from reusable provider-layer seams
+
+Decision:
+Represent the future live `OpenClaw` provider as a composition of request resolution, executor posture, response normalization, and world-data hydration helpers before adding network calls.
+
+Why:
+This keeps the eventual live provider implementation thin, makes each pre-network seam independently testable, and ensures live data will reuse the same downstream contract path already proven by fixture data.

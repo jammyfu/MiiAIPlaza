@@ -4,6 +4,7 @@ import {
   createOpenClawPresenceFixture,
   createOpenClawFixtureWorldData,
   createOpenClawLiveRequestConfig,
+  createOpenClawLiveProviderSkeleton,
   normalizeOpenClawLiveResponsePayload,
   resolveOpenClawLiveRequestOverrides,
   openClawPresenceAdapter,
@@ -228,4 +229,58 @@ test("openclaw normalized live responses can hydrate through the existing world-
   expect(worldData.residents[0]?.agent.id).toBe("openclaw-live");
   expect(worldData.residents[0]?.presence.status).toBe("idle");
   expect(worldData.source.request?.executor?.status).toBe("needs-config");
+});
+
+test("openclaw live provider skeleton composes request, normalization, and world hydration", () => {
+  const skeleton = createOpenClawLiveProviderSkeleton({
+    endpointUrl: "https://openclaw.example.com/presence",
+    authTokenName: "OPENCLAW_TOKEN",
+    workspaceHint: "mii-plaza-client",
+  });
+
+  const livePayload = {
+    generated_at: "2026-04-20T10:12:00Z",
+    workspace: "mii-plaza-client",
+    agents: [
+      {
+        agent_id: "openclaw-live",
+        display_name: "OpenClaw Live",
+        role_name: "Execution Captain",
+        state: "running" as const,
+        summary: "Live provider skeleton is ready",
+        task: "Composing future live provider pieces",
+        mood: "focused",
+        updated_at: "2026-04-20T10:11:00Z",
+        location: "Fountain Walk",
+        activity_score: 0.97,
+        tags: ["plans", "tools"],
+        palette: {
+          primary: "#ff8a4c",
+          accent: "#ffd166",
+        },
+        bio: "Proves the live provider seam composes without network traffic.",
+        prompt: "Inspect the composed live provider skeleton.",
+        highlights: ["Reuses request, executor, and normalization seams together."],
+        position: {
+          x: -2,
+          z: 1,
+        },
+      },
+    ],
+  };
+
+  expect(skeleton.request.endpointLabel).toBe("https://openclaw.example.com/presence");
+  expect(skeleton.request.executor).toEqual({
+    status: "ready",
+    mode: "dry-run",
+    summary: "Executor seam is ready; enable live requests when network fetches are introduced.",
+  });
+
+  const normalized = skeleton.normalizeResponse(livePayload);
+  expect(normalized.agents[0]?.id).toBe("openclaw-live");
+
+  const worldData = skeleton.createWorldDataFromResponse(livePayload);
+  expect(worldData.source.request).toEqual(skeleton.request);
+  expect(worldData.residents[0]?.agent.id).toBe("openclaw-live");
+  expect(worldData.residents[0]?.presence.status).toBe("active");
 });

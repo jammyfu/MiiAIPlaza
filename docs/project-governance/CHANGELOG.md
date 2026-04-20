@@ -28,3 +28,4 @@
 - Added a typed `OpenClaw` endpoint/auth override resolver so future live request setup flows through one normalized provider-layer seam.
 - Added typed `OpenClaw` executor posture so future live fetch readiness is visible in the HUD and provider diagnostics before network calls exist.
 - Added a typed `OpenClaw` live response normalizer so future network payloads can reuse the existing fixture-backed plaza contract path.
+- Added a composed `OpenClaw` live provider skeleton so future live fetch execution can plug into one reusable provider-layer assembly.

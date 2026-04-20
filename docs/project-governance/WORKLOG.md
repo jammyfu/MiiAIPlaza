@@ -60,3 +60,6 @@
 - Added a typed `OpenClaw` live response normalizer that maps future network payload fields into the existing fixture payload shape.
 - Verified that normalized live responses can flow through the current adapter and world-data path without changing the runtime shell.
 - Expanded verification to cover response normalization behavior and advanced `CURRENT_PLAN.md` to the next composed live-provider skeleton slice.
+- Added a composed `OpenClaw` live provider skeleton that wires together request resolution, executor posture, response normalization, and world-data hydration without network traffic.
+- Verified that the composed skeleton reuses the existing fixture-backed contract path end to end while keeping live configuration explicit.
+- Expanded verification to cover live-provider composition and advanced `CURRENT_PLAN.md` to the next selectable live-provider entrypoint slice.

@@ -72,6 +72,16 @@ export interface OpenClawLiveResponsePayload {
   agents: OpenClawLiveResponseAgent[];
 }
 
+export interface OpenClawLiveProviderSkeleton {
+  request: PlazaWorldDataRequest;
+  normalizeResponse: (
+    payload: OpenClawLiveResponsePayload
+  ) => OpenClawFixturePayload;
+  createWorldDataFromResponse: (
+    payload: OpenClawLiveResponsePayload
+  ) => PlazaWorldData;
+}
+
 function isoOffset(baseTimestamp: number, minutesAgo: number): string {
   return new Date(baseTimestamp - minutesAgo * 60_000).toISOString();
 }
@@ -198,6 +208,30 @@ export function normalizeOpenClawLiveResponsePayload(
       highlights: agent.highlights,
       plazaPosition: agent.position,
     })),
+  };
+}
+
+export function createOpenClawLiveProviderSkeleton(
+  overrides: OpenClawLiveRequestOverrides = {}
+): OpenClawLiveProviderSkeleton {
+  const request = resolveOpenClawLiveRequestOverrides(overrides);
+
+  return {
+    request,
+    normalizeResponse(payload) {
+      return normalizeOpenClawLiveResponsePayload(payload);
+    },
+    createWorldDataFromResponse(payload) {
+      const normalizedPayload = normalizeOpenClawLiveResponsePayload(payload);
+      const worldData = createOpenClawFixtureWorldData(normalizedPayload);
+      return {
+        ...worldData,
+        source: {
+          ...worldData.source,
+          request,
+        },
+      };
+    },
   };
 }
 
