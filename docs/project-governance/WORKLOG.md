@@ -75,3 +75,6 @@
 - Added a typed live request descriptor on the shared `OpenClaw` request contract so endpoint/auth/workspace intent now resolves into a future fetch-ready shape before transport exists.
 - Surfaced the request descriptor through plaza diagnostics, HUD provider metadata, and the shared `Provider Status` hotspot without changing the current runtime shell.
 - Expanded verification to cover request-descriptor behavior and advanced `CURRENT_PLAN.md` to the next transport-delegate slice.
+- Added a typed preview transport delegate for `OpenClaw` so the network-ready executor now routes through a named delegate that consumes the shared request descriptor without network I/O.
+- Surfaced transport-delegate metadata through plaza diagnostics, HUD provider metadata, and the shared `Provider Status` hotspot so future transport swaps have a visible seam.
+- Expanded verification to cover transport-delegate behavior and advanced `CURRENT_PLAN.md` to the next injected fetch-runner slice.

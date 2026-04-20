@@ -5,6 +5,7 @@ import type {
   PlazaResident,
   PlazaWorldData,
   PlazaWorldDataRequestDescriptor,
+  PlazaWorldDataRequestTransportDelegate,
   PlazaWorldDataRequestExecutor,
   PlazaWorldDataRequest,
   PlazaWorldDataProvider,
@@ -93,9 +94,15 @@ export interface OpenClawNetworkReadyExecution<TPayload> {
 export interface OpenClawNetworkReadyExecutorContract<TPayload> {
   contract: "network-ready";
   request: PlazaWorldDataRequest;
+  transportDelegate: OpenClawTransportDelegate<TPayload>;
   execute(
     now?: Date | string | number
   ): Promise<OpenClawNetworkReadyExecution<TPayload>>;
+}
+
+export interface OpenClawTransportDelegate<TPayload> {
+  metadata: PlazaWorldDataRequestTransportDelegate;
+  execute(now?: Date | string | number): Promise<TPayload>;
 }
 
 export interface OpenClawLivePreviewExecution {
@@ -238,16 +245,35 @@ export function createOpenClawLivePreviewResponsePayload(
 export function createOpenClawPreviewExecutorContract(
   request: PlazaWorldDataRequest
 ): OpenClawNetworkReadyExecutorContract<OpenClawLiveResponsePayload> {
+  const transportDelegate = createOpenClawPreviewTransportDelegate(request);
   return {
     contract: "network-ready",
     request,
+    transportDelegate,
     async execute(now: Date | string | number = Date.now()) {
       return {
         contract: "network-ready",
         mode: "preview",
         request,
-        payload: createOpenClawLivePreviewResponsePayload(now),
+        payload: await transportDelegate.execute(now),
       };
+    },
+  };
+}
+
+export function createOpenClawPreviewTransportDelegate(
+  request: PlazaWorldDataRequest
+): OpenClawTransportDelegate<OpenClawLiveResponsePayload> {
+  return {
+    metadata:
+      request.transportDelegate ?? {
+        id: "openclaw-preview-transport",
+        label: "Preview transport delegate",
+        summary:
+          "Consumes the request descriptor and returns a preview payload without network I/O.",
+      },
+    async execute(now: Date | string | number = Date.now()) {
+      return createOpenClawLivePreviewResponsePayload(now);
     },
   };
 }
@@ -356,12 +382,19 @@ export function resolveOpenClawLiveRequestOverrides(
     authTokenName: overrides.authTokenName,
     workspaceHint: overrides.workspaceHint,
   });
+  const transportDelegate: PlazaWorldDataRequestTransportDelegate = {
+    id: "openclaw-preview-transport",
+    label: "Preview transport delegate",
+    summary:
+      "Consumes the request descriptor and returns a preview payload without network I/O.",
+  };
   const executor = planOpenClawLiveFetchExecutor({
     transport: "http",
     endpointLabel,
     authKind,
     liveEnabled: overrides.liveEnabled ?? false,
     descriptor,
+    transportDelegate,
     ...(overrides.workspaceHint
       ? { workspaceHint: overrides.workspaceHint }
       : {}),
@@ -373,6 +406,7 @@ export function resolveOpenClawLiveRequestOverrides(
     authKind,
     liveEnabled: overrides.liveEnabled ?? false,
     descriptor,
+    transportDelegate,
     ...(overrides.workspaceHint
       ? { workspaceHint: overrides.workspaceHint }
       : {}),

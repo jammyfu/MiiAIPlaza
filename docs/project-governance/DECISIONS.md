@@ -193,3 +193,11 @@ Resolve a typed request descriptor alongside the existing `OpenClaw` request met
 
 Why:
 The future fetch path needs more than endpoint/auth prose: it needs a stable description of method, path, query, accepted content type, and auth-header posture. Putting that shape on the shared request contract now keeps the next transport-delegate slice focused on execution instead of rediscovering request composition rules.
+
+### Route preview execution through a named transport delegate before adding a fetch runner
+
+Decision:
+Represent the current no-network `OpenClaw` preview path as a named transport delegate that consumes the shared request descriptor and is then invoked by the async executor contract.
+
+Why:
+This keeps the future live transport swap one layer smaller. The next slice can introduce an injected fetch runner behind a transport delegate instead of mixing transport concerns directly into the executor contract or request resolver.

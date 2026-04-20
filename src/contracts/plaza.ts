@@ -82,6 +82,7 @@ export interface PlazaWorldDataRequest {
   liveEnabled: boolean;
   workspaceHint?: string;
   descriptor?: PlazaWorldDataRequestDescriptor;
+  transportDelegate?: PlazaWorldDataRequestTransportDelegate;
   executor?: PlazaWorldDataRequestExecutor;
 }
 
@@ -91,6 +92,12 @@ export interface PlazaWorldDataRequestDescriptor {
   queryLabel?: string;
   acceptLabel: string;
   authHeaderLabel?: string;
+}
+
+export interface PlazaWorldDataRequestTransportDelegate {
+  id: string;
+  label: string;
+  summary: string;
 }
 
 export interface PlazaWorldDataRequestExecutor {

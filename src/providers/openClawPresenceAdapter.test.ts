@@ -5,6 +5,7 @@ import {
   createOpenClawFixtureWorldData,
   createOpenClawLiveRequestConfig,
   createOpenClawPreviewExecutorContract,
+  createOpenClawPreviewTransportDelegate,
   createOpenClawLiveProviderSkeleton,
   executeOpenClawLivePreview,
   normalizeOpenClawLiveResponsePayload,
@@ -105,6 +106,12 @@ test("openclaw request overrides resolve endpoint and auth posture without enabl
       acceptLabel: "application/json",
       authHeaderLabel: "Authorization: Bearer OPENCLAW_TOKEN",
     },
+    transportDelegate: {
+      id: "openclaw-preview-transport",
+      label: "Preview transport delegate",
+      summary:
+        "Consumes the request descriptor and returns a preview payload without network I/O.",
+    },
     executor: {
       status: "ready",
       mode: "dry-run",
@@ -131,6 +138,12 @@ test("openclaw request overrides can opt into a session-backed live configuratio
       queryLabel: "view=plaza",
       acceptLabel: "application/json",
       authHeaderLabel: "Session cookie",
+    },
+    transportDelegate: {
+      id: "openclaw-preview-transport",
+      label: "Preview transport delegate",
+      summary:
+        "Consumes the request descriptor and returns a preview payload without network I/O.",
     },
     executor: {
       status: "ready",
@@ -319,6 +332,7 @@ test("openclaw preview executor contract exposes a network-ready async execute s
 
   expect(contract.contract).toBe("network-ready");
   expect(contract.request).toEqual(request);
+  expect(contract.transportDelegate.metadata).toEqual(request.transportDelegate);
 
   const result = await contract.execute("2026-04-20T10:12:00Z");
 
@@ -329,6 +343,27 @@ test("openclaw preview executor contract exposes a network-ready async execute s
   expect(result.payload.workspace).toBe("mii-plaza-client");
   expect(result.payload.agents.length).toBeGreaterThan(0);
   expect(result.payload.agents[0]?.agent_id).toBe("openclaw");
+});
+
+test("openclaw preview transport delegate consumes request descriptors without network calls", async () => {
+  const request = resolveOpenClawLiveRequestOverrides({
+    endpointUrl: "https://openclaw.example.com/presence",
+    authTokenName: "OPENCLAW_TOKEN",
+    workspaceHint: "mii-plaza-client",
+  });
+  const delegate = createOpenClawPreviewTransportDelegate(request);
+
+  expect(delegate.metadata).toEqual({
+    id: "openclaw-preview-transport",
+    label: "Preview transport delegate",
+    summary:
+      "Consumes the request descriptor and returns a preview payload without network I/O.",
+  });
+
+  const payload = await delegate.execute("2026-04-20T10:12:00Z");
+
+  expect(payload.generated_at).toBe("2026-04-20T10:12:00.000Z");
+  expect(payload.agents[0]?.agent_id).toBe("openclaw");
 });
 
 test("openclaw live preview executor returns typed preview results without network calls", async () => {

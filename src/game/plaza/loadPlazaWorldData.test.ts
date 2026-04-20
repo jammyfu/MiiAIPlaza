@@ -29,6 +29,12 @@ test("loadPlazaWorldData passes through successful provider results", async () =
               acceptLabel: "application/json",
               authHeaderLabel: "Authorization: Bearer OPENCLAW_TOKEN",
             },
+            transportDelegate: {
+              id: "openclaw-preview-transport",
+              label: "Preview transport delegate",
+              summary:
+                "Consumes the request descriptor and returns a preview payload without network I/O.",
+            },
             executor: {
               status: "ready",
               mode: "dry-run",
@@ -57,6 +63,9 @@ test("loadPlazaWorldData passes through successful provider results", async () =
   expect(world.hotspots[0]?.details).toContain("Request descriptor: GET /presence");
   expect(world.hotspots[0]?.details).toContain(
     "Query: view=plaza&workspace=mii-plaza-client"
+  );
+  expect(world.hotspots[0]?.details).toContain(
+    "Transport delegate: Preview transport delegate"
   );
   expect(world.hotspots[0]?.details).toContain("Live request: Config only");
   expect(world.hotspots[0]?.details).toContain("Executor: Dry run ready");

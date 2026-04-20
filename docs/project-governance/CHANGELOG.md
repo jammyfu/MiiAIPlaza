@@ -33,3 +33,4 @@
 - Added a typed no-network `OpenClaw` preview executor so the live-preview provider now goes through an explicit execution seam.
 - Added a typed network-ready async `OpenClaw` executor contract so the live-preview path now matches the future live transport execution shape.
 - Added a typed `OpenClaw` live request descriptor so provider diagnostics can surface request method, path, query, and auth-header posture before real transport arrives.
+- Added a typed `OpenClaw` preview transport delegate so the live-preview path now exposes an explicit pre-fetch transport boundary in diagnostics and provider status details.

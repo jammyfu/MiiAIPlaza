@@ -27,6 +27,7 @@
 - The `OpenClaw` live-preview path now uses a typed no-network executor step instead of calling preview payload helpers directly.
 - The `OpenClaw` live-preview path now runs through a typed network-ready async executor contract that future live transport implementations can share.
 - The shared `OpenClaw` request contract now carries a typed live request descriptor that diagnostics and provider status can surface before real transport exists.
+- The `OpenClaw` live-preview path now routes through a typed transport delegate that consumes the request descriptor before returning preview payloads.
 
 ## Current Verification Evidence
 
@@ -59,3 +60,4 @@
 - The live-preview provider now executes through a typed preview executor that accepts resolved request metadata and returns preview payloads.
 - The live-preview provider now awaits a typed network-ready async executor contract instead of relying on a synchronous special-case helper.
 - The `OpenClaw` request seam now resolves a typed request descriptor so future transport work can consume request method/path/query/auth posture directly.
+- The network-ready executor now reuses a named preview transport delegate so future injected fetch runners can slot in behind the same delegate boundary.

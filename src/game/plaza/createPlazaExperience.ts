@@ -140,6 +140,16 @@ export function createPlazaExperience({
                 ? `<small>${requestCopy.descriptorQueryLabel}</small>`
                 : ""
             }
+            ${
+              requestCopy?.transportDelegateLabel
+                ? `<small>${requestCopy.transportDelegateLabel}</small>`
+                : ""
+            }
+            ${
+              requestCopy?.transportDelegateSummary
+                ? `<small>${requestCopy.transportDelegateSummary}</small>`
+                : ""
+            }
             ${requestCopy?.executorLabel ? `<small>${requestCopy.executorLabel}</small>` : ""}
             ${
               requestCopy?.executorSummary

@@ -10,6 +10,7 @@
 - Add the first no-network `OpenClaw` executor implementation behind the live provider entrypoint
 - Add a typed `OpenClaw` live request descriptor behind the network-ready executor contract
 - Add a typed `OpenClaw` transport delegate behind the request descriptor and network-ready executor contract
+- Add an injected `OpenClaw` fetch runner behind the transport delegate and network-ready executor contract
 - Add background provider polling on top of the shared refresh controller
 - Add proper animation states for walking, idling, and emotes
 - Add navmesh or waypoint routing for resident agents

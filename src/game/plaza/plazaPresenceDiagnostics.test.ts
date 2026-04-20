@@ -143,6 +143,12 @@ test("world data request copy stays readable in the hud and provider status flow
       acceptLabel: "application/json",
       authHeaderLabel: "Authorization: Bearer OPENCLAW_TOKEN",
     },
+    transportDelegate: {
+      id: "openclaw-preview-transport",
+      label: "Preview transport delegate",
+      summary:
+        "Consumes the request descriptor and returns a preview payload without network I/O.",
+    },
     executor: {
       status: "needs-config",
       mode: "dry-run",
@@ -160,6 +166,9 @@ test("world data request copy stays readable in the hud and provider status flow
     descriptorQueryLabel: "Query: view=plaza&workspace=mii-plaza-client",
     descriptorAcceptLabel: "Accepts: application/json",
     descriptorAuthLabel: "Auth header: Authorization: Bearer OPENCLAW_TOKEN",
+    transportDelegateLabel: "Preview transport delegate",
+    transportDelegateSummary:
+      "Consumes the request descriptor and returns a preview payload without network I/O.",
     executorLabel: "Dry run needs config",
     executorSummary: "Configure a live OpenClaw endpoint before enabling fetch execution.",
   });
