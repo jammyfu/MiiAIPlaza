@@ -104,6 +104,8 @@ export interface PlazaWorldDataRequestTransportDelegate {
 export interface PlazaWorldDataRequestFetchRunner {
   id: string;
   label: string;
+  contract: "network-capable";
+  mode: "preview" | "live";
   summary: string;
 }
 

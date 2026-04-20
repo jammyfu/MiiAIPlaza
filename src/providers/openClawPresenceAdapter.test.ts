@@ -116,6 +116,8 @@ test("openclaw request overrides resolve endpoint and auth posture without enabl
     fetchRunner: {
       id: "openclaw-preview-runner",
       label: "Preview fetch runner",
+      contract: "network-capable",
+      mode: "preview",
       summary:
         "Provides preview payloads for the transport delegate without invoking a real network fetch.",
     },
@@ -155,6 +157,8 @@ test("openclaw request overrides can opt into a session-backed live configuratio
     fetchRunner: {
       id: "openclaw-preview-runner",
       label: "Preview fetch runner",
+      contract: "network-capable",
+      mode: "preview",
       summary:
         "Provides preview payloads for the transport delegate without invoking a real network fetch.",
     },
@@ -390,6 +394,8 @@ test("openclaw preview fetch runner provides the injected preview payload seam",
   expect(runner.metadata).toEqual({
     id: "openclaw-preview-runner",
     label: "Preview fetch runner",
+    contract: "network-capable",
+    mode: "preview",
     summary:
       "Provides preview payloads for the transport delegate without invoking a real network fetch.",
   });

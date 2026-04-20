@@ -209,3 +209,11 @@ Move preview payload generation behind a dedicated fetch-runner seam and make th
 
 Why:
 This preserves the new transport delegate boundary while creating the exact replacement point future live network runners will need. The next runner-contract slice can now focus on describing live-capable execution semantics instead of first untangling payload generation from the delegate layer.
+
+### Make the preview fetch runner declare the future live-runner contract now
+
+Decision:
+Extend the current preview fetch runner metadata so it explicitly declares it is a preview-mode implementation of a network-capable runner contract.
+
+Why:
+This keeps the future live-runner swap additive instead of structural. A later network-capable implementation can reuse the same request and delegate seams, while diagnostics already know how to describe contract posture instead of only one-off preview behavior.

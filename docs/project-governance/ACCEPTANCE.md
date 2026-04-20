@@ -29,6 +29,7 @@
 - The shared `OpenClaw` request contract now carries a typed live request descriptor that diagnostics and provider status can surface before real transport exists.
 - The `OpenClaw` live-preview path now routes through a typed transport delegate that consumes the request descriptor before returning preview payloads.
 - The `OpenClaw` live-preview transport delegate now calls through an injected preview fetch runner instead of generating payloads inline.
+- The `OpenClaw` preview fetch runner now explicitly declares network-capable contract metadata while remaining a preview-mode implementation.
 
 ## Current Verification Evidence
 
@@ -63,3 +64,4 @@
 - The `OpenClaw` request seam now resolves a typed request descriptor so future transport work can consume request method/path/query/auth posture directly.
 - The network-ready executor now reuses a named preview transport delegate so future injected fetch runners can slot in behind the same delegate boundary.
 - The preview transport delegate now reuses a named preview fetch runner so future network-capable runners can swap in behind the same transport boundary.
+- The preview fetch runner now surfaces network-capable contract posture so future runner selection can remain additive instead of restructuring diagnostics or request metadata.

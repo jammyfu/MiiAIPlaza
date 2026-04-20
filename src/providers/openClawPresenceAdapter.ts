@@ -294,6 +294,8 @@ export function createOpenClawPreviewFetchRunner(
       request.fetchRunner ?? {
         id: "openclaw-preview-runner",
         label: "Preview fetch runner",
+        contract: "network-capable",
+        mode: "preview",
         summary:
           "Provides preview payloads for the transport delegate without invoking a real network fetch.",
       },
@@ -416,6 +418,8 @@ export function resolveOpenClawLiveRequestOverrides(
   const fetchRunner: PlazaWorldDataRequestFetchRunner = {
     id: "openclaw-preview-runner",
     label: "Preview fetch runner",
+    contract: "network-capable",
+    mode: "preview",
     summary:
       "Provides preview payloads for the transport delegate without invoking a real network fetch.",
   };

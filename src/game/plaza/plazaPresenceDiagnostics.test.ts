@@ -152,6 +152,8 @@ test("world data request copy stays readable in the hud and provider status flow
     fetchRunner: {
       id: "openclaw-preview-runner",
       label: "Preview fetch runner",
+      contract: "network-capable",
+      mode: "preview",
       summary:
         "Provides preview payloads for the transport delegate without invoking a real network fetch.",
     },
@@ -176,6 +178,7 @@ test("world data request copy stays readable in the hud and provider status flow
     transportDelegateSummary:
       "Consumes the request descriptor and returns a preview payload without network I/O.",
     fetchRunnerLabel: "Preview fetch runner",
+    fetchRunnerContractLabel: "Network-capable preview runner",
     fetchRunnerSummary:
       "Provides preview payloads for the transport delegate without invoking a real network fetch.",
     executorLabel: "Dry run needs config",

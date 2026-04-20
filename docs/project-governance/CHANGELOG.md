@@ -35,3 +35,4 @@
 - Added a typed `OpenClaw` live request descriptor so provider diagnostics can surface request method, path, query, and auth-header posture before real transport arrives.
 - Added a typed `OpenClaw` preview transport delegate so the live-preview path now exposes an explicit pre-fetch transport boundary in diagnostics and provider status details.
 - Added an injected `OpenClaw` preview fetch runner so the preview transport delegate now exposes the exact runner seam future live network fetches can replace.
+- Added network-capable contract metadata to the `OpenClaw` preview fetch runner so diagnostics can distinguish the long-term runner contract from the current preview-only implementation.

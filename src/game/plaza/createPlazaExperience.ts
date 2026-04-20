@@ -156,6 +156,11 @@ export function createPlazaExperience({
                 : ""
             }
             ${
+              requestCopy?.fetchRunnerContractLabel
+                ? `<small>${requestCopy.fetchRunnerContractLabel}</small>`
+                : ""
+            }
+            ${
               requestCopy?.fetchRunnerSummary
                 ? `<small>${requestCopy.fetchRunnerSummary}</small>`
                 : ""
