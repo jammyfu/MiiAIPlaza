@@ -4,6 +4,7 @@ import {
   createOpenClawPresenceFixture,
   createOpenClawFixtureWorldData,
   createOpenClawLiveRequestConfig,
+  createOpenClawPreviewExecutorContract,
   createOpenClawLiveProviderSkeleton,
   executeOpenClawLivePreview,
   normalizeOpenClawLiveResponsePayload,
@@ -287,15 +288,41 @@ test("openclaw live provider skeleton composes request, normalization, and world
   expect(worldData.residents[0]?.presence.status).toBe("active");
 });
 
-test("openclaw live preview executor returns typed preview results without network calls", () => {
+test("openclaw preview executor contract exposes a network-ready async execute seam", async () => {
+  const request = resolveOpenClawLiveRequestOverrides({
+    endpointUrl: "https://openclaw.example.com/presence",
+    authTokenName: "OPENCLAW_TOKEN",
+    workspaceHint: "mii-plaza-client",
+  });
+  const contract = createOpenClawPreviewExecutorContract(request);
+
+  expect(contract.contract).toBe("network-ready");
+  expect(contract.request).toEqual(request);
+
+  const result = await contract.execute("2026-04-20T10:12:00Z");
+
+  expect(result.contract).toBe("network-ready");
+  expect(result.mode).toBe("preview");
+  expect(result.request).toEqual(request);
+  expect(result.payload.generated_at).toBe("2026-04-20T10:12:00.000Z");
+  expect(result.payload.workspace).toBe("mii-plaza-client");
+  expect(result.payload.agents.length).toBeGreaterThan(0);
+  expect(result.payload.agents[0]?.agent_id).toBe("openclaw");
+});
+
+test("openclaw live preview executor returns typed preview results without network calls", async () => {
   const request = resolveOpenClawLiveRequestOverrides({
     endpointUrl: "https://openclaw.example.com/presence",
     authTokenName: "OPENCLAW_TOKEN",
     workspaceHint: "mii-plaza-client",
   });
 
-  const result = executeOpenClawLivePreview(request, "2026-04-20T10:12:00Z");
+  const result = await executeOpenClawLivePreview(
+    request,
+    "2026-04-20T10:12:00Z"
+  );
 
+  expect(result.contract).toBe("network-ready");
   expect(result.mode).toBe("preview");
   expect(result.request).toEqual(request);
   expect(result.payload.generated_at).toBe("2026-04-20T10:12:00.000Z");

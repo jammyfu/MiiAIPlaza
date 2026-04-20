@@ -69,3 +69,6 @@
 - Added a typed no-network `OpenClaw` preview executor that explicitly accepts request metadata and returns preview payloads without transport.
 - Wired the live-preview provider through that executor so the live-mode branch now goes through an explicit execution step instead of calling preview payload helpers directly.
 - Expanded verification to cover the preview executor and advanced `CURRENT_PLAN.md` to the next network-ready executor contract slice.
+- Added a typed network-ready async executor contract for `OpenClaw` so preview execution now runs through the same contract shape future live transport can implement.
+- Kept the live-preview provider aligned with that contract by awaiting the shared execute seam instead of calling a special-case synchronous helper.
+- Expanded verification to cover the executor contract and advanced `CURRENT_PLAN.md` to the next live request-descriptor slice.

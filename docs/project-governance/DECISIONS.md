@@ -177,3 +177,11 @@ Represent the current no-network `OpenClaw` live-preview step as a typed executo
 
 Why:
 This turns the live-preview path into a true execution seam instead of a direct helper call, which makes the future jump to real transport execution smaller and keeps provider composition honest about where execution begins.
+
+### Make the `OpenClaw` executor seam network-ready and async before transport arrives
+
+Decision:
+Wrap the current preview execution path in a typed async executor contract that future live transport implementations can share, instead of keeping preview execution as a special synchronous helper.
+
+Why:
+Real network fetches will need an async execution boundary. Moving the preview path onto that same contract now keeps the live-preview provider honest about the future execution model and shrinks the eventual transport swap to a provider-layer implementation detail.

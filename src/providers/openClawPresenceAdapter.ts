@@ -82,7 +82,23 @@ export interface OpenClawLiveProviderSkeleton {
   ) => PlazaWorldData;
 }
 
+export interface OpenClawNetworkReadyExecution<TPayload> {
+  contract: "network-ready";
+  mode: "preview" | "live";
+  request: PlazaWorldDataRequest;
+  payload: TPayload;
+}
+
+export interface OpenClawNetworkReadyExecutorContract<TPayload> {
+  contract: "network-ready";
+  request: PlazaWorldDataRequest;
+  execute(
+    now?: Date | string | number
+  ): Promise<OpenClawNetworkReadyExecution<TPayload>>;
+}
+
 export interface OpenClawLivePreviewExecution {
+  contract: "network-ready";
   mode: "preview";
   request: PlazaWorldDataRequest;
   payload: OpenClawLiveResponsePayload;
@@ -218,15 +234,28 @@ export function createOpenClawLivePreviewResponsePayload(
   };
 }
 
-export function executeOpenClawLivePreview(
+export function createOpenClawPreviewExecutorContract(
+  request: PlazaWorldDataRequest
+): OpenClawNetworkReadyExecutorContract<OpenClawLiveResponsePayload> {
+  return {
+    contract: "network-ready",
+    request,
+    async execute(now: Date | string | number = Date.now()) {
+      return {
+        contract: "network-ready",
+        mode: "preview",
+        request,
+        payload: createOpenClawLivePreviewResponsePayload(now),
+      };
+    },
+  };
+}
+
+export async function executeOpenClawLivePreview(
   request: PlazaWorldDataRequest,
   now: Date | string | number = Date.now()
-): OpenClawLivePreviewExecution {
-  return {
-    mode: "preview",
-    request,
-    payload: createOpenClawLivePreviewResponsePayload(now),
-  };
+): Promise<OpenClawLivePreviewExecution> {
+  return createOpenClawPreviewExecutorContract(request).execute(now);
 }
 
 export function normalizeOpenClawLiveResponsePayload(
@@ -458,7 +487,7 @@ export const openClawLivePreviewWorldDataProvider: PlazaWorldDataProvider = {
       authTokenName: "OPENCLAW_TOKEN",
       workspaceHint: "mii-plaza-client",
     });
-    const execution = executeOpenClawLivePreview(skeleton.request);
+    const execution = await executeOpenClawLivePreview(skeleton.request);
     const worldData = skeleton.createWorldDataFromResponse(execution.payload);
 
     return {
