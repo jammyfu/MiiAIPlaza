@@ -94,6 +94,13 @@ export interface PlazaWorldDataRequestCopy {
   executionBridgeSourceLabel: string | null;
   executionBridgeTargetLabel: string | null;
   executionBridgeModeLabel: string | null;
+  fetchEntryLabel: string | null;
+  fetchEntrySummary: string | null;
+  fetchEntryStatusLabel: string | null;
+  fetchEntryPayloadLabel: string | null;
+  fetchEntrySourceLabel: string | null;
+  fetchEntryTargetLabel: string | null;
+  fetchEntryModeLabel: string | null;
   executorLabel: string | null;
   executorSummary: string | null;
 }
@@ -427,6 +434,29 @@ export function describeWorldDataRequest(
     executionBridgeModeLabel: request.executionBridge
       ? `Bridge mode: ${
           request.executionBridge.runnerMode === "live" ? "Live" : "Preview"
+        }`
+      : null,
+    fetchEntryLabel: request.fetchEntry?.label ?? null,
+    fetchEntrySummary: request.fetchEntry?.summary ?? null,
+    fetchEntryStatusLabel: request.fetchEntry
+      ? `Fetch entry status: ${
+          request.fetchEntry.status === "live-ready"
+            ? "Live ready"
+            : "Preview payload"
+        }`
+      : null,
+    fetchEntryPayloadLabel: request.fetchEntry
+      ? `Entry payload: ${request.fetchEntry.payloadLabel}`
+      : null,
+    fetchEntrySourceLabel: request.fetchEntry
+      ? `Entry source bridge: ${request.fetchEntry.sourceExecutionBridgeLabel}`
+      : null,
+    fetchEntryTargetLabel: request.fetchEntry
+      ? `Entry target: ${request.fetchEntry.fetchTargetLabel}`
+      : null,
+    fetchEntryModeLabel: request.fetchEntry
+      ? `Entry mode: ${
+          request.fetchEntry.runnerMode === "live" ? "Live" : "Preview"
         }`
       : null,
     executorLabel: executorCopy?.label ?? null,

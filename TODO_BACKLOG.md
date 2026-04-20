@@ -14,7 +14,7 @@
 - Add a network-capable `OpenClaw` runner contract that can later swap preview and real fetch implementations
 - Add an `OpenClaw` runner factory that can select preview or future live-capable runners behind the transport delegate
 - Add a live-capable `OpenClaw` runner stub plus selection policy behind the runner factory
-- Add an `OpenClaw` live fetch-entry record that resolves execution bridges into fetch-call-boundary placeholder state
+- Add an `OpenClaw` live fetch-dispatch record that resolves fetch entries into network-invocation-boundary placeholder state
 - Add background provider polling on top of the shared refresh controller
 - Add proper animation states for walking, idling, and emotes
 - Add navmesh or waypoint routing for resident agents

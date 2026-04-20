@@ -40,6 +40,7 @@
 - The shared `OpenClaw` request contract now carries a typed live normalizer-handoff record so response envelopes resolve into one normalization-boundary placeholder shape without network calls.
 - The shared `OpenClaw` request contract now carries a typed live execution-payload record so normalizer handoffs resolve into one execution-boundary placeholder shape without network calls.
 - The shared `OpenClaw` request contract now carries a typed live execution-bridge record so execution payloads resolve into one fetch-call-boundary placeholder shape without network calls.
+- The shared `OpenClaw` request contract now carries a typed live fetch-entry record so execution bridges resolve into one network-invocation-boundary placeholder shape without network calls.
 
 ## Current Verification Evidence
 
@@ -85,3 +86,4 @@
 - The live path now resolves a shared normalizer-handoff record and surfaces that execution-boundary placeholder posture through diagnostics, HUD provider metadata, and `Provider Status` details before actual live execution exists.
 - The live path now resolves a shared execution-payload record and surfaces that live-execution-boundary placeholder posture through diagnostics, HUD provider metadata, and `Provider Status` details before actual live execution exists.
 - The live path now resolves a shared execution-bridge record and surfaces that fetch-call-boundary placeholder posture through diagnostics, HUD provider metadata, and `Provider Status` details before actual live fetch execution exists.
+- The live path now resolves a shared fetch-entry record and surfaces that network-invocation-boundary placeholder posture through diagnostics, HUD provider metadata, and `Provider Status` details before actual live network execution exists.

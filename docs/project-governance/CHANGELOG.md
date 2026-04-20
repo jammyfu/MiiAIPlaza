@@ -46,3 +46,4 @@
 - Added a typed `OpenClaw` live normalizer-handoff record so future execution work can inspect normalization-boundary placeholder posture before any network calls exist.
 - Added a typed `OpenClaw` live execution-payload record so future live execution work can inspect execution-boundary placeholder posture before any network calls exist.
 - Added a typed `OpenClaw` live execution-bridge record so future live fetch work can inspect fetch-call-boundary placeholder posture before any network calls exist.
+- Added a typed `OpenClaw` live fetch-entry record so future live network work can inspect network-invocation-boundary placeholder posture before any network calls exist.

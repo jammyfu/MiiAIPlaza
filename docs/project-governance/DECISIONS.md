@@ -234,6 +234,14 @@ Resolve a typed execution-bridge record from the current execution-payload seam 
 Why:
 This keeps the final bridge into actual live fetch execution explicit and testable, lets preview and live-capable stub runners share one fetch-call-boundary placeholder shape, and prevents the later networked slice from having to rediscover how execution payload posture should cross into the eventual fetch entrypoint.
 
+### Put fetch-entry posture on the shared request contract before real network invocation exists
+
+Decision:
+Resolve a typed fetch-entry record from the current execution-bridge seam and surface it through the shared request contract before any real network invocation is introduced.
+
+Why:
+This keeps the last no-network handoff into live fetch execution explicit and testable, lets preview and live-capable stub runners share one fetch-call placeholder shape, and prevents the later transport slice from having to reconstruct how bridge posture should map into the actual fetch call boundary.
+
 ### Normalize runner inputs into a shared request envelope before concrete request building
 
 Decision:

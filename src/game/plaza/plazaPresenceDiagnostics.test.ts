@@ -267,6 +267,18 @@ test("world data request copy stays readable in the hud and provider status flow
       bridgeTargetLabel: "OpenClaw live fetch entrypoint",
       runnerMode: "preview",
     },
+    fetchEntry: {
+      id: "openclaw-live-fetch-entry",
+      label: "OpenClaw live fetch entry",
+      summary:
+        "Represents the placeholder fetch-call-boundary record derived from the execution bridge before actual live fetch execution runs.",
+      status: "preview-payload",
+      payloadLabel: "Preview payload available from no-network live-preview execution.",
+      sourceExecutionBridgeLabel:
+        "Preview payload from GET OpenClaw live endpoint pending configuration?view=plaza&workspace=mii-plaza-client",
+      fetchTargetLabel: "OpenClaw live fetch call",
+      runnerMode: "preview",
+    },
     executor: {
       status: "needs-config",
       mode: "dry-run",
@@ -367,6 +379,17 @@ test("world data request copy stays readable in the hud and provider status flow
     executionBridgeTargetLabel:
       "Bridge target: OpenClaw live fetch entrypoint",
     executionBridgeModeLabel: "Bridge mode: Preview",
+    fetchEntryLabel: "OpenClaw live fetch entry",
+    fetchEntrySummary:
+      "Represents the placeholder fetch-call-boundary record derived from the execution bridge before actual live fetch execution runs.",
+    fetchEntryStatusLabel: "Fetch entry status: Preview payload",
+    fetchEntryPayloadLabel:
+      "Entry payload: Preview payload available from no-network live-preview execution.",
+    fetchEntrySourceLabel:
+      "Entry source bridge: Preview payload from GET OpenClaw live endpoint pending configuration?view=plaza&workspace=mii-plaza-client",
+    fetchEntryTargetLabel:
+      "Entry target: OpenClaw live fetch call",
+    fetchEntryModeLabel: "Entry mode: Preview",
     executorLabel: "Dry run needs config",
     executorSummary: "Configure a live OpenClaw endpoint before enabling fetch execution.",
   });
