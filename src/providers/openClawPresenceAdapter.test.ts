@@ -3,6 +3,7 @@ import { getPresenceDiagnostics } from "../game/plaza/plazaPresenceDiagnostics";
 import {
   createOpenClawPresenceFixture,
   createOpenClawFixtureWorldData,
+  createOpenClawLiveRequestConfig,
   openClawPresenceAdapter,
   openClawPresenceFixture,
   openClawFixtureWorldDataProvider,
@@ -58,4 +59,17 @@ test("openclaw fixture can expose stale residents for provider diagnostics", () 
 
   expect(staleResidents.length).toBe(1);
   expect(staleResidents[0]?.agent.id).toBe("mailbox-lantern");
+});
+
+test("openclaw fixture carries a typed live-request configuration seam", () => {
+  const requestConfig = createOpenClawLiveRequestConfig({
+    workspaceHint: "mii-plaza-client",
+  });
+  const worldData = createOpenClawFixtureWorldData();
+
+  expect(requestConfig.transport).toBe("http");
+  expect(requestConfig.authKind).toBe("token");
+  expect(requestConfig.liveEnabled).toBe(false);
+  expect(requestConfig.endpointLabel).toContain("pending");
+  expect(worldData.source.request).toEqual(requestConfig);
 });

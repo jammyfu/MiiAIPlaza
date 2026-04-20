@@ -17,6 +17,12 @@ test("loadPlazaWorldData passes through successful provider results", async () =
             state: "healthy",
             headline: "Mock provider is healthy.",
           },
+          request: {
+            transport: "http",
+            endpointLabel: "Configured via future live request seam",
+            authKind: "token",
+            liveEnabled: false,
+          },
         },
         residents: [],
         hotspots: [],
@@ -31,6 +37,11 @@ test("loadPlazaWorldData passes through successful provider results", async () =
   expect(world.hotspots[0]?.name).toBe("Provider Status");
   expect(world.hotspots[0]?.details).toContain("Health: Healthy");
   expect(world.hotspots[0]?.details).toContain("Retry: Retry on demand");
+  expect(world.hotspots[0]?.details).toContain("Request transport: HTTP");
+  expect(world.hotspots[0]?.details).toContain(
+    "Request endpoint: Configured via future live request seam"
+  );
+  expect(world.hotspots[0]?.details).toContain("Live request: Config only");
 });
 
 test("loadPlazaWorldData recovers provider failures into structured fallback world data", async () => {

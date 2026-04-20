@@ -32,6 +32,7 @@ import { createResidentAvatarMii } from "./plazaResidentAvatarAdapter";
 import {
   describePresenceFreshness,
   describeWorldDataHealth,
+  describeWorldDataRequest,
   describeWorldDataSource,
   getPresenceDiagnostics,
   summarizeResidentDiagnostics,
@@ -89,6 +90,7 @@ export function createPlazaExperience({
   const providerSummary = summarizeResidentDiagnostics(residents);
   const sourceLabel = describeWorldDataSource(source);
   const healthCopy = describeWorldDataHealth(source.health);
+  const requestCopy = source.request ? describeWorldDataRequest(source.request) : null;
   const refreshUiState = refreshSnapshot
     ? describeRefreshUiState(refreshSnapshot, false)
     : null;
@@ -126,6 +128,12 @@ export function createPlazaExperience({
                 ? `<small>${healthCopy.fallbackHint}</small>`
                 : ""
             }
+            ${
+              requestCopy
+                ? `<small>${requestCopy.transportLabel} · ${requestCopy.authLabel} · ${requestCopy.liveLabel}</small>`
+                : ""
+            }
+            ${requestCopy?.workspaceLabel ? `<small>${requestCopy.workspaceLabel}</small>` : ""}
             ${
               refreshUiState ? `<small>${refreshUiState.statusLabel}</small>` : ""
             }

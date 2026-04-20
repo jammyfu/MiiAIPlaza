@@ -121,3 +121,11 @@ Expose a typed polling plan from the shared world-data controller and render tha
 
 Why:
 This keeps the current manual refresh path canonical while making future scheduled refresh behavior explicit and testable. When live polling arrives, it can reuse the same cadence contract instead of inventing timer rules in the page or scene layers.
+
+### Put live-request metadata on the shared source contract before adding fetches
+
+Decision:
+Represent future `OpenClaw` live-request posture directly on `PlazaWorldDataSource` through typed request metadata and surface it through HUD/status diagnostics before any real HTTP calls exist.
+
+Why:
+This keeps live-provider setup explicit and testable, aligns fixture-backed data with future request-shape assumptions, and prevents the eventual live fetch path from smuggling endpoint/auth concerns into ad-hoc page state.

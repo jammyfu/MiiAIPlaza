@@ -2,9 +2,11 @@ import { expect, test } from "bun:test";
 import type {
   PlazaPresenceSnapshot,
   PlazaWorldDataHealth,
+  PlazaWorldDataRequest,
   PlazaWorldDataSource,
 } from "../../contracts/plaza";
 import {
+  describeWorldDataRequest,
   describePresenceFreshness,
   describeWorldDataHealth,
   describeWorldDataSource,
@@ -123,5 +125,23 @@ test("world data health copy can describe healthy and failing recovery timing", 
     fallbackHint: "Using the provider status terminal while recovery is pending.",
     retryLabel: "Retry in 2m",
     nextRetryLabel: "Next retry at 10:14",
+  });
+});
+
+test("world data request copy stays readable in the hud and provider status flow", () => {
+  const request: PlazaWorldDataRequest = {
+    transport: "http",
+    endpointLabel: "OpenClaw live endpoint pending configuration",
+    authKind: "token",
+    liveEnabled: false,
+    workspaceHint: "mii-plaza-client",
+  };
+
+  expect(describeWorldDataRequest(request)).toEqual({
+    transportLabel: "HTTP",
+    endpointLabel: "OpenClaw live endpoint pending configuration",
+    authLabel: "Token",
+    liveLabel: "Config only",
+    workspaceLabel: "Workspace: mii-plaza-client",
   });
 });

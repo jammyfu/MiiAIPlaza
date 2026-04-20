@@ -3,7 +3,10 @@ import type {
   PlazaWorldData,
   PlazaWorldDataProvider,
 } from "../../contracts/plaza";
-import { describeWorldDataHealth } from "./plazaPresenceDiagnostics";
+import {
+  describeWorldDataHealth,
+  describeWorldDataRequest,
+} from "./plazaPresenceDiagnostics";
 
 function createProviderFailureWorldData(
   provider: Pick<PlazaWorldDataProvider, "id" | "provider" | "mode">,
@@ -58,6 +61,9 @@ function providerStatusColor(state: PlazaWorldData["source"]["health"]["state"])
 
 function createProviderStatusHotspot(world: PlazaWorldData): PlazaHotspot {
   const healthCopy = describeWorldDataHealth(world.source.health);
+  const requestCopy = world.source.request
+    ? describeWorldDataRequest(world.source.request)
+    : null;
   const existingStatusHotspot = world.hotspots.find(
     (hotspot) => hotspot.id === "provider-status"
   );
@@ -74,6 +80,11 @@ function createProviderStatusHotspot(world: PlazaWorldData): PlazaHotspot {
       `Mode: ${world.source.mode}`,
       `Health: ${healthCopy.label}`,
       `Retry: ${healthCopy.retryLabel}`,
+      ...(requestCopy ? [`Request transport: ${requestCopy.transportLabel}`] : []),
+      ...(requestCopy ? [`Request endpoint: ${requestCopy.endpointLabel}`] : []),
+      ...(requestCopy ? [`Request auth: ${requestCopy.authLabel}`] : []),
+      ...(requestCopy ? [`Live request: ${requestCopy.liveLabel}`] : []),
+      ...(requestCopy?.workspaceLabel ? [requestCopy.workspaceLabel] : []),
       ...(healthCopy.nextRetryLabel ? [healthCopy.nextRetryLabel] : []),
       ...(healthCopy.lastUpdatedLabel ? [healthCopy.lastUpdatedLabel] : []),
       ...(healthCopy.fallbackHint ? [healthCopy.fallbackHint] : []),

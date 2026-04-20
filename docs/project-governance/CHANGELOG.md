@@ -24,3 +24,4 @@
 - Added a typed plaza world-data controller so future manual refresh and live polling can reuse the same provider-boundary load path.
 - Added the first player-facing `Refresh Provider` action and aligned provider-status inspection with the same refresh boundary.
 - Added typed polling-plan metadata so the plaza can describe future scheduled refresh posture without starting background timers.
+- Added typed live-request metadata for `OpenClaw` so future endpoint/auth setup is visible in plaza diagnostics before real fetches exist.

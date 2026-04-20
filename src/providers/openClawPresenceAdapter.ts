@@ -4,6 +4,7 @@ import type {
   PlazaPresenceSnapshot,
   PlazaResident,
   PlazaWorldData,
+  PlazaWorldDataRequest,
   PlazaWorldDataProvider,
 } from "../contracts/plaza";
 import { listMockHotspots } from "./mockPlazaPresence";
@@ -141,6 +142,18 @@ export function createOpenClawPresenceFixture(
 export const openClawPresenceFixture: OpenClawFixturePayload =
   createOpenClawPresenceFixture("2026-04-20T10:12:00Z");
 
+export function createOpenClawLiveRequestConfig(
+  overrides: Partial<PlazaWorldDataRequest> = {}
+): PlazaWorldDataRequest {
+  return {
+    transport: "http",
+    endpointLabel: "OpenClaw live endpoint pending configuration",
+    authKind: "token",
+    liveEnabled: false,
+    ...overrides,
+  };
+}
+
 function normalizeState(state: OpenClawFixtureAgent["state"]): PlazaAgentStatus {
   switch (state) {
     case "running":
@@ -219,6 +232,9 @@ export function createOpenClawFixtureWorldData(
           new Date(payload.generatedAt).getTime() + 3 * 60 * 1000
         ).toISOString(),
       },
+      request: createOpenClawLiveRequestConfig({
+        workspaceHint: payload.workspace,
+      }),
     },
     residents: openClawPresenceAdapter.listResidents(payload),
     hotspots: listMockHotspots(),

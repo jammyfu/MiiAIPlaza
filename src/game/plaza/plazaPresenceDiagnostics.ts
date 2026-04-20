@@ -1,5 +1,6 @@
 import type {
   PlazaWorldDataHealth,
+  PlazaWorldDataRequest,
   PlazaPresenceSnapshot,
   PlazaResident,
   PlazaWorldDataSource,
@@ -27,6 +28,14 @@ export interface PlazaWorldDataHealthCopy {
   fallbackHint: string | null;
   retryLabel: string;
   nextRetryLabel: string | null;
+}
+
+export interface PlazaWorldDataRequestCopy {
+  transportLabel: string;
+  endpointLabel: string;
+  authLabel: string;
+  liveLabel: string;
+  workspaceLabel: string | null;
 }
 
 const DEFAULT_FRESH_FOR_MS = 2 * 60 * 1000;
@@ -167,6 +176,25 @@ export function describeWorldDataHealth(
     fallbackHint: health.fallbackHint ?? null,
     retryLabel,
     nextRetryLabel,
+  };
+}
+
+export function describeWorldDataRequest(
+  request: PlazaWorldDataRequest
+): PlazaWorldDataRequestCopy {
+  return {
+    transportLabel: request.transport.toUpperCase(),
+    endpointLabel: request.endpointLabel,
+    authLabel:
+      request.authKind === "token"
+        ? "Token"
+        : request.authKind === "session"
+          ? "Session"
+          : "None",
+    liveLabel: request.liveEnabled ? "Enabled" : "Config only",
+    workspaceLabel: request.workspaceHint
+      ? `Workspace: ${request.workspaceHint}`
+      : null,
   };
 }
 

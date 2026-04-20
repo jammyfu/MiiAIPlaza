@@ -48,3 +48,6 @@
 - Added typed polling-plan metadata on top of the shared world-data controller so manual refresh and future scheduled refreshes share one cadence seam.
 - Surfaced polling posture copy in the plaza HUD and `Provider Status` inspection flow without introducing background timers.
 - Expanded verification to cover the new polling-plan copy and advanced `CURRENT_PLAN.md` to a live-request-configuration preparation slice.
+- Added a typed `OpenClaw` live-request configuration seam on the world-data source contract without introducing any network fetches.
+- Kept fixture-backed `OpenClaw` world data aligned with the same request metadata and surfaced that posture in both the HUD and `Provider Status` inspection details.
+- Expanded verification to cover request metadata copy and advanced `CURRENT_PLAN.md` to the next auth/endpoint override resolution slice.

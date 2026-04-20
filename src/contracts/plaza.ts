@@ -63,6 +63,7 @@ export interface PlazaWorldDataSource {
   provider: string;
   mode: "mock" | "fixture" | "live";
   health: PlazaWorldDataHealth;
+  request?: PlazaWorldDataRequest;
 }
 
 export interface PlazaWorldDataHealth {
@@ -72,6 +73,14 @@ export interface PlazaWorldDataHealth {
   fallbackHint?: string;
   retryAfterMs?: number;
   nextRetryAt?: string;
+}
+
+export interface PlazaWorldDataRequest {
+  transport: "http" | "fixture";
+  endpointLabel: string;
+  authKind: "none" | "token" | "session";
+  liveEnabled: boolean;
+  workspaceHint?: string;
 }
 
 export interface PlazaWorldData {
