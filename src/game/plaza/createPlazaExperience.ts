@@ -1300,7 +1300,7 @@ export function createPlazaExperience({
 
     residentMeshes.forEach(({ group, index }) => {
       group.position.y = Math.sin(elapsed * 1.7 + index) * 0.06;
-      group.rotation.y = Math.sin(elapsed * 0.8 + index) * 0.22;
+      group.rotation.y = 0;
     });
 
     desiredCamera

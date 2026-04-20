@@ -1,32 +1,31 @@
 import {
   Box3,
-  Color,
+  CanvasTexture,
   Group,
+  Mesh,
+  Sprite,
+  SpriteMaterial,
   Vector3,
-  Vector4,
-  type Mesh,
-  type Object3D,
   type WebGLRenderer,
 } from "three";
-import { cMaterialName } from "../../class/3d/shader/fflShaderConst";
 import type { PlazaResident } from "../../contracts/plaza";
+import { LUTShaderMaterial } from "../../external/ffl.js/LUTShaderMaterial";
 import {
   createResidentAvatarMii,
   supportsResidentAvatar,
 } from "./plazaResidentAvatarAdapter";
-import { LUTShaderMaterial } from "../../external/ffl.js/LUTShaderMaterial";
 
 export type ResidentAvatarRig = {
-  mode: "local-ffl-body";
+  mode: "local-body-render";
   bodyAnchorY: number;
   bodyTargetHeight: number;
   markerY: number;
 };
 
 const residentAvatarRig: ResidentAvatarRig = {
-  mode: "local-ffl-body",
+  mode: "local-body-render",
   bodyAnchorY: 0,
-  bodyTargetHeight: 3.1,
+  bodyTargetHeight: 3.2,
   markerY: 3.75,
 };
 
@@ -44,7 +43,7 @@ export function describeResidentAvatarSceneMode(
   resident: PlazaResident
 ): string {
   return createResidentAvatarRig(resident)
-    ? "Local FFL full-body"
+    ? "Local full-body render"
     : "Fallback proxy geometry";
 }
 
@@ -77,85 +76,151 @@ export function normalizeResidentAvatarModel(
   avatarScene.updateMatrixWorld(true);
 }
 
-function flagResidentAvatarMeshes(object: Object3D) {
-  object.traverse((child) => {
-    const maybeMesh = child as Mesh;
-    if (!("isMesh" in maybeMesh) || !maybeMesh.isMesh) {
-      return;
-    }
+async function renderLocalResidentBodyImage(
+  resident: PlazaResident,
+  renderer: WebGLRenderer
+): Promise<string | null> {
+  const avatarMii = createResidentAvatarMii(resident);
+  if (!avatarMii) {
+    return null;
+  }
 
-    maybeMesh.castShadow = true;
-    maybeMesh.receiveShadow = true;
+  const dataU8 = avatarMii.encodeStudio();
+  const { getFFL, getFFLWorkerExists, getFFLWorkerMakeIcon } = await import(
+    "../../main"
+  );
+  const { ViewType, createCharModel, createCharModelIcon, initCharModelTextures } =
+    await import("../../external/ffl.js/ffl");
+
+  if (getFFLWorkerExists()) {
+    return (await getFFLWorkerMakeIcon(
+      dataU8,
+      "all_body_sugar",
+      1024,
+      1024
+    )) as string;
+  }
+
+  let charModel: any;
+  try {
+    charModel = createCharModel(
+      dataU8,
+      undefined,
+      LUTShaderMaterial,
+      getFFL(),
+      false
+    );
+    initCharModelTextures(charModel, renderer);
+    return (await createCharModelIcon(
+      charModel,
+      renderer,
+      ViewType.AllBody,
+      1024,
+      1024,
+      true
+    )) as string;
+  } finally {
+    charModel?.dispose?.();
+  }
+}
+
+async function cropResidentBodyRender(dataUrl: string): Promise<{
+  texture: CanvasTexture;
+  width: number;
+  height: number;
+}> {
+  const image = await new Promise<HTMLImageElement>((resolve, reject) => {
+    const nextImage = new Image();
+    nextImage.onload = () => resolve(nextImage);
+    nextImage.onerror = () =>
+      reject(new Error("Failed to load local resident body render."));
+    nextImage.src = dataUrl;
   });
-}
 
-type BodyModelSet = {
-  m?: Group;
-  f?: Group;
-};
-
-function getBodyModelSet(): BodyModelSet | null {
-  const globalBodyModels = (globalThis as { bodyModels?: { Miitomo?: BodyModelSet } })
-    .bodyModels;
-  return globalBodyModels?.Miitomo ?? null;
-}
-
-function buildLocalBodyModel(charModel: any): Group | null {
-  const bodyModels = getBodyModelSet();
-  if (!bodyModels) {
-    return null;
+  const sourceCanvas = document.createElement("canvas");
+  sourceCanvas.width = image.naturalWidth || image.width;
+  sourceCanvas.height = image.naturalHeight || image.height;
+  const sourceContext = sourceCanvas.getContext("2d");
+  if (!sourceContext) {
+    throw new Error("Could not read local resident body render.");
   }
 
-  const gender = charModel._getGender();
-  const bodyModel = (gender === 0 ? bodyModels.m : bodyModels.f)?.clone(
-    true
-  ) as Group | undefined;
-  if (!bodyModel) {
-    return null;
+  sourceContext.drawImage(image, 0, 0);
+  const imageData = sourceContext.getImageData(
+    0,
+    0,
+    sourceCanvas.width,
+    sourceCanvas.height
+  );
+
+  let minX = sourceCanvas.width;
+  let minY = sourceCanvas.height;
+  let maxX = -1;
+  let maxY = -1;
+
+  for (let y = 0; y < sourceCanvas.height; y += 1) {
+    for (let x = 0; x < sourceCanvas.width; x += 1) {
+      const alpha = imageData.data[(y * sourceCanvas.width + x) * 4 + 3];
+      if (alpha < 16) {
+        continue;
+      }
+
+      minX = Math.min(minX, x);
+      minY = Math.min(minY, y);
+      maxX = Math.max(maxX, x);
+      maxY = Math.max(maxY, y);
+    }
   }
 
-  const bodyMeshName = gender === 0 ? "body_m" : "body_f";
-  const handsMeshName = gender === 0 ? "hands_m" : "hands_f";
-  const legsMeshName = gender === 0 ? "legs_m" : "legs_f";
-
-  const bodyMesh = bodyModel.getObjectByName(bodyMeshName) as Mesh | null;
-  const handsMesh = bodyModel.getObjectByName(handsMeshName) as Mesh | null;
-  const legsMesh = bodyModel.getObjectByName(legsMeshName) as Mesh | null;
-
-  const bodyScale = charModel.getBodyScale();
-  bodyModel.scale.set(bodyScale.x * 10, bodyScale.y * 10, bodyScale.z * 10);
-
-  const bodyBounds = new Box3().setFromObject(bodyModel);
-  bodyModel.position.set(0, -bodyBounds.max.y, 0);
-
-  const favoriteColor = charModel._getFavoriteColor(true);
-
-  if (bodyMesh) {
-    bodyMesh.material = new LUTShaderMaterial({
-      modulateType: cMaterialName.FFL_MODULATE_TYPE_SHAPE_BODY,
-      modulateMode: 0,
-      modulateColor: new Vector4(
-        favoriteColor.r,
-        favoriteColor.g,
-        favoriteColor.b,
-        1
-      ),
-    });
+  if (maxX < minX || maxY < minY) {
+    const fallbackTexture = new CanvasTexture(sourceCanvas);
+    fallbackTexture.colorSpace = "srgb";
+    fallbackTexture.needsUpdate = true;
+    return {
+      texture: fallbackTexture,
+      width: sourceCanvas.width,
+      height: sourceCanvas.height,
+    };
   }
 
-  if (legsMesh) {
-    legsMesh.material = new LUTShaderMaterial({
-      modulateType: cMaterialName.FFL_MODULATE_TYPE_SHAPE_PANTS,
-      modulateMode: 0,
-      modulateColor: new Vector4(0.3, 0.3, 0.3, 1),
-    });
+  const paddingX = Math.max(8, Math.round((maxX - minX + 1) * 0.06));
+  const paddingY = Math.max(8, Math.round((maxY - minY + 1) * 0.04));
+  const cropX = Math.max(0, minX - paddingX);
+  const cropY = Math.max(0, minY - paddingY);
+  const cropWidth = Math.min(sourceCanvas.width - cropX, maxX - minX + 1 + paddingX * 2);
+  const cropHeight = Math.min(
+    sourceCanvas.height - cropY,
+    maxY - minY + 1 + paddingY * 2
+  );
+
+  const croppedCanvas = document.createElement("canvas");
+  croppedCanvas.width = cropWidth;
+  croppedCanvas.height = cropHeight;
+  const croppedContext = croppedCanvas.getContext("2d");
+  if (!croppedContext) {
+    throw new Error("Could not crop local resident body render.");
   }
 
-  if (handsMesh?.material && "color" in handsMesh.material) {
-    (handsMesh.material as { color: Color }).color = new Color("#f0cfaf");
-  }
+  croppedContext.drawImage(
+    sourceCanvas,
+    cropX,
+    cropY,
+    cropWidth,
+    cropHeight,
+    0,
+    0,
+    cropWidth,
+    cropHeight
+  );
 
-  return bodyModel;
+  const texture = new CanvasTexture(croppedCanvas);
+  texture.colorSpace = "srgb";
+  texture.needsUpdate = true;
+  return {
+    texture,
+    width: cropWidth,
+    height: cropHeight,
+  };
 }
 
 export async function buildResidentAvatarModel(
@@ -167,46 +232,32 @@ export async function buildResidentAvatarModel(
     return null;
   }
 
-  const avatarMii = createResidentAvatarMii(resident);
-  if (!avatarMii) {
+  const renderUrl = await renderLocalResidentBodyImage(resident, renderer);
+  if (!renderUrl) {
     return null;
   }
 
-  const { createCharModel, initCharModelTextures, FFLCharModelDescDefault } =
-    await import("../../external/ffl.js/ffl");
-  const { getFFL } = await import("../../main");
+  const { texture, width, height } = await cropResidentBodyRender(renderUrl);
 
-  const charModel = createCharModel(
-    avatarMii.encodeStudio(),
-    {
-      ...FFLCharModelDescDefault,
-      resolution: 512,
-      allExpressionFlag: new Uint32Array([1, 0, 0]),
-    },
-    LUTShaderMaterial,
-    getFFL(),
-    false
+  const aspectRatio = width > 0 && height > 0 ? width / height : 0.72;
+  const planeHeight = rig.bodyTargetHeight;
+  const planeWidth = planeHeight * aspectRatio;
+
+  const avatarSprite = new Sprite(
+    new SpriteMaterial({
+      map: texture,
+      transparent: true,
+      alphaTest: 0.02,
+      depthWrite: false,
+    })
   );
-  initCharModelTextures(charModel, renderer);
-
-  const avatarScene = new Group();
-  avatarScene.name = "PlazaResidentBody";
-
-  const bodyModel = buildLocalBodyModel(charModel);
-  if (bodyModel) {
-    avatarScene.add(bodyModel);
-  }
-
-  avatarScene.add(charModel.meshes.clone());
-  flagResidentAvatarMeshes(avatarScene);
-  normalizeResidentAvatarModel(avatarScene, {
-    anchorY: rig.bodyAnchorY,
-    targetHeight: rig.bodyTargetHeight,
-  });
+  avatarSprite.name = "PlazaResidentBodyRender";
+  avatarSprite.center.set(0.5, 0);
+  avatarSprite.scale.set(planeWidth, planeHeight, 1);
+  avatarSprite.position.y = rig.bodyAnchorY;
 
   const avatarRoot = new Group();
   avatarRoot.name = `PlazaResidentAvatar:${resident.agent.id}`;
-  avatarRoot.userData.charModel = charModel;
-  avatarRoot.add(avatarScene);
+  avatarRoot.add(avatarSprite);
   return avatarRoot;
 }
