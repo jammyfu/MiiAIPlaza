@@ -14,9 +14,6 @@ import {
   PlaneGeometry,
   Scene,
   SphereGeometry,
-  Sprite,
-  SpriteMaterial,
-  Texture,
   Vector2,
   Vector3,
   WebGLRenderer,
@@ -42,6 +39,7 @@ import {
   describePollingPlanUi,
   describeRefreshUiState,
 } from "./plazaRefreshUi";
+import { buildResidentAvatarHeadModel } from "./plazaResidentAvatarScene";
 import { getMiiRender, MiiCustomRenderType } from "../../util/miiImageUtils";
 
 interface PlazaExperienceOptions {
@@ -925,8 +923,6 @@ export function createPlazaExperience({
   scene.add(player);
 
   const interactables: Interactable[] = [];
-  const disposableTextures: Texture[] = [];
-  const disposableMaterials: SpriteMaterial[] = [];
 
   const residentMeshes = residents.map((resident, index) => {
     const diagnostics = getPresenceDiagnostics(resident.presence);
@@ -988,26 +984,22 @@ export function createPlazaExperience({
         return;
       }
 
-      getMiiRender(residentMii, MiiCustomRenderType.Body)
+      buildResidentAvatarHeadModel(resident, renderer)
         .then((image) => {
-          const texture = new Texture(image);
-          texture.needsUpdate = true;
-          const material = new SpriteMaterial({
-            map: texture,
-            transparent: true,
-            depthWrite: false,
-          });
-          const sprite = new Sprite(material);
-          sprite.position.y = 1.45;
-          sprite.scale.set(2.45, 3.5, 1);
-          group.add(sprite);
+          if (!image) {
+            return;
+          }
 
-          body.visible = false;
+          group.add(image);
           head.visible = false;
-          marker.position.y = 2.6;
+          marker.position.y = 2.55;
 
-          disposableTextures.push(texture);
-          disposableMaterials.push(material);
+          return getMiiRender(residentMii, MiiCustomRenderType.HeadOnly);
+        })
+        .then((image) => {
+          if (!image) {
+            return;
+          }
 
           const avatarChip = document.createElement("img");
           avatarChip.className = "plaza-resident-avatar";
@@ -1328,8 +1320,6 @@ export function createPlazaExperience({
       renderer.domElement.removeEventListener("pointerdown", onPointerDown);
       window.removeEventListener("pointermove", onPointerMove);
       window.removeEventListener("pointerup", onPointerUp);
-      disposableMaterials.forEach((material) => material.dispose());
-      disposableTextures.forEach((texture) => texture.dispose());
       renderer.dispose();
     },
   };

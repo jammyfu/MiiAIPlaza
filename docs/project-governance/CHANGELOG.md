@@ -57,3 +57,4 @@
 - Added a typed `OpenClaw` live request-dispatch handler so network execution now flows through an injectable handler boundary before any real HTTP calls exist.
 - Added a typed `OpenClaw` live HTTP-bridge handler so request dispatch now flows through an injectable bridge boundary before any real HTTP calls exist.
 - Added a typed `OpenClaw` live transport-callable handler so the HTTP bridge now flows through an injectable callable boundary before any real HTTP calls exist.
+- 将 README.md 翻译为中文，方便开发者更好地理解项目。

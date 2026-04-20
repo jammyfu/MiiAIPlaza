@@ -1,161 +1,161 @@
-# Mii Plaza Client
+# Mii Plaza 客户端
 
-![Preview image](public/assets/images/preview_dark.png)
+![预览图像](public/assets/images/preview_dark.png)
 
-`mii-creator` is now being developed as a `Mii Plaza Client`: a browser-based 3D plaza built on top of the existing Mii editor, renderer, and local asset pipeline.
+`mii-creator` 现在正被开发为一个 `Mii Plaza Client`（Mii 广场客户端）：一个基于浏览器的 3D 广场，构建在现有的 Mii 编辑器、渲染器和本地资源管道之上。
 
-The repository still ships the original Mii editing and library experience, but the current product direction is larger than a standalone avatar editor:
+本仓库仍然保留了原始的 Mii 编辑和库体验，但目前的产品方向已不再仅仅是一个独立的化身编辑器：
 
-- `/` keeps the classic Mii editor and local library flow
-- `/?plaza=1` runs the early third-person plaza prototype
-- provider-driven presence data is being prepared for `OpenClaw` and other future agent backends
+- `/` 保留了经典的 Mii 编辑器和本地库流程
+- `/?plaza=1` 运行早期的第三人称广场原型
+- 提供者驱动的在线状态数据正在为 `OpenClaw` 和其他未来的代理后端做准备
 
-## What This Repo Owns
+## 本仓库负责的内容
 
-This repository is the client plane of the project.
+本仓库是项目的客户端层。
 
-It owns:
+它负责：
 
-- Mii editing, rendering, and identity presentation
-- the playable browser plaza runtime
-- HUD, diagnostics, and player interaction shells
-- provider-facing client contracts for agent presence
+- Mii 编辑、渲染和身份展示
+- 可运行的浏览器广场运行时
+- HUD（抬头显示）、诊断和玩家互动外壳
+- 面向提供者的代理在线状态客户端合约
 
-It does not own:
+它不负责：
 
-- agent orchestration itself
-- social persistence or mailbox/board storage
-- realtime fanout or multiplayer backend services
+- 代理（Agent）本身的编排
+- 社交持久化或邮箱/留言板存储
+- 实时分发或多玩家后端服务
 
-Those pieces are planned behind stable contracts and a separate service plane.
+这些部分计划放在稳定的合约和独立的服务器层之后。
 
-## Current Architecture Direction
+## 当前架构方向
 
-The current fork is following a layered platform path:
+当前的分支遵循分层平台路径：
 
-- `Mii Plaza Client` in this repo
-- provider adapters for `OpenClaw` and future agent systems
-- contract-first integration before real network dependencies are turned on
-- continuous project governance through `CURRENT_PLAN.md`, `MASTER_PLAN.md`, and `docs/project-governance/`
+- 本仓库中的 `Mii Plaza Client`
+- 用于 `OpenClaw` 和未来代理系统的提供者适配器
+- 在开启真实网络依赖之前的“合约优先”集成
+- 通过 `CURRENT_PLAN.md`、`MASTER_PLAN.md` 和 `docs/project-governance/` 进行持续的项目治理
 
-Recommended reading order:
+推荐阅读顺序：
 
-- [PROJECT_BRIEF.md](/Users/jammyfu/works/AI/Tools/mii-creator/PROJECT_BRIEF.md)
-- [CURRENT_PLAN.md](/Users/jammyfu/works/AI/Tools/mii-creator/CURRENT_PLAN.md)
-- [MASTER_PLAN.md](/Users/jammyfu/works/AI/Tools/mii-creator/MASTER_PLAN.md)
-- [docs/architecture/PLATFORM_ROADMAP.md](/Users/jammyfu/works/AI/Tools/mii-creator/docs/architecture/PLATFORM_ROADMAP.md)
-- [docs/AUTOMATION_COMMANDS.md](/Users/jammyfu/works/AI/Tools/mii-creator/docs/AUTOMATION_COMMANDS.md)
-- [docs/LONG_RUNNING_AUTONOMY.md](/Users/jammyfu/works/AI/Tools/mii-creator/docs/LONG_RUNNING_AUTONOMY.md)
-- [docs/superpowers/specs/2026-04-20-mii-plaza-platform-design.md](/Users/jammyfu/works/AI/Tools/mii-creator/docs/superpowers/specs/2026-04-20-mii-plaza-platform-design.md)
+- [PROJECT_BRIEF.md 项目简介](PROJECT_BRIEF.md)
+- [CURRENT_PLAN.md 当前计划](CURRENT_PLAN.md)
+- [MASTER_PLAN.md 总体规划](MASTER_PLAN.md)
+- [docs/architecture/PLATFORM_ROADMAP.md docs/architecture/PLATFORM_ROADMAP.md](docs/architecture/PLATFORM_ROADMAP.md)
+- [docs/AUTOMATION_COMMANDS.md 自动化命令](docs/AUTOMATION_COMMANDS.md)
+- [docs/LONG_RUNNING_AUTONOMY.md docs/LONG_RUNNING_AUTONOMY.md](docs/LONG_RUNNING_AUTONOMY.md)
+- [docs/superpowers/specs/2026-04-20-mii-plaza-platform-design.md docs/superpowers/specs/2026-04-20-mii-plaza-platform-design.md](docs/superpowers/specs/2026-04-20-mii-plaza-platform-design.md)
 
-## Open Source Base And Attribution
+## 开源基础与贡献致谢
 
-This project is based on the open source repository [datkat21/mii-creator](https://github.com/datkat21/mii-creator).
+本项目基于开源仓库 [datkat21/mii-creator](https://github.com/datkat21/mii-creator)。
 
-This fork keeps that codebase as its foundation and extends it toward a playable Mii plaza experience.
+本分叉（fork）以此代码库为基础，并将其扩展为可玩的 Mii 广场体验。
 
-The current repo also builds on or references the following open source projects:
+当前仓库还构建或参考了以下开源项目：
 
-- [ariankordi/FFL-Testing](https://github.com/ariankordi/FFL-Testing) for the renderer-server prototype ideas and local rendering workflow
-- [datkat21/FFL-Testing-with-hats](https://github.com/datkat21/FFL-Testing-with-hats) for hat-enabled local rendering support
-- [PretendoNetwork/mii-js](https://github.com/PretendoNetwork/mii-js) for JavaScript-friendly Mii data handling
+- [ariankordi/FFL-Testing](https://github.com/ariankordi/FFL-Testing) ：借鉴了渲染服务器原型想法和本地渲染工作流
+- [datkat21/FFL-Testing-with-hats](https://github.com/datkat21/FFL-Testing-with-hats) ：引入了带帽子的本地渲染支持
+- [PretendoNetwork/mii-js](https://github.com/PretendoNetwork/mii-js) ：用于 JavaScript 友好的 Mii 数据处理
 
-Additional attribution from the original project remains relevant:
+原始项目的其他致谢依然有效：
 
-- some utility code in `src/external/mii-frontend` is adapted from arian's public website/tooling
-- custom Mii Maker music is by [objecty](https://x.com/objecty)
+- `src/external/mii-frontend` 中的部分实用程序代码改编自 arian 的公开网站/工具
+- 自定义 Mii Maker 音乐由 [objecty](https://x.com/objecty) 创作
 
-Please keep upstream attribution intact when reusing or redistributing this fork.
+在重用或分发此分叉时，请保持上游致谢完整。
 
-## Current Feature Surface
+## 当前功能面
 
-### Editor And Renderer
+### 编辑器与渲染器
 
-- real 3D Mii rendering
-- Mii editing with extended colors and accessories
-- local library save/load flows
-- QR export
-- PNG export
-- `.ffsd` and `.miic` import/export
-- custom render creation inside the app
-- browser-local `ffl.js` rendering on localhost
-- optional native local renderer server workflow
+- 真实的 3D Mii 渲染
+- 具有扩展颜色和配饰的 Mii 编辑
+- 本地库保存/加载流程
+- QR 码导出
+- PNG 导出
+- `.ffsd` 和 `.miic` 导入/导出
+- 在应用内自定义渲染创建
+- 本地主机的浏览器端 `ffl.js` 渲染
+- 可选的原生本地渲染服务器工作流
 
-### Plaza Prototype
+### 广场原型
 
-- third-person playable plaza shell at `/?plaza=1`
-- mock provider-backed plaza residents and hotspots
-- provider diagnostics in HUD and `Provider Status`
-- typed provider seams for `OpenClaw` live integration
-- refresh/fallback/status handling for evolving provider pipelines
+- 位于 `/?plaza=1` 的第三人称可玩广场外壳
+- 模拟提供者支持的广场居民和热点
+- HUD 和 `Provider Status`（提供者状态）中的提供者诊断
+- 针对 `OpenClaw` 实时集成的类型化提供者衔接
+- 针对不断演进的提供者管道的刷新/回退/状态处理
 
-## Getting Started
+## 开始使用
 
-### Prerequisites
+### 前提条件
 
 - [Bun](https://bun.sh/)
 - Python 3
-- macOS is the best-supported local renderer environment in the current scripts
+- macOS 是当前脚本中支持最好的本地渲染环境
 
-Install dependencies:
+安装依赖：
 
 ```bash
 bun i
 ```
 
-## Running The App
+## 运行应用
 
-### Fastest local frontend loop
+### 最快的本地前端循环
 
-Run the TypeScript build watcher:
+运行 TypeScript 构建监听器：
 
 ```bash
 bun run build-ts
 ```
 
-Serve the static app in another terminal:
+在另一个终端中启动静态应用服务：
 
 ```bash
 bun run serve
 ```
 
-Then open:
+然后打开：
 
-- [http://127.0.0.1:3000/](http://127.0.0.1:3000/) for the classic editor
-- [http://127.0.0.1:3000/?plaza=1](http://127.0.0.1:3000/?plaza=1) for the plaza prototype
+- [http://127.0.0.1:3000/](http://127.0.0.1:3000/) 进入经典编辑器
+- [http://127.0.0.1:3000/?plaza=1](http://127.0.0.1:3000/?plaza=1) 进入广场原型
 
-If you prefer a one-shot compile instead of the watcher:
+如果你更喜欢一次性编译而不是监听器：
 
 ```bash
 bun run build-once
 ```
 
-### Local renderer stack
+### 本地渲染技术栈
 
-This repo supports two local rendering modes:
+本仓库支持两种本地渲染模式：
 
-- browser-local `ffl.js` rendering, now the default on `localhost` and `127.0.0.1`
-- native local renderer server mode using `/miis/*`
+- 浏览器端 `ffl.js` 渲染，现在是 `localhost` 和 `127.0.0.1` 上的默认模式
+- 使用 `/miis/*` 的原生本地渲染服务器模式
 
-Native prerequisites on macOS:
+macOS 上的原生前提条件：
 
 ```bash
 brew install cmake pkg-config glfw go
 ```
 
-Set up renderer resources:
+设置渲染器资源：
 
 ```bash
 ./scripts/setup-local-renderer.sh
 ```
 
-Start only the app:
+仅启动应用：
 
 ```bash
 ./scripts/start-local-app.sh
 ```
 
-Useful companion commands:
+有用的配套命令：
 
 ```bash
 ./scripts/status-local-app.sh
@@ -163,35 +163,35 @@ Useful companion commands:
 ./scripts/start-local-app.sh restart
 ```
 
-Start the native renderer server too:
+同时启动原生渲染服务器：
 
 ```bash
 ./scripts/start-local-renderer.sh
 ```
 
-Open the app in server renderer mode:
+在服务器渲染模式下打开应用：
 
 - [http://127.0.0.1:3000/?rendererBackend=server](http://127.0.0.1:3000/?rendererBackend=server)
 
-Start everything together:
+一键启动所有内容：
 
 ```bash
 ./scripts/start-local-stack.sh
 ```
 
-Check or stop the full stack:
+检查或停止全栈：
 
 ```bash
 ./scripts/status-local-stack.sh
 ./scripts/stop-local-stack.sh
 ```
 
-### Useful runtime overrides
+### 有用的运行时覆盖参数
 
 - `MII_RENDERER_BACKEND=ffljs`
 - `MII_RENDERER_BACKEND=server`
 - `MII_RENDERER_BACKEND=both`
-- `MII_RENDERER_REPO=/absolute/path/to/FFL-Testing-with-hats`
+- `MII_RENDERER_REPO=/你的/本地/FFL-Testing-with-hats/绝对路径`
 - `MII_RENDERER_PORT=5001`
 - `MII_APP_PORT=3001`
 - `MII_RENDERER_UPSTREAM_PORT=12347`
@@ -200,49 +200,49 @@ Check or stop the full stack:
 - `?rendererBackend=ffljs`
 - `?rendererBackend=server`
 
-## Running Tests And Verification
+## 运行测试与验证
 
-### Quick test entrypoint
+### 快速测试入口
 
-Run the default test script:
+运行默认测试脚本：
 
 ```bash
 bun test
 ```
 
-Or through `package.json`:
+或者通过 `package.json` 运行：
 
 ```bash
 bun run test
 ```
 
-This currently covers:
+目前涵盖以下内容：
 
-- core plaza provider tests
-- resident avatar adapter tests
-- local sync helper tests
+- 核心广场提供者测试
+- 居民代入适配器测试
+- 本地同步辅助工具测试
 
-### Full repository verification
+### 全库验证
 
-The main verification entrypoint for this project is:
+本仓库的主要验证入口是：
 
 ```bash
 python3 tools/verify.py
 ```
 
-That command runs the broader repository checks used by the project loop, including:
+该命令会运行项目循环中使用的更广泛的仓库检查，包括：
 
-- Bun test suites for plaza/provider/runtime coverage
-- Python unittest coverage for sync tooling
-- one-shot frontend build verification
+- 用于广场/提供者/运行时的 Bun 测试套件
+- 用于同步工具的 Python 单元测试覆盖
+- 一次性前端构建验证
 
-You can also call the package shortcut:
+你也可以调用包快捷方式：
 
 ```bash
 bun run verify
 ```
 
-### Useful individual commands
+### 有用的独立命令
 
 ```bash
 bun run build-once
@@ -251,25 +251,25 @@ bun test src/game/plaza/loadPlazaWorldData.test.ts
 python3 -m unittest tools.test_sync_or_queue tools.test_queue_local_git_sync tools.test_verify
 ```
 
-## Automation And Safe Sync
+## 自动化与安全同步
 
-This repository uses the same safe-sync submission pattern adopted from `ai-analysis-mcp` and `AegisGraph`.
+本仓库采用了从 `ai-analysis-mcp` 和 `AegisGraph` 继承的安全同步提交模式。
 
-The preferred automation flow is:
+推荐的自动化流程是：
 
-1. finish one stable closure
-2. run `python3 tools/verify.py`
-3. submit through safe sync instead of raw `git commit && git push`
+1. 完成一个稳定的闭环（closure）
+2. 运行 `python3 tools/verify.py`
+3. 通过安全同步提交，而不是直接使用 `git commit && git push`
 
-Primary commands:
+主要命令：
 
 ```bash
-python3 tools/sync_or_queue.py --message "feat: your stable closure"
-python3 tools/sync_or_queue.py --message "feat: your stable closure" --prefer-local
+python3 tools/sync_or_queue.py --message "feat: 你的稳定闭环说明"
+python3 tools/sync_or_queue.py --message "feat: 你的稳定闭环说明" --prefer-local
 python3 tools/local_git_flush.py
 ```
 
-Package shortcuts:
+包快捷方式：
 
 ```bash
 bun run sync
@@ -277,34 +277,34 @@ bun run sync:local
 bun run flush:local
 ```
 
-See:
+请参阅：
 
-- [AGENTS.md](/Users/jammyfu/works/AI/Tools/mii-creator/AGENTS.md)
-- [docs/AUTOMATION_COMMANDS.md](/Users/jammyfu/works/AI/Tools/mii-creator/docs/AUTOMATION_COMMANDS.md)
-- [docs/LONG_RUNNING_AUTONOMY.md](/Users/jammyfu/works/AI/Tools/mii-creator/docs/LONG_RUNNING_AUTONOMY.md)
+- [AGENTS.md](AGENTS.md)
+- [docs/AUTOMATION_COMMANDS.md](docs/AUTOMATION_COMMANDS.md)
+- [docs/LONG_RUNNING_AUTONOMY.md](docs/LONG_RUNNING_AUTONOMY.md)
 
-## Contributing
+## 贡献
 
-Contributions are welcome, especially in these areas:
+欢迎贡献，特别是在以下领域：
 
-- plaza gameplay and player interaction
-- provider adapters and diagnostics
-- Mii rendering improvements
-- local tooling and automation reliability
-- social/world systems once the service contracts are ready
+- 广场玩法和玩家互动
+- 提供者适配器和诊断
+- Mii 渲染改进
+- 本地工具链和自动化可靠性
+- 一旦服务合约准备就绪后的社交/世界系统
 
-If you contribute, please align with the repository loop files and verify before syncing changes.
+如果你参与贡献，请与仓库循环文件保持一致，并在同步更改前进行验证。
 
-## Model Credits
+## 模型致谢
 
-Some custom hat models are provided by The Models Resource:
+部分自定义帽子模型由 The Models Resource 提供：
 
-- [Top Hat](https://www.models-resource.com/nintendo_switch/supersmashbrosultimate/model/30314/)
-- [Ribbon & Bow](https://www.models-resource.com/3ds/nintendogscats/model/30239/)
+- [Top Hat（高礼帽）](https://www.models-resource.com/nintendo_switch/supersmashbrosultimate/model/30314/)
+- [Ribbon & Bow（缎带与蝴蝶结）](https://www.models-resource.com/3ds/nintendogscats/model/30239/)
 
-Thanks to [Timimimi](https://github.com/Timiimiimii) for creating additional hat models:
+感谢 [Timimimi](https://github.com/Timiimiimii) 创作的额外帽子模型：
 
-- Cat Ears
-- Straw Hat
-- Hijab
-- Bike Helmet
+- 猫耳 (Cat Ears)
+- 草帽 (Straw Hat)
+- 希贾布 (Hijab)
+- 自行车头盔 (Bike Helmet)
