@@ -117,3 +117,6 @@
 - Added a typed `OpenClaw` live fetch-entry record so execution-bridge output now resolves into one fetch-call-boundary placeholder shape without network calls.
 - Taught preview and live-capable stub runners to carry the shared fetch-entry record alongside execution bridges so future live network plumbing can reuse one fetch-call handoff shape.
 - Surfaced fetch-entry metadata through plaza diagnostics, HUD provider metadata, and the shared `Provider Status` hotspot, then advanced `CURRENT_PLAN.md` to the next live fetch-dispatch slice.
+- Added a typed `OpenClaw` live fetch-dispatch record so fetch-entry output now resolves into one network-invocation-boundary placeholder shape without network calls.
+- Taught preview and live-capable stub runners to carry the shared fetch-dispatch record alongside fetch entries so future live transport invocation can reuse one dispatch handoff shape.
+- Surfaced fetch-dispatch metadata through plaza diagnostics, HUD provider metadata, and the shared `Provider Status` hotspot, then advanced `CURRENT_PLAN.md` to the next live transport-call slice.

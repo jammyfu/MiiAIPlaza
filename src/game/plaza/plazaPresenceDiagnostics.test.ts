@@ -279,6 +279,18 @@ test("world data request copy stays readable in the hud and provider status flow
       fetchTargetLabel: "OpenClaw live fetch call",
       runnerMode: "preview",
     },
+    fetchDispatch: {
+      id: "openclaw-live-fetch-dispatch",
+      label: "OpenClaw live fetch dispatch",
+      summary:
+        "Represents the placeholder network-invocation-boundary record derived from the fetch entry before actual live network execution runs.",
+      status: "preview-payload",
+      payloadLabel: "Preview payload available from no-network live-preview execution.",
+      sourceFetchEntryLabel:
+        "Preview payload from GET OpenClaw live endpoint pending configuration?view=plaza&workspace=mii-plaza-client",
+      dispatchTargetLabel: "OpenClaw live network invocation",
+      runnerMode: "preview",
+    },
     executor: {
       status: "needs-config",
       mode: "dry-run",
@@ -390,6 +402,17 @@ test("world data request copy stays readable in the hud and provider status flow
     fetchEntryTargetLabel:
       "Entry target: OpenClaw live fetch call",
     fetchEntryModeLabel: "Entry mode: Preview",
+    fetchDispatchLabel: "OpenClaw live fetch dispatch",
+    fetchDispatchSummary:
+      "Represents the placeholder network-invocation-boundary record derived from the fetch entry before actual live network execution runs.",
+    fetchDispatchStatusLabel: "Fetch dispatch status: Preview payload",
+    fetchDispatchPayloadLabel:
+      "Dispatch payload: Preview payload available from no-network live-preview execution.",
+    fetchDispatchSourceLabel:
+      "Dispatch source entry: Preview payload from GET OpenClaw live endpoint pending configuration?view=plaza&workspace=mii-plaza-client",
+    fetchDispatchTargetLabel:
+      "Dispatch target: OpenClaw live network invocation",
+    fetchDispatchModeLabel: "Dispatch mode: Preview",
     executorLabel: "Dry run needs config",
     executorSummary: "Configure a live OpenClaw endpoint before enabling fetch execution.",
   });

@@ -101,6 +101,13 @@ export interface PlazaWorldDataRequestCopy {
   fetchEntrySourceLabel: string | null;
   fetchEntryTargetLabel: string | null;
   fetchEntryModeLabel: string | null;
+  fetchDispatchLabel: string | null;
+  fetchDispatchSummary: string | null;
+  fetchDispatchStatusLabel: string | null;
+  fetchDispatchPayloadLabel: string | null;
+  fetchDispatchSourceLabel: string | null;
+  fetchDispatchTargetLabel: string | null;
+  fetchDispatchModeLabel: string | null;
   executorLabel: string | null;
   executorSummary: string | null;
 }
@@ -457,6 +464,29 @@ export function describeWorldDataRequest(
     fetchEntryModeLabel: request.fetchEntry
       ? `Entry mode: ${
           request.fetchEntry.runnerMode === "live" ? "Live" : "Preview"
+        }`
+      : null,
+    fetchDispatchLabel: request.fetchDispatch?.label ?? null,
+    fetchDispatchSummary: request.fetchDispatch?.summary ?? null,
+    fetchDispatchStatusLabel: request.fetchDispatch
+      ? `Fetch dispatch status: ${
+          request.fetchDispatch.status === "live-ready"
+            ? "Live ready"
+            : "Preview payload"
+        }`
+      : null,
+    fetchDispatchPayloadLabel: request.fetchDispatch
+      ? `Dispatch payload: ${request.fetchDispatch.payloadLabel}`
+      : null,
+    fetchDispatchSourceLabel: request.fetchDispatch
+      ? `Dispatch source entry: ${request.fetchDispatch.sourceFetchEntryLabel}`
+      : null,
+    fetchDispatchTargetLabel: request.fetchDispatch
+      ? `Dispatch target: ${request.fetchDispatch.dispatchTargetLabel}`
+      : null,
+    fetchDispatchModeLabel: request.fetchDispatch
+      ? `Dispatch mode: ${
+          request.fetchDispatch.runnerMode === "live" ? "Live" : "Preview"
         }`
       : null,
     executorLabel: executorCopy?.label ?? null,

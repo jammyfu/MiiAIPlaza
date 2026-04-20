@@ -305,3 +305,11 @@ When `OpenClaw` requests are marked `liveEnabled`, have the runner factory selec
 
 Why:
 This lets the live path exercise runner selection and diagnostics honestly before real transport exists, while keeping the actual fetch boundary unchanged and safe in restricted environments.
+
+### Resolve transport-call records from fetch-dispatch metadata before real network calls exist
+
+Decision:
+Represent the next transport-invocation-boundary `OpenClaw` state as a typed transport-call record derived from the shared fetch-dispatch seam, and carry that record on the shared request contract before wiring any concrete live fetch implementation.
+
+Why:
+This keeps the network-invocation posture separate from the eventual fetch implementation while giving preview and future live-capable runners one stable transport-call handoff shape. Diagnostics can describe what would be invoked next without implying that a real network request has already started.
