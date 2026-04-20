@@ -40,7 +40,7 @@ import {
   describePollingPlanUi,
   describeRefreshUiState,
 } from "./plazaRefreshUi";
-import { buildResidentAvatarHeadModel } from "./plazaResidentAvatarScene";
+import { buildResidentAvatarModel } from "./plazaResidentAvatarScene";
 import { getMiiRender, MiiCustomRenderType } from "../../util/miiImageUtils";
 
 interface PlazaExperienceOptions {
@@ -875,12 +875,16 @@ export function createPlazaExperience({
   renderer.shadowMap.enabled = true;
   canvasWrap.appendChild(renderer.domElement);
 
-  scene.add(new AmbientLight("#ffffff", 1.6));
+  scene.add(new AmbientLight("#cfd8e6", Math.PI / 12));
 
-  const sunLight = new DirectionalLight("#fff4d6", 2.4);
-  sunLight.position.set(10, 16, 8);
+  const sunLight = new DirectionalLight("#ebfeff", Math.PI * 0.72);
+  sunLight.position.set(7, 11, 9);
   sunLight.castShadow = true;
   scene.add(sunLight);
+
+  const fillLight = new DirectionalLight("#ffe7c7", Math.PI * 0.28);
+  fillLight.position.set(-6, 7, -4);
+  scene.add(fillLight);
 
   const ground = new Mesh(
     new PlaneGeometry(64, 64),
@@ -930,23 +934,28 @@ export function createPlazaExperience({
     const freshnessLabel = describePresenceFreshness(diagnostics.freshness);
     const group = new Group();
     const body = new Mesh(
-      new CylinderGeometry(0.26, 0.34, 1.05, 18),
-      new MeshStandardMaterial({ color: resident.agent.themeColor })
+      new CylinderGeometry(0.24, 0.28, 1.5, 12),
+      new MeshStandardMaterial({
+        color: resident.agent.themeColor,
+        roughness: 0.88,
+        metalness: 0.02,
+      })
     );
-    body.position.y = 0.58;
-    body.castShadow = true;
-    body.receiveShadow = true;
+    body.position.y = 0.75;
     const head = new Mesh(
       new SphereGeometry(0.34, 18, 14),
-      new MeshStandardMaterial({ color: "#f0cfaf" })
+      new MeshStandardMaterial({
+        color: "#f0cfaf",
+        roughness: 0.92,
+        metalness: 0.01,
+      })
     );
-    head.position.y = 1.7;
-    head.castShadow = true;
+    head.position.y = 1.8;
     const marker = new Mesh(
       new BoxGeometry(0.18, 0.18, 0.18),
       new MeshStandardMaterial({ color: resident.agent.accentColor })
     );
-    marker.position.y = 2.35;
+    marker.position.y = 2.7;
     group.add(body, head, marker);
     group.position.set(resident.position.x, 0, resident.position.z);
     scene.add(group);
@@ -986,15 +995,16 @@ export function createPlazaExperience({
         return;
       }
 
-      buildResidentAvatarHeadModel(resident, renderer)
+      buildResidentAvatarModel(resident, renderer)
         .then((image) => {
           if (!image) {
             return;
           }
 
           group.add(image);
+          body.visible = false;
           head.visible = false;
-          marker.position.y = 2.55;
+          marker.position.y = 3.75;
 
           return getMiiRender(residentMii, MiiCustomRenderType.HeadOnly);
         })

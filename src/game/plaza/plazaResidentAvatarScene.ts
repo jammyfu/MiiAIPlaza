@@ -17,17 +17,17 @@ const REMOTE_RENDERER_BASE_URL =
   "https://mii-unsecure.ariankordi.net/miis/image";
 
 export type ResidentAvatarRig = {
-  mode: "three-head";
-  headAnchorY: number;
-  headTargetHeight: number;
+  mode: "studio-body-glb";
+  bodyAnchorY: number;
+  bodyTargetHeight: number;
   markerY: number;
 };
 
 const residentAvatarRig: ResidentAvatarRig = {
-  mode: "three-head",
-  headAnchorY: 1.08,
-  headTargetHeight: 0.86,
-  markerY: 2.55,
+  mode: "studio-body-glb",
+  bodyAnchorY: 0,
+  bodyTargetHeight: 3.1,
+  markerY: 3.75,
 };
 
 export function createResidentAvatarRig(
@@ -44,37 +44,37 @@ export function describeResidentAvatarSceneMode(
   resident: PlazaResident
 ): string {
   return createResidentAvatarRig(resident)
-    ? "3D resident head"
+    ? "Studio full-body GLB"
     : "Fallback proxy geometry";
 }
 
-export function normalizeResidentAvatarHeadModel(
-  headScene: Group,
+export function normalizeResidentAvatarModel(
+  avatarScene: Group,
   options: {
     anchorY: number;
     targetHeight: number;
   }
 ) {
-  headScene.updateMatrixWorld(true);
+  avatarScene.updateMatrixWorld(true);
 
-  const bounds = new Box3().setFromObject(headScene);
+  const bounds = new Box3().setFromObject(avatarScene);
   const size = bounds.getSize(new Vector3());
   if (size.y <= 0) {
     return;
   }
 
   const scaleFactor = options.targetHeight / size.y;
-  headScene.scale.multiplyScalar(scaleFactor);
-  headScene.updateMatrixWorld(true);
+  avatarScene.scale.multiplyScalar(scaleFactor);
+  avatarScene.updateMatrixWorld(true);
 
-  const scaledBounds = new Box3().setFromObject(headScene);
+  const scaledBounds = new Box3().setFromObject(avatarScene);
   const center = scaledBounds.getCenter(new Vector3());
   const min = scaledBounds.min.clone();
 
-  headScene.position.x -= center.x;
-  headScene.position.z -= center.z;
-  headScene.position.y += options.anchorY - min.y;
-  headScene.updateMatrixWorld(true);
+  avatarScene.position.x -= center.x;
+  avatarScene.position.z -= center.z;
+  avatarScene.position.y += options.anchorY - min.y;
+  avatarScene.updateMatrixWorld(true);
 }
 
 function bytesToHex(bytes: Uint8Array) {
@@ -93,7 +93,7 @@ function flagResidentAvatarMeshes(object: Object3D) {
   });
 }
 
-export function createResidentAvatarHeadModelUrl(
+export function createResidentAvatarModelUrl(
   resident: PlazaResident
 ): string | null {
   const avatarMii = createResidentAvatarMii(resident);
@@ -101,12 +101,14 @@ export function createResidentAvatarHeadModelUrl(
     return null;
   }
 
-  return `${REMOTE_RENDERER_BASE_URL}.glb?shaderType=miitomo&type=face&width=260&verifyCharInfo=0&data=${bytesToHex(
-    avatarMii.encodeStudio()
-  )}`;
+  return avatarMii.studioUrl({
+    ext: "glb",
+    type: "all_body",
+    width: 512,
+  });
 }
 
-export async function buildResidentAvatarHeadModel(
+export async function buildResidentAvatarModel(
   resident: PlazaResident,
   _renderer: WebGLRenderer
 ): Promise<Group | null> {
@@ -115,22 +117,22 @@ export async function buildResidentAvatarHeadModel(
     return null;
   }
 
-  const gltfUrl = createResidentAvatarHeadModelUrl(resident);
+  const gltfUrl = createResidentAvatarModelUrl(resident);
   if (!gltfUrl) {
     return null;
   }
 
   const loader = new GLTFLoader();
-  const headModel = await loader.loadAsync(gltfUrl);
-  headModel.scene.name = "PlazaResidentHead";
-  normalizeResidentAvatarHeadModel(headModel.scene, {
-    anchorY: rig.headAnchorY,
-    targetHeight: rig.headTargetHeight,
+  const avatarModel = await loader.loadAsync(gltfUrl);
+  avatarModel.scene.name = "PlazaResidentBody";
+  normalizeResidentAvatarModel(avatarModel.scene, {
+    anchorY: rig.bodyAnchorY,
+    targetHeight: rig.bodyTargetHeight,
   });
-  flagResidentAvatarMeshes(headModel.scene);
+  flagResidentAvatarMeshes(avatarModel.scene);
 
-  const headRoot = new Group();
-  headRoot.name = `PlazaResidentAvatar:${resident.agent.id}`;
-  headRoot.add(headModel.scene);
-  return headRoot;
+  const avatarRoot = new Group();
+  avatarRoot.name = `PlazaResidentAvatar:${resident.agent.id}`;
+  avatarRoot.add(avatarModel.scene);
+  return avatarRoot;
 }
