@@ -52,3 +52,4 @@
 - Added a typed `OpenClaw` live fetch-execution record so future live transport implementation work can inspect transport-implementation-boundary placeholder posture before any network calls exist.
 - Added a typed `OpenClaw` live execution-delegate record so future live transport runner work can inspect network-runner-boundary placeholder posture before any network calls exist.
 - Added a typed `OpenClaw` live transport-implementation record so future live fetch-runner work can inspect fetch-runner-boundary placeholder posture before any network calls exist.
+- Added a typed `OpenClaw` live transport-runner record so future live network-execution work can inspect the final pre-network runner posture before any network calls exist.

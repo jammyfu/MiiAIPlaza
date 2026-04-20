@@ -218,6 +218,14 @@ Extend the current preview fetch runner metadata so it explicitly declares it is
 Why:
 This keeps the future live-runner swap additive instead of structural. A later network-capable implementation can reuse the same request and delegate seams, while diagnostics already know how to describe contract posture instead of only one-off preview behavior.
 
+### Put transport-runner metadata on the shared request contract before live execution exists
+
+Decision:
+Resolve a typed live transport-runner record from transport-implementation metadata and carry it through the shared `OpenClaw` request contract before introducing any real network execution.
+
+Why:
+This keeps the final handoff into a future injectable fetch implementation explicit and testable, lets diagnostics describe the last pre-network boundary without ad-hoc UI logic, and preserves the current dry-run/live-preview behavior while the actual transport layer is still missing.
+
 ### Put execution-boundary payload posture on the shared request contract before real live execution exists
 
 Decision:

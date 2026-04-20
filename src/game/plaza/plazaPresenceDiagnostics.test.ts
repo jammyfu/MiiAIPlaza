@@ -343,6 +343,19 @@ test("world data request copy stays readable in the hud and provider status flow
       runnerTargetLabel: "OpenClaw live transport runner",
       runnerMode: "preview",
     },
+    transportRunner: {
+      id: "openclaw-live-transport-runner",
+      label: "OpenClaw live transport runner",
+      summary:
+        "Represents the placeholder fetch-runner-boundary record derived from the transport implementation before actual live network execution runs.",
+      status: "preview-payload",
+      payloadLabel:
+        "Preview payload available from no-network live-preview execution.",
+      sourceTransportImplementationLabel:
+        "Preview payload from GET OpenClaw live endpoint pending configuration?view=plaza&workspace=mii-plaza-client",
+      executionTargetLabel: "OpenClaw live network execution",
+      runnerMode: "preview",
+    },
     executor: {
       status: "needs-config",
       mode: "dry-run",
@@ -510,6 +523,17 @@ test("world data request copy stays readable in the hud and provider status flow
     transportImplementationTargetLabel:
       "Implementation target: OpenClaw live transport runner",
     transportImplementationModeLabel: "Implementation mode: Preview",
+    transportRunnerLabel: "OpenClaw live transport runner",
+    transportRunnerSummary:
+      "Represents the placeholder fetch-runner-boundary record derived from the transport implementation before actual live network execution runs.",
+    transportRunnerStatusLabel: "Transport runner status: Preview payload",
+    transportRunnerPayloadLabel:
+      "Runner payload: Preview payload available from no-network live-preview execution.",
+    transportRunnerSourceLabel:
+      "Runner source implementation: Preview payload from GET OpenClaw live endpoint pending configuration?view=plaza&workspace=mii-plaza-client",
+    transportRunnerTargetLabel:
+      "Runner target: OpenClaw live network execution",
+    transportRunnerModeLabel: "Runner mode: Preview",
     executorLabel: "Dry run needs config",
     executorSummary: "Configure a live OpenClaw endpoint before enabling fetch execution.",
   });

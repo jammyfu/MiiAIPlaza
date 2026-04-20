@@ -136,6 +136,13 @@ export interface PlazaWorldDataRequestCopy {
   transportImplementationSourceLabel: string | null;
   transportImplementationTargetLabel: string | null;
   transportImplementationModeLabel: string | null;
+  transportRunnerLabel: string | null;
+  transportRunnerSummary: string | null;
+  transportRunnerStatusLabel: string | null;
+  transportRunnerPayloadLabel: string | null;
+  transportRunnerSourceLabel: string | null;
+  transportRunnerTargetLabel: string | null;
+  transportRunnerModeLabel: string | null;
   executorLabel: string | null;
   executorSummary: string | null;
 }
@@ -611,6 +618,29 @@ export function describeWorldDataRequest(
           request.transportImplementation.runnerMode === "live"
             ? "Live"
             : "Preview"
+        }`
+      : null,
+    transportRunnerLabel: request.transportRunner?.label ?? null,
+    transportRunnerSummary: request.transportRunner?.summary ?? null,
+    transportRunnerStatusLabel: request.transportRunner
+      ? `Transport runner status: ${
+          request.transportRunner.status === "live-ready"
+            ? "Live ready"
+            : "Preview payload"
+        }`
+      : null,
+    transportRunnerPayloadLabel: request.transportRunner
+      ? `Runner payload: ${request.transportRunner.payloadLabel}`
+      : null,
+    transportRunnerSourceLabel: request.transportRunner
+      ? `Runner source implementation: ${request.transportRunner.sourceTransportImplementationLabel}`
+      : null,
+    transportRunnerTargetLabel: request.transportRunner
+      ? `Runner target: ${request.transportRunner.executionTargetLabel}`
+      : null,
+    transportRunnerModeLabel: request.transportRunner
+      ? `Runner mode: ${
+          request.transportRunner.runnerMode === "live" ? "Live" : "Preview"
         }`
       : null,
     executorLabel: executorCopy?.label ?? null,
