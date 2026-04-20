@@ -81,7 +81,16 @@ export interface PlazaWorldDataRequest {
   authKind: "none" | "token" | "session";
   liveEnabled: boolean;
   workspaceHint?: string;
+  descriptor?: PlazaWorldDataRequestDescriptor;
   executor?: PlazaWorldDataRequestExecutor;
+}
+
+export interface PlazaWorldDataRequestDescriptor {
+  method: "GET" | "POST";
+  pathLabel: string;
+  queryLabel?: string;
+  acceptLabel: string;
+  authHeaderLabel?: string;
 }
 
 export interface PlazaWorldDataRequestExecutor {

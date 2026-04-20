@@ -72,3 +72,6 @@
 - Added a typed network-ready async executor contract for `OpenClaw` so preview execution now runs through the same contract shape future live transport can implement.
 - Kept the live-preview provider aligned with that contract by awaiting the shared execute seam instead of calling a special-case synchronous helper.
 - Expanded verification to cover the executor contract and advanced `CURRENT_PLAN.md` to the next live request-descriptor slice.
+- Added a typed live request descriptor on the shared `OpenClaw` request contract so endpoint/auth/workspace intent now resolves into a future fetch-ready shape before transport exists.
+- Surfaced the request descriptor through plaza diagnostics, HUD provider metadata, and the shared `Provider Status` hotspot without changing the current runtime shell.
+- Expanded verification to cover request-descriptor behavior and advanced `CURRENT_PLAN.md` to the next transport-delegate slice.

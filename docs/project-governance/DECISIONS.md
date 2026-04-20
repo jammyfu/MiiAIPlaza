@@ -185,3 +185,11 @@ Wrap the current preview execution path in a typed async executor contract that 
 
 Why:
 Real network fetches will need an async execution boundary. Moving the preview path onto that same contract now keeps the live-preview provider honest about the future execution model and shrinks the eventual transport swap to a provider-layer implementation detail.
+
+### Put a typed live request descriptor on the shared `OpenClaw` request contract
+
+Decision:
+Resolve a typed request descriptor alongside the existing `OpenClaw` request metadata and carry it through diagnostics before any transport delegate or real network call exists.
+
+Why:
+The future fetch path needs more than endpoint/auth prose: it needs a stable description of method, path, query, accepted content type, and auth-header posture. Putting that shape on the shared request contract now keeps the next transport-delegate slice focused on execution instead of rediscovering request composition rules.

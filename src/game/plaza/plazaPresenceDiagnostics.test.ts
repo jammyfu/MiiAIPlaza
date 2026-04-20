@@ -136,6 +136,13 @@ test("world data request copy stays readable in the hud and provider status flow
     authKind: "token",
     liveEnabled: false,
     workspaceHint: "mii-plaza-client",
+    descriptor: {
+      method: "GET",
+      pathLabel: "/presence",
+      queryLabel: "view=plaza&workspace=mii-plaza-client",
+      acceptLabel: "application/json",
+      authHeaderLabel: "Authorization: Bearer OPENCLAW_TOKEN",
+    },
     executor: {
       status: "needs-config",
       mode: "dry-run",
@@ -149,6 +156,10 @@ test("world data request copy stays readable in the hud and provider status flow
     authLabel: "Token",
     liveLabel: "Config only",
     workspaceLabel: "Workspace: mii-plaza-client",
+    descriptorLabel: "GET /presence",
+    descriptorQueryLabel: "Query: view=plaza&workspace=mii-plaza-client",
+    descriptorAcceptLabel: "Accepts: application/json",
+    descriptorAuthLabel: "Auth header: Authorization: Bearer OPENCLAW_TOKEN",
     executorLabel: "Dry run needs config",
     executorSummary: "Configure a live OpenClaw endpoint before enabling fetch execution.",
   });

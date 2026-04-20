@@ -4,6 +4,7 @@ import type {
   PlazaPresenceSnapshot,
   PlazaResident,
   PlazaWorldData,
+  PlazaWorldDataRequestDescriptor,
   PlazaWorldDataRequestExecutor,
   PlazaWorldDataRequest,
   PlazaWorldDataProvider,
@@ -317,6 +318,32 @@ export interface OpenClawLiveRequestOverrides {
   workspaceHint?: string;
 }
 
+export function createOpenClawLiveRequestDescriptor(
+  overrides: OpenClawLiveRequestOverrides = {}
+): PlazaWorldDataRequestDescriptor {
+  const queryParts = ["view=plaza"];
+  if (overrides.workspaceHint) {
+    queryParts.push(`workspace=${overrides.workspaceHint}`);
+  }
+
+  let authHeaderLabel: string | undefined;
+  if (overrides.authKind === "session") {
+    authHeaderLabel = "Session cookie";
+  } else if ((overrides.authKind ?? "token") === "token") {
+    authHeaderLabel = overrides.authTokenName
+      ? `Authorization: Bearer ${overrides.authTokenName}`
+      : "Authorization: Bearer configured token";
+  }
+
+  return {
+    method: "GET",
+    pathLabel: "/presence",
+    queryLabel: queryParts.join("&"),
+    acceptLabel: "application/json",
+    ...(authHeaderLabel ? { authHeaderLabel } : {}),
+  };
+}
+
 export function resolveOpenClawLiveRequestOverrides(
   overrides: OpenClawLiveRequestOverrides = {}
 ): PlazaWorldDataRequest {
@@ -324,11 +351,17 @@ export function resolveOpenClawLiveRequestOverrides(
     overrides.authKind ?? (overrides.authTokenName ? "token" : "token");
   const endpointLabel =
     overrides.endpointUrl ?? "OpenClaw live endpoint pending configuration";
+  const descriptor = createOpenClawLiveRequestDescriptor({
+    authKind,
+    authTokenName: overrides.authTokenName,
+    workspaceHint: overrides.workspaceHint,
+  });
   const executor = planOpenClawLiveFetchExecutor({
     transport: "http",
     endpointLabel,
     authKind,
     liveEnabled: overrides.liveEnabled ?? false,
+    descriptor,
     ...(overrides.workspaceHint
       ? { workspaceHint: overrides.workspaceHint }
       : {}),
@@ -339,6 +372,7 @@ export function resolveOpenClawLiveRequestOverrides(
     endpointLabel,
     authKind,
     liveEnabled: overrides.liveEnabled ?? false,
+    descriptor,
     ...(overrides.workspaceHint
       ? { workspaceHint: overrides.workspaceHint }
       : {}),

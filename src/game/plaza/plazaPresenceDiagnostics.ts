@@ -37,6 +37,10 @@ export interface PlazaWorldDataRequestCopy {
   authLabel: string;
   liveLabel: string;
   workspaceLabel: string | null;
+  descriptorLabel: string | null;
+  descriptorQueryLabel: string | null;
+  descriptorAcceptLabel: string | null;
+  descriptorAuthLabel: string | null;
   executorLabel: string | null;
   executorSummary: string | null;
 }
@@ -193,6 +197,7 @@ export function describeWorldDataRequest(
   const executorCopy = request.executor
     ? describeWorldDataRequestExecutor(request.executor)
     : null;
+  const descriptor = request.descriptor;
 
   return {
     transportLabel: request.transport.toUpperCase(),
@@ -206,6 +211,18 @@ export function describeWorldDataRequest(
     liveLabel: request.liveEnabled ? "Enabled" : "Config only",
     workspaceLabel: request.workspaceHint
       ? `Workspace: ${request.workspaceHint}`
+      : null,
+    descriptorLabel: descriptor
+      ? `${descriptor.method} ${descriptor.pathLabel}`
+      : null,
+    descriptorQueryLabel: descriptor?.queryLabel
+      ? `Query: ${descriptor.queryLabel}`
+      : null,
+    descriptorAcceptLabel: descriptor
+      ? `Accepts: ${descriptor.acceptLabel}`
+      : null,
+    descriptorAuthLabel: descriptor?.authHeaderLabel
+      ? `Auth header: ${descriptor.authHeaderLabel}`
       : null,
     executorLabel: executorCopy?.label ?? null,
     executorSummary: executorCopy?.summary ?? null,

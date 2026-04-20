@@ -98,6 +98,13 @@ test("openclaw request overrides resolve endpoint and auth posture without enabl
     authKind: "token",
     liveEnabled: false,
     workspaceHint: "mii-plaza-client",
+    descriptor: {
+      method: "GET",
+      pathLabel: "/presence",
+      queryLabel: "view=plaza&workspace=mii-plaza-client",
+      acceptLabel: "application/json",
+      authHeaderLabel: "Authorization: Bearer OPENCLAW_TOKEN",
+    },
     executor: {
       status: "ready",
       mode: "dry-run",
@@ -118,6 +125,13 @@ test("openclaw request overrides can opt into a session-backed live configuratio
     endpointLabel: "https://openclaw.example.com/presence",
     authKind: "session",
     liveEnabled: true,
+    descriptor: {
+      method: "GET",
+      pathLabel: "/presence",
+      queryLabel: "view=plaza",
+      acceptLabel: "application/json",
+      authHeaderLabel: "Session cookie",
+    },
     executor: {
       status: "ready",
       mode: "live",
@@ -273,6 +287,13 @@ test("openclaw live provider skeleton composes request, normalization, and world
   };
 
   expect(skeleton.request.endpointLabel).toBe("https://openclaw.example.com/presence");
+  expect(skeleton.request.descriptor).toEqual({
+    method: "GET",
+    pathLabel: "/presence",
+    queryLabel: "view=plaza&workspace=mii-plaza-client",
+    acceptLabel: "application/json",
+    authHeaderLabel: "Authorization: Bearer OPENCLAW_TOKEN",
+  });
   expect(skeleton.request.executor).toEqual({
     status: "ready",
     mode: "dry-run",

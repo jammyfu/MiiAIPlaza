@@ -22,6 +22,13 @@ test("loadPlazaWorldData passes through successful provider results", async () =
             endpointLabel: "Configured via future live request seam",
             authKind: "token",
             liveEnabled: false,
+            descriptor: {
+              method: "GET",
+              pathLabel: "/presence",
+              queryLabel: "view=plaza&workspace=mii-plaza-client",
+              acceptLabel: "application/json",
+              authHeaderLabel: "Authorization: Bearer OPENCLAW_TOKEN",
+            },
             executor: {
               status: "ready",
               mode: "dry-run",
@@ -46,6 +53,10 @@ test("loadPlazaWorldData passes through successful provider results", async () =
   expect(world.hotspots[0]?.details).toContain("Request transport: HTTP");
   expect(world.hotspots[0]?.details).toContain(
     "Request endpoint: Configured via future live request seam"
+  );
+  expect(world.hotspots[0]?.details).toContain("Request descriptor: GET /presence");
+  expect(world.hotspots[0]?.details).toContain(
+    "Query: view=plaza&workspace=mii-plaza-client"
   );
   expect(world.hotspots[0]?.details).toContain("Live request: Config only");
   expect(world.hotspots[0]?.details).toContain("Executor: Dry run ready");

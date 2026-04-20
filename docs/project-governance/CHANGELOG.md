@@ -32,3 +32,4 @@
 - Added a selectable `openclaw-live-preview` provider entrypoint so the plaza can exercise the live-mode branch without making network calls.
 - Added a typed no-network `OpenClaw` preview executor so the live-preview provider now goes through an explicit execution seam.
 - Added a typed network-ready async `OpenClaw` executor contract so the live-preview path now matches the future live transport execution shape.
+- Added a typed `OpenClaw` live request descriptor so provider diagnostics can surface request method, path, query, and auth-header posture before real transport arrives.
