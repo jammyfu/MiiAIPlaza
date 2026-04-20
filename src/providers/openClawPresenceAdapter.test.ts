@@ -160,6 +160,20 @@ test("openclaw request overrides resolve endpoint and auth posture without enabl
         "Authorization: Bearer OPENCLAW_TOKEN",
       ],
     },
+    fetchAttempt: {
+      id: "openclaw-live-fetch-attempt",
+      label: "OpenClaw live fetch attempt",
+      summary:
+        "Represents the next transport-ready fetch input derived from the request builder without executing it.",
+      method: "GET",
+      urlLabel:
+        "https://openclaw.example.com/presence?view=plaza&workspace=mii-plaza-client",
+      headerLabels: [
+        "Accept: application/json",
+        "Authorization: Bearer OPENCLAW_TOKEN",
+      ],
+      runnerMode: "preview",
+    },
     executor: {
       status: "ready",
       mode: "dry-run",
@@ -232,6 +246,16 @@ test("openclaw request overrides can opt into a session-backed live configuratio
       method: "GET",
       urlLabel: "https://openclaw.example.com/presence?view=plaza",
       headerLabels: ["Accept: application/json", "Session cookie"],
+    },
+    fetchAttempt: {
+      id: "openclaw-live-fetch-attempt",
+      label: "OpenClaw live fetch attempt",
+      summary:
+        "Represents the next transport-ready fetch input derived from the request builder without executing it.",
+      method: "GET",
+      urlLabel: "https://openclaw.example.com/presence?view=plaza",
+      headerLabels: ["Accept: application/json", "Session cookie"],
+      runnerMode: "live",
     },
     executor: {
       status: "ready",
@@ -475,6 +499,7 @@ test("openclaw preview fetch-runner factory selects the preview runner contract"
   expect(runner.metadata).toEqual(request.fetchRunner);
   expect(runner.envelope).toEqual(request.runnerEnvelope);
   expect(runner.requestBuilder).toEqual(request.requestBuilder);
+  expect(runner.fetchAttempt).toEqual(request.fetchAttempt);
   const payload = await runner.run("2026-04-20T10:12:00Z");
   expect(payload.generated_at).toBe("2026-04-20T10:12:00.000Z");
   expect(payload.workspace).toBe("mii-plaza-client");
@@ -501,6 +526,7 @@ test("openclaw fetch-runner factory can select the live-capable stub when live m
   });
   expect(runner.envelope).toEqual(request.runnerEnvelope);
   expect(runner.requestBuilder).toEqual(request.requestBuilder);
+  expect(runner.fetchAttempt).toEqual(request.fetchAttempt);
 
   const payload = await runner.run("2026-04-20T10:12:00Z");
   expect(payload.generated_at).toBe("2026-04-20T10:12:00.000Z");
@@ -525,6 +551,7 @@ test("openclaw preview fetch runner provides the injected preview payload seam",
   });
   expect(runner.envelope).toEqual(request.runnerEnvelope);
   expect(runner.requestBuilder).toEqual(request.requestBuilder);
+  expect(runner.fetchAttempt).toEqual(request.fetchAttempt);
 
   const payload = await runner.run("2026-04-20T10:12:00Z");
 

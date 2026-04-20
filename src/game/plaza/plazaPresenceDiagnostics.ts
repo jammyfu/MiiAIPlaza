@@ -55,6 +55,11 @@ export interface PlazaWorldDataRequestCopy {
   requestBuilderSummary: string | null;
   requestBuilderTargetLabel: string | null;
   requestBuilderHeadersLabel: string | null;
+  fetchAttemptLabel: string | null;
+  fetchAttemptSummary: string | null;
+  fetchAttemptTargetLabel: string | null;
+  fetchAttemptHeadersLabel: string | null;
+  fetchAttemptModeLabel: string | null;
   executorLabel: string | null;
   executorSummary: string | null;
 }
@@ -264,6 +269,20 @@ export function describeWorldDataRequest(
       request.requestBuilder && request.requestBuilder.headerLabels.length > 0
         ? `Headers: ${request.requestBuilder.headerLabels.join("; ")}`
         : null,
+    fetchAttemptLabel: request.fetchAttempt?.label ?? null,
+    fetchAttemptSummary: request.fetchAttempt?.summary ?? null,
+    fetchAttemptTargetLabel: request.fetchAttempt
+      ? `Fetch attempt: ${request.fetchAttempt.method} ${request.fetchAttempt.urlLabel}`
+      : null,
+    fetchAttemptHeadersLabel:
+      request.fetchAttempt && request.fetchAttempt.headerLabels.length > 0
+        ? `Attempt headers: ${request.fetchAttempt.headerLabels.join("; ")}`
+        : null,
+    fetchAttemptModeLabel: request.fetchAttempt
+      ? `Attempt mode: ${
+          request.fetchAttempt.runnerMode === "live" ? "Live" : "Preview"
+        }`
+      : null,
     executorLabel: executorCopy?.label ?? null,
     executorSummary: executorCopy?.summary ?? null,
   };

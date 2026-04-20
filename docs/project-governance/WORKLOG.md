@@ -96,3 +96,6 @@
 - Added a typed `OpenClaw` live request builder so runner envelopes now resolve into concrete request URL, method, and header metadata without network calls.
 - Taught preview and live-capable stub runners to carry the shared request-builder output alongside runner envelopes so future transport work can consume one fetch-ready shape.
 - Surfaced request-builder metadata through plaza diagnostics, HUD provider metadata, and the shared `Provider Status` hotspot, then advanced `CURRENT_PLAN.md` to the next live fetch-attempt slice.
+- Added a typed `OpenClaw` live fetch-attempt record so request-builder output now resolves into one runner-consumable transport input without network calls.
+- Taught preview and live-capable stub runners to carry the shared fetch-attempt record alongside request builders so future transport execution can consume one attempt shape.
+- Surfaced fetch-attempt metadata through plaza diagnostics, HUD provider metadata, and the shared `Provider Status` hotspot, then advanced `CURRENT_PLAN.md` to the next live fetch-result slice.

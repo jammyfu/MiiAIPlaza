@@ -234,6 +234,14 @@ Represent concrete `OpenClaw` request URL, method, and header posture as a typed
 Why:
 This keeps the runner envelope focused on normalized intent while giving future transport work one fetch-ready shape to consume. Diagnostics can now show the exact future request posture without forcing preview runners or page code to reconstruct URL and header rules ad hoc.
 
+### Resolve fetch attempts from request builders before transport results exist
+
+Decision:
+Represent the next transport-consumable `OpenClaw` input as a typed fetch-attempt record derived from the shared request builder, and carry that attempt on the shared request contract before adding any live response or network execution logic.
+
+Why:
+This keeps request building and transport execution separated by one explicit seam. Future runners can consume a stable attempt shape, while diagnostics and HUD surfaces can show the exact pre-execution transport input without implying that a network call already happened.
+
 ### Select fetch runners through a factory before introducing live-capable implementations
 
 Decision:

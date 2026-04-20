@@ -194,6 +194,20 @@ test("world data request copy stays readable in the hud and provider status flow
         "Authorization: Bearer OPENCLAW_TOKEN",
       ],
     },
+    fetchAttempt: {
+      id: "openclaw-live-fetch-attempt",
+      label: "OpenClaw live fetch attempt",
+      summary:
+        "Represents the next transport-ready fetch input derived from the request builder without executing it.",
+      method: "GET",
+      urlLabel:
+        "OpenClaw live endpoint pending configuration?view=plaza&workspace=mii-plaza-client",
+      headerLabels: [
+        "Accept: application/json",
+        "Authorization: Bearer OPENCLAW_TOKEN",
+      ],
+      runnerMode: "preview",
+    },
     executor: {
       status: "needs-config",
       mode: "dry-run",
@@ -233,6 +247,14 @@ test("world data request copy stays readable in the hud and provider status flow
       "Request build: GET OpenClaw live endpoint pending configuration?view=plaza&workspace=mii-plaza-client",
     requestBuilderHeadersLabel:
       "Headers: Accept: application/json; Authorization: Bearer OPENCLAW_TOKEN",
+    fetchAttemptLabel: "OpenClaw live fetch attempt",
+    fetchAttemptSummary:
+      "Represents the next transport-ready fetch input derived from the request builder without executing it.",
+    fetchAttemptTargetLabel:
+      "Fetch attempt: GET OpenClaw live endpoint pending configuration?view=plaza&workspace=mii-plaza-client",
+    fetchAttemptHeadersLabel:
+      "Attempt headers: Accept: application/json; Authorization: Bearer OPENCLAW_TOKEN",
+    fetchAttemptModeLabel: "Attempt mode: Preview",
     executorLabel: "Dry run needs config",
     executorSummary: "Configure a live OpenClaw endpoint before enabling fetch execution.",
   });

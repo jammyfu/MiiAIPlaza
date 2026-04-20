@@ -210,6 +210,31 @@ export function createPlazaExperience({
                 ? `<small>${requestCopy.requestBuilderHeadersLabel}</small>`
                 : ""
             }
+            ${
+              requestCopy?.fetchAttemptLabel
+                ? `<small>${requestCopy.fetchAttemptLabel}</small>`
+                : ""
+            }
+            ${
+              requestCopy?.fetchAttemptSummary
+                ? `<small>${requestCopy.fetchAttemptSummary}</small>`
+                : ""
+            }
+            ${
+              requestCopy?.fetchAttemptTargetLabel
+                ? `<small>${requestCopy.fetchAttemptTargetLabel}</small>`
+                : ""
+            }
+            ${
+              requestCopy?.fetchAttemptHeadersLabel
+                ? `<small>${requestCopy.fetchAttemptHeadersLabel}</small>`
+                : ""
+            }
+            ${
+              requestCopy?.fetchAttemptModeLabel
+                ? `<small>${requestCopy.fetchAttemptModeLabel}</small>`
+                : ""
+            }
             ${requestCopy?.executorLabel ? `<small>${requestCopy.executorLabel}</small>` : ""}
             ${
               requestCopy?.executorSummary

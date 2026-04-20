@@ -40,3 +40,4 @@
 - Added a live-capable `OpenClaw` runner stub and factory selection policy so `liveEnabled` requests now exercise the future live runner path without making network calls.
 - Added a typed `OpenClaw` runner request envelope so preview and future live-capable runners now share one normalized input shape before concrete live request building exists.
 - Added a typed `OpenClaw` live request builder so future transport work can inspect concrete request URL, method, and header posture before any network calls exist.
+- Added a typed `OpenClaw` live fetch-attempt record so future transport work can inspect runner-consumable pre-execution inputs before any network calls exist.
