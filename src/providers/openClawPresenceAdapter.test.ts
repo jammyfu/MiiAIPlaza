@@ -5,6 +5,7 @@ import {
   createOpenClawFixtureWorldData,
   createOpenClawLiveRequestConfig,
   createOpenClawPreviewExecutorContract,
+  createOpenClawPreviewFetchRunner,
   createOpenClawPreviewTransportDelegate,
   createOpenClawLiveProviderSkeleton,
   executeOpenClawLivePreview,
@@ -112,6 +113,12 @@ test("openclaw request overrides resolve endpoint and auth posture without enabl
       summary:
         "Consumes the request descriptor and returns a preview payload without network I/O.",
     },
+    fetchRunner: {
+      id: "openclaw-preview-runner",
+      label: "Preview fetch runner",
+      summary:
+        "Provides preview payloads for the transport delegate without invoking a real network fetch.",
+    },
     executor: {
       status: "ready",
       mode: "dry-run",
@@ -144,6 +151,12 @@ test("openclaw request overrides can opt into a session-backed live configuratio
       label: "Preview transport delegate",
       summary:
         "Consumes the request descriptor and returns a preview payload without network I/O.",
+    },
+    fetchRunner: {
+      id: "openclaw-preview-runner",
+      label: "Preview fetch runner",
+      summary:
+        "Provides preview payloads for the transport delegate without invoking a real network fetch.",
     },
     executor: {
       status: "ready",
@@ -363,6 +376,28 @@ test("openclaw preview transport delegate consumes request descriptors without n
   const payload = await delegate.execute("2026-04-20T10:12:00Z");
 
   expect(payload.generated_at).toBe("2026-04-20T10:12:00.000Z");
+  expect(payload.agents[0]?.agent_id).toBe("openclaw");
+});
+
+test("openclaw preview fetch runner provides the injected preview payload seam", async () => {
+  const request = resolveOpenClawLiveRequestOverrides({
+    endpointUrl: "https://openclaw.example.com/presence",
+    authTokenName: "OPENCLAW_TOKEN",
+    workspaceHint: "mii-plaza-client",
+  });
+  const runner = createOpenClawPreviewFetchRunner(request);
+
+  expect(runner.metadata).toEqual({
+    id: "openclaw-preview-runner",
+    label: "Preview fetch runner",
+    summary:
+      "Provides preview payloads for the transport delegate without invoking a real network fetch.",
+  });
+
+  const payload = await runner.run("2026-04-20T10:12:00Z");
+
+  expect(payload.generated_at).toBe("2026-04-20T10:12:00.000Z");
+  expect(payload.workspace).toBe("mii-plaza-client");
   expect(payload.agents[0]?.agent_id).toBe("openclaw");
 });
 

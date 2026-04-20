@@ -201,3 +201,11 @@ Represent the current no-network `OpenClaw` preview path as a named transport de
 
 Why:
 This keeps the future live transport swap one layer smaller. The next slice can introduce an injected fetch runner behind a transport delegate instead of mixing transport concerns directly into the executor contract or request resolver.
+
+### Inject preview payload generation through a fetch runner seam
+
+Decision:
+Move preview payload generation behind a dedicated fetch-runner seam and make the transport delegate call that runner instead of constructing preview payloads directly.
+
+Why:
+This preserves the new transport delegate boundary while creating the exact replacement point future live network runners will need. The next runner-contract slice can now focus on describing live-capable execution semantics instead of first untangling payload generation from the delegate layer.

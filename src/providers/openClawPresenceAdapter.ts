@@ -5,6 +5,7 @@ import type {
   PlazaResident,
   PlazaWorldData,
   PlazaWorldDataRequestDescriptor,
+  PlazaWorldDataRequestFetchRunner,
   PlazaWorldDataRequestTransportDelegate,
   PlazaWorldDataRequestExecutor,
   PlazaWorldDataRequest,
@@ -103,6 +104,11 @@ export interface OpenClawNetworkReadyExecutorContract<TPayload> {
 export interface OpenClawTransportDelegate<TPayload> {
   metadata: PlazaWorldDataRequestTransportDelegate;
   execute(now?: Date | string | number): Promise<TPayload>;
+}
+
+export interface OpenClawFetchRunner<TPayload> {
+  metadata: PlazaWorldDataRequestFetchRunner;
+  run(now?: Date | string | number): Promise<TPayload>;
 }
 
 export interface OpenClawLivePreviewExecution {
@@ -262,7 +268,9 @@ export function createOpenClawPreviewExecutorContract(
 }
 
 export function createOpenClawPreviewTransportDelegate(
-  request: PlazaWorldDataRequest
+  request: PlazaWorldDataRequest,
+  fetchRunner: OpenClawFetchRunner<OpenClawLiveResponsePayload> =
+    createOpenClawPreviewFetchRunner(request)
 ): OpenClawTransportDelegate<OpenClawLiveResponsePayload> {
   return {
     metadata:
@@ -273,6 +281,23 @@ export function createOpenClawPreviewTransportDelegate(
           "Consumes the request descriptor and returns a preview payload without network I/O.",
       },
     async execute(now: Date | string | number = Date.now()) {
+      return fetchRunner.run(now);
+    },
+  };
+}
+
+export function createOpenClawPreviewFetchRunner(
+  request: PlazaWorldDataRequest
+): OpenClawFetchRunner<OpenClawLiveResponsePayload> {
+  return {
+    metadata:
+      request.fetchRunner ?? {
+        id: "openclaw-preview-runner",
+        label: "Preview fetch runner",
+        summary:
+          "Provides preview payloads for the transport delegate without invoking a real network fetch.",
+      },
+    async run(now: Date | string | number = Date.now()) {
       return createOpenClawLivePreviewResponsePayload(now);
     },
   };
@@ -388,6 +413,12 @@ export function resolveOpenClawLiveRequestOverrides(
     summary:
       "Consumes the request descriptor and returns a preview payload without network I/O.",
   };
+  const fetchRunner: PlazaWorldDataRequestFetchRunner = {
+    id: "openclaw-preview-runner",
+    label: "Preview fetch runner",
+    summary:
+      "Provides preview payloads for the transport delegate without invoking a real network fetch.",
+  };
   const executor = planOpenClawLiveFetchExecutor({
     transport: "http",
     endpointLabel,
@@ -395,6 +426,7 @@ export function resolveOpenClawLiveRequestOverrides(
     liveEnabled: overrides.liveEnabled ?? false,
     descriptor,
     transportDelegate,
+    fetchRunner,
     ...(overrides.workspaceHint
       ? { workspaceHint: overrides.workspaceHint }
       : {}),
@@ -407,6 +439,7 @@ export function resolveOpenClawLiveRequestOverrides(
     liveEnabled: overrides.liveEnabled ?? false,
     descriptor,
     transportDelegate,
+    fetchRunner,
     ...(overrides.workspaceHint
       ? { workspaceHint: overrides.workspaceHint }
       : {}),

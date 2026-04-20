@@ -99,6 +99,10 @@ function createProviderStatusHotspot(world: PlazaWorldData): PlazaHotspot {
       ...(requestCopy?.transportDelegateSummary
         ? [requestCopy.transportDelegateSummary]
         : []),
+      ...(requestCopy?.fetchRunnerLabel
+        ? [`Fetch runner: ${requestCopy.fetchRunnerLabel}`]
+        : []),
+      ...(requestCopy?.fetchRunnerSummary ? [requestCopy.fetchRunnerSummary] : []),
       ...(requestCopy?.executorLabel ? [`Executor: ${requestCopy.executorLabel}`] : []),
       ...(requestCopy?.executorSummary ? [requestCopy.executorSummary] : []),
       ...(healthCopy.nextRetryLabel ? [healthCopy.nextRetryLabel] : []),

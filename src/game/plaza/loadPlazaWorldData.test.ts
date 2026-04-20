@@ -35,6 +35,12 @@ test("loadPlazaWorldData passes through successful provider results", async () =
               summary:
                 "Consumes the request descriptor and returns a preview payload without network I/O.",
             },
+            fetchRunner: {
+              id: "openclaw-preview-runner",
+              label: "Preview fetch runner",
+              summary:
+                "Provides preview payloads for the transport delegate without invoking a real network fetch.",
+            },
             executor: {
               status: "ready",
               mode: "dry-run",
@@ -66,6 +72,9 @@ test("loadPlazaWorldData passes through successful provider results", async () =
   );
   expect(world.hotspots[0]?.details).toContain(
     "Transport delegate: Preview transport delegate"
+  );
+  expect(world.hotspots[0]?.details).toContain(
+    "Fetch runner: Preview fetch runner"
   );
   expect(world.hotspots[0]?.details).toContain("Live request: Config only");
   expect(world.hotspots[0]?.details).toContain("Executor: Dry run ready");

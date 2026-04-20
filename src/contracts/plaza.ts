@@ -83,6 +83,7 @@ export interface PlazaWorldDataRequest {
   workspaceHint?: string;
   descriptor?: PlazaWorldDataRequestDescriptor;
   transportDelegate?: PlazaWorldDataRequestTransportDelegate;
+  fetchRunner?: PlazaWorldDataRequestFetchRunner;
   executor?: PlazaWorldDataRequestExecutor;
 }
 
@@ -95,6 +96,12 @@ export interface PlazaWorldDataRequestDescriptor {
 }
 
 export interface PlazaWorldDataRequestTransportDelegate {
+  id: string;
+  label: string;
+  summary: string;
+}
+
+export interface PlazaWorldDataRequestFetchRunner {
   id: string;
   label: string;
   summary: string;

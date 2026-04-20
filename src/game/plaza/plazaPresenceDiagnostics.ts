@@ -43,6 +43,8 @@ export interface PlazaWorldDataRequestCopy {
   descriptorAuthLabel: string | null;
   transportDelegateLabel: string | null;
   transportDelegateSummary: string | null;
+  fetchRunnerLabel: string | null;
+  fetchRunnerSummary: string | null;
   executorLabel: string | null;
   executorSummary: string | null;
 }
@@ -228,6 +230,8 @@ export function describeWorldDataRequest(
       : null,
     transportDelegateLabel: request.transportDelegate?.label ?? null,
     transportDelegateSummary: request.transportDelegate?.summary ?? null,
+    fetchRunnerLabel: request.fetchRunner?.label ?? null,
+    fetchRunnerSummary: request.fetchRunner?.summary ?? null,
     executorLabel: executorCopy?.label ?? null,
     executorSummary: executorCopy?.summary ?? null,
   };
