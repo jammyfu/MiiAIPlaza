@@ -135,3 +135,6 @@
 - Added a typed `OpenClaw` live transport-runner record so transport-implementation output now resolves into one fetch-runner-boundary placeholder shape without network calls.
 - Taught preview and live-capable stub runners to carry the shared transport-runner record alongside transport-implementation metadata so future live network execution can reuse one runner-boundary handoff shape.
 - Surfaced transport-runner metadata through plaza diagnostics, HUD provider metadata, and the shared `Provider Status` hotspot, then advanced `CURRENT_PLAN.md` to the next injected live network-execution slice.
+- Added an injectable `OpenClaw` live network-execution seam so transport-runner metadata now resolves into a real preview/live stub execution boundary instead of direct payload helpers.
+- Taught preview and live-capable runners to execute through the shared network-execution seam while keeping the same preview payload behavior and request-shape assumptions.
+- Surfaced network-execution metadata through plaza diagnostics, HUD provider metadata, and the shared `Provider Status` hotspot, then advanced `CURRENT_PLAN.md` to the next request-dispatch slice.

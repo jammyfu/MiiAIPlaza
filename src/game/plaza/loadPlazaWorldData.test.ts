@@ -248,6 +248,20 @@ test("loadPlazaWorldData passes through successful provider results", async () =
               executionTargetLabel: "OpenClaw live network execution",
               runnerMode: "preview",
             },
+            networkExecution: {
+              id: "openclaw-live-network-execution",
+              label: "OpenClaw live network execution",
+              summary:
+                "Represents the injectable execution seam selected from the transport runner before actual live HTTP requests are enabled.",
+              status: "preview-payload",
+              payloadLabel:
+                "Preview payload available from no-network live-preview execution.",
+              sourceTransportRunnerLabel:
+                "Preview payload from GET Configured via future live request seam?view=plaza&workspace=mii-plaza-client",
+              implementationLabel:
+                "Preview payload injection selected without network I/O.",
+              runnerMode: "preview",
+            },
             executor: {
               status: "ready",
               mode: "dry-run",
@@ -503,6 +517,22 @@ test("loadPlazaWorldData passes through successful provider results", async () =
     "Runner target: OpenClaw live network execution"
   );
   expect(world.hotspots[0]?.details).toContain("Runner mode: Preview");
+  expect(world.hotspots[0]?.details).toContain(
+    "Network execution: OpenClaw live network execution"
+  );
+  expect(world.hotspots[0]?.details).toContain(
+    "Network execution status: Preview payload"
+  );
+  expect(world.hotspots[0]?.details).toContain(
+    "Network payload: Preview payload available from no-network live-preview execution."
+  );
+  expect(world.hotspots[0]?.details).toContain(
+    "Network source runner: Preview payload from GET Configured via future live request seam?view=plaza&workspace=mii-plaza-client"
+  );
+  expect(world.hotspots[0]?.details).toContain(
+    "Network implementation: Preview payload injection selected without network I/O."
+  );
+  expect(world.hotspots[0]?.details).toContain("Network mode: Preview");
   expect(world.hotspots[0]?.details).toContain("Live request: Config only");
   expect(world.hotspots[0]?.details).toContain("Executor: Dry run ready");
   expect(world.hotspots[0]?.details).toContain(

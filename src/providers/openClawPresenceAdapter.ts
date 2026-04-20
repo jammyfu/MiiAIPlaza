@@ -20,6 +20,7 @@ import type {
   PlazaWorldDataRequestExecutionDelegate,
   PlazaWorldDataRequestTransportImplementation,
   PlazaWorldDataRequestTransportRunner,
+  PlazaWorldDataRequestNetworkExecution,
   PlazaWorldDataRequestBuilder,
   PlazaWorldDataRequestRunnerEnvelope,
   PlazaWorldDataRequestTransportDelegate,
@@ -140,7 +141,13 @@ export interface OpenClawFetchRunner<TPayload> {
   executionDelegate: PlazaWorldDataRequestExecutionDelegate;
   transportImplementation: PlazaWorldDataRequestTransportImplementation;
   transportRunner: PlazaWorldDataRequestTransportRunner;
+  networkExecution: OpenClawNetworkExecution<TPayload>;
   run(now?: Date | string | number): Promise<TPayload>;
+}
+
+export interface OpenClawNetworkExecution<TPayload> {
+  metadata: PlazaWorldDataRequestNetworkExecution;
+  execute(now?: Date | string | number): Promise<TPayload>;
 }
 
 export interface OpenClawFetchRunnerFactory<TPayload> {
@@ -360,6 +367,10 @@ export function createOpenClawFetchRunnerFactory(
   const transportRunner =
     request.transportRunner ??
     createOpenClawLiveTransportRunner(transportImplementation);
+  const networkExecution =
+    request.liveEnabled
+      ? createOpenClawLiveStubNetworkExecution(request, envelope, transportRunner)
+      : createOpenClawPreviewNetworkExecution(request, envelope, transportRunner);
 
   return {
     metadata:
@@ -387,7 +398,8 @@ export function createOpenClawFetchRunnerFactory(
             fetchExecution,
             executionDelegate,
             transportImplementation,
-            transportRunner
+            transportRunner,
+            networkExecution
           )
         : createOpenClawPreviewFetchRunner(
             request,
@@ -405,7 +417,8 @@ export function createOpenClawFetchRunnerFactory(
             fetchExecution,
             executionDelegate,
             transportImplementation,
-            transportRunner
+            transportRunner,
+            networkExecution
           );
     },
   };
@@ -475,7 +488,9 @@ export function createOpenClawPreviewFetchRunner(
     createOpenClawLiveTransportImplementation(executionDelegate),
   transportRunner: PlazaWorldDataRequestTransportRunner =
     request.transportRunner ??
-    createOpenClawLiveTransportRunner(transportImplementation)
+    createOpenClawLiveTransportRunner(transportImplementation),
+  networkExecution: OpenClawNetworkExecution<OpenClawLiveResponsePayload> =
+    createOpenClawPreviewNetworkExecution(request, envelope, transportRunner)
 ): OpenClawFetchRunner<OpenClawLiveResponsePayload> {
   return {
     metadata:
@@ -502,10 +517,9 @@ export function createOpenClawPreviewFetchRunner(
     executionDelegate,
     transportImplementation,
     transportRunner,
+    networkExecution,
     async run(now: Date | string | number = Date.now()) {
-      return createOpenClawLivePreviewResponsePayload(now, {
-        workspace: envelope.workspaceHint,
-      });
+      return networkExecution.execute(now);
     },
   };
 }
@@ -552,7 +566,9 @@ export function createOpenClawLiveStubFetchRunner(
     createOpenClawLiveTransportImplementation(executionDelegate),
   transportRunner: PlazaWorldDataRequestTransportRunner =
     request.transportRunner ??
-    createOpenClawLiveTransportRunner(transportImplementation)
+    createOpenClawLiveTransportRunner(transportImplementation),
+  networkExecution: OpenClawNetworkExecution<OpenClawLiveResponsePayload> =
+    createOpenClawLiveStubNetworkExecution(request, envelope, transportRunner)
 ): OpenClawFetchRunner<OpenClawLiveResponsePayload> {
   return {
     metadata:
@@ -579,10 +595,9 @@ export function createOpenClawLiveStubFetchRunner(
     executionDelegate,
     transportImplementation,
     transportRunner,
+    networkExecution,
     async run(now: Date | string | number = Date.now()) {
-      return createOpenClawLivePreviewResponsePayload(now, {
-        workspace: envelope.workspaceHint,
-      });
+      return networkExecution.execute(now);
     },
   };
 }
@@ -938,6 +953,60 @@ export function createOpenClawLiveTransportRunner(
   };
 }
 
+export function createOpenClawLiveNetworkExecutionMetadata(
+  transportRunner: PlazaWorldDataRequestTransportRunner
+): PlazaWorldDataRequestNetworkExecution {
+  return {
+    id: "openclaw-live-network-execution",
+    label: "OpenClaw live network execution",
+    summary:
+      "Represents the injectable execution seam selected from the transport runner before actual live HTTP requests are enabled.",
+    status: transportRunner.status,
+    payloadLabel: transportRunner.payloadLabel,
+    sourceTransportRunnerLabel:
+      transportRunner.sourceTransportImplementationLabel,
+    implementationLabel:
+      transportRunner.runnerMode === "live"
+        ? "Live HTTP injection stub selected while real network transport remains disabled."
+        : "Preview payload injection selected without network I/O.",
+    runnerMode: transportRunner.runnerMode,
+  };
+}
+
+export function createOpenClawPreviewNetworkExecution(
+  request: PlazaWorldDataRequest,
+  envelope: PlazaWorldDataRequestRunnerEnvelope,
+  transportRunner: PlazaWorldDataRequestTransportRunner
+): OpenClawNetworkExecution<OpenClawLiveResponsePayload> {
+  return {
+    metadata:
+      request.networkExecution ??
+      createOpenClawLiveNetworkExecutionMetadata(transportRunner),
+    async execute(now: Date | string | number = Date.now()) {
+      return createOpenClawLivePreviewResponsePayload(now, {
+        workspace: envelope.workspaceHint,
+      });
+    },
+  };
+}
+
+export function createOpenClawLiveStubNetworkExecution(
+  request: PlazaWorldDataRequest,
+  envelope: PlazaWorldDataRequestRunnerEnvelope,
+  transportRunner: PlazaWorldDataRequestTransportRunner
+): OpenClawNetworkExecution<OpenClawLiveResponsePayload> {
+  return {
+    metadata:
+      request.networkExecution ??
+      createOpenClawLiveNetworkExecutionMetadata(transportRunner),
+    async execute(now: Date | string | number = Date.now()) {
+      return createOpenClawLivePreviewResponsePayload(now, {
+        workspace: envelope.workspaceHint,
+      });
+    },
+  };
+}
+
 export function resolveOpenClawLiveRequestOverrides(
   overrides: OpenClawLiveRequestOverrides = {}
 ): PlazaWorldDataRequest {
@@ -1014,6 +1083,8 @@ export function resolveOpenClawLiveRequestOverrides(
     createOpenClawLiveTransportImplementation(executionDelegate);
   const transportRunner =
     createOpenClawLiveTransportRunner(transportImplementation);
+  const networkExecution =
+    createOpenClawLiveNetworkExecutionMetadata(transportRunner);
   const executor = planOpenClawLiveFetchExecutor({
     transport: "http",
     endpointLabel,
@@ -1038,6 +1109,7 @@ export function resolveOpenClawLiveRequestOverrides(
     executionDelegate,
     transportImplementation,
     transportRunner,
+    networkExecution,
     ...(overrides.workspaceHint
       ? { workspaceHint: overrides.workspaceHint }
       : {}),
@@ -1067,6 +1139,7 @@ export function resolveOpenClawLiveRequestOverrides(
     executionDelegate,
     transportImplementation,
     transportRunner,
+    networkExecution,
     ...(overrides.workspaceHint
       ? { workspaceHint: overrides.workspaceHint }
       : {}),

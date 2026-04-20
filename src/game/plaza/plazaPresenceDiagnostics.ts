@@ -143,6 +143,13 @@ export interface PlazaWorldDataRequestCopy {
   transportRunnerSourceLabel: string | null;
   transportRunnerTargetLabel: string | null;
   transportRunnerModeLabel: string | null;
+  networkExecutionLabel: string | null;
+  networkExecutionSummary: string | null;
+  networkExecutionStatusLabel: string | null;
+  networkExecutionPayloadLabel: string | null;
+  networkExecutionSourceLabel: string | null;
+  networkExecutionImplementationLabel: string | null;
+  networkExecutionModeLabel: string | null;
   executorLabel: string | null;
   executorSummary: string | null;
 }
@@ -641,6 +648,29 @@ export function describeWorldDataRequest(
     transportRunnerModeLabel: request.transportRunner
       ? `Runner mode: ${
           request.transportRunner.runnerMode === "live" ? "Live" : "Preview"
+        }`
+      : null,
+    networkExecutionLabel: request.networkExecution?.label ?? null,
+    networkExecutionSummary: request.networkExecution?.summary ?? null,
+    networkExecutionStatusLabel: request.networkExecution
+      ? `Network execution status: ${
+          request.networkExecution.status === "live-ready"
+            ? "Live ready"
+            : "Preview payload"
+        }`
+      : null,
+    networkExecutionPayloadLabel: request.networkExecution
+      ? `Network payload: ${request.networkExecution.payloadLabel}`
+      : null,
+    networkExecutionSourceLabel: request.networkExecution
+      ? `Network source runner: ${request.networkExecution.sourceTransportRunnerLabel}`
+      : null,
+    networkExecutionImplementationLabel: request.networkExecution
+      ? `Network implementation: ${request.networkExecution.implementationLabel}`
+      : null,
+    networkExecutionModeLabel: request.networkExecution
+      ? `Network mode: ${
+          request.networkExecution.runnerMode === "live" ? "Live" : "Preview"
         }`
       : null,
     executorLabel: executorCopy?.label ?? null,

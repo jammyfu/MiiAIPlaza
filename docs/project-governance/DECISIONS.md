@@ -226,6 +226,14 @@ Resolve a typed live transport-runner record from transport-implementation metad
 Why:
 This keeps the final handoff into a future injectable fetch implementation explicit and testable, lets diagnostics describe the last pre-network boundary without ad-hoc UI logic, and preserves the current dry-run/live-preview behavior while the actual transport layer is still missing.
 
+### Route preview and live-stub execution through a shared network-execution seam
+
+Decision:
+Represent the next `OpenClaw` execution step as a typed network-execution seam selected from transport-runner metadata, and make preview/live-stub runners call that seam instead of constructing payloads inline.
+
+Why:
+This turns the final pre-network boundary into a true injectable behavior seam, keeps preview/live-stub behavior aligned on one execution contract, and makes the next step toward a real request-dispatch handler additive instead of structural.
+
 ### Put execution-boundary payload posture on the shared request contract before real live execution exists
 
 Decision:
