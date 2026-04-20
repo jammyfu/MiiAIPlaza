@@ -157,6 +157,13 @@ export interface PlazaWorldDataRequestCopy {
   requestDispatchSourceLabel: string | null;
   requestDispatchImplementationLabel: string | null;
   requestDispatchModeLabel: string | null;
+  httpBridgeLabel: string | null;
+  httpBridgeSummary: string | null;
+  httpBridgeStatusLabel: string | null;
+  httpBridgePayloadLabel: string | null;
+  httpBridgeSourceLabel: string | null;
+  httpBridgeImplementationLabel: string | null;
+  httpBridgeModeLabel: string | null;
   executorLabel: string | null;
   executorSummary: string | null;
 }
@@ -701,6 +708,29 @@ export function describeWorldDataRequest(
     requestDispatchModeLabel: request.requestDispatch
       ? `Dispatch mode: ${
           request.requestDispatch.runnerMode === "live" ? "Live" : "Preview"
+        }`
+      : null,
+    httpBridgeLabel: request.httpBridge?.label ?? null,
+    httpBridgeSummary: request.httpBridge?.summary ?? null,
+    httpBridgeStatusLabel: request.httpBridge
+      ? `HTTP bridge status: ${
+          request.httpBridge.status === "live-ready"
+            ? "Live ready"
+            : "Preview payload"
+        }`
+      : null,
+    httpBridgePayloadLabel: request.httpBridge
+      ? `HTTP payload: ${request.httpBridge.payloadLabel}`
+      : null,
+    httpBridgeSourceLabel: request.httpBridge
+      ? `HTTP source dispatch: ${request.httpBridge.sourceRequestDispatchLabel}`
+      : null,
+    httpBridgeImplementationLabel: request.httpBridge
+      ? `HTTP implementation: ${request.httpBridge.implementationLabel}`
+      : null,
+    httpBridgeModeLabel: request.httpBridge
+      ? `HTTP mode: ${
+          request.httpBridge.runnerMode === "live" ? "Live" : "Preview"
         }`
       : null,
     executorLabel: executorCopy?.label ?? null,

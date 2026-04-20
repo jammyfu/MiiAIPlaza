@@ -346,6 +346,20 @@ test("openclaw request overrides resolve endpoint and auth posture without enabl
         "Preview payload injection selected without network I/O.",
       runnerMode: "preview",
     },
+    httpBridge: {
+      id: "openclaw-live-http-bridge",
+      label: "OpenClaw live HTTP bridge",
+      summary:
+        "Represents the future-facing HTTP bridge selected by the request-dispatch handler before actual live transport is enabled.",
+      status: "preview-payload",
+      payloadLabel:
+        "Preview payload available from no-network live-preview execution.",
+      sourceRequestDispatchLabel:
+        "Preview payload from GET https://openclaw.example.com/presence?view=plaza&workspace=mii-plaza-client",
+      implementationLabel:
+        "Preview payload injection selected without network I/O.",
+      runnerMode: "preview",
+    },
     executor: {
       status: "ready",
       mode: "dry-run",
@@ -595,6 +609,20 @@ test("openclaw request overrides can opt into a session-backed live configuratio
       payloadLabel:
         "Awaiting a real transport response once live network execution is enabled.",
       sourceNetworkExecutionLabel:
+        "Live-ready placeholder from GET https://openclaw.example.com/presence?view=plaza",
+      implementationLabel:
+        "Live HTTP injection stub selected while real network transport remains disabled.",
+      runnerMode: "live",
+    },
+    httpBridge: {
+      id: "openclaw-live-http-bridge",
+      label: "OpenClaw live HTTP bridge",
+      summary:
+        "Represents the future-facing HTTP bridge selected by the request-dispatch handler before actual live transport is enabled.",
+      status: "live-ready",
+      payloadLabel:
+        "Awaiting a real transport response once live network execution is enabled.",
+      sourceRequestDispatchLabel:
         "Live-ready placeholder from GET https://openclaw.example.com/presence?view=plaza",
       implementationLabel:
         "Live HTTP injection stub selected while real network transport remains disabled.",
@@ -859,6 +887,9 @@ test("openclaw preview fetch-runner factory selects the preview runner contract"
   expect(runner.networkExecution.requestDispatch.metadata).toEqual(
     request.requestDispatch
   );
+  expect(runner.networkExecution.requestDispatch.httpBridge.metadata).toEqual(
+    request.httpBridge
+  );
   const payload = await runner.run("2026-04-20T10:12:00Z");
   expect(payload.generated_at).toBe("2026-04-20T10:12:00.000Z");
   expect(payload.workspace).toBe("mii-plaza-client");
@@ -902,6 +933,9 @@ test("openclaw fetch-runner factory can select the live-capable stub when live m
   expect(runner.networkExecution.requestDispatch.metadata).toEqual(
     request.requestDispatch
   );
+  expect(runner.networkExecution.requestDispatch.httpBridge.metadata).toEqual(
+    request.httpBridge
+  );
 
   const payload = await runner.run("2026-04-20T10:12:00Z");
   expect(payload.generated_at).toBe("2026-04-20T10:12:00.000Z");
@@ -942,6 +976,9 @@ test("openclaw preview fetch runner provides the injected preview payload seam",
   expect(runner.networkExecution.metadata).toEqual(request.networkExecution);
   expect(runner.networkExecution.requestDispatch.metadata).toEqual(
     request.requestDispatch
+  );
+  expect(runner.networkExecution.requestDispatch.httpBridge.metadata).toEqual(
+    request.httpBridge
   );
 
   const payload = await runner.run("2026-04-20T10:12:00Z");

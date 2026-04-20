@@ -720,6 +720,41 @@ export function createPlazaExperience({
                 ? `<small>${requestCopy.requestDispatchModeLabel}</small>`
                 : ""
             }
+            ${
+              requestCopy?.httpBridgeLabel
+                ? `<small>${requestCopy.httpBridgeLabel}</small>`
+                : ""
+            }
+            ${
+              requestCopy?.httpBridgeSummary
+                ? `<small>${requestCopy.httpBridgeSummary}</small>`
+                : ""
+            }
+            ${
+              requestCopy?.httpBridgeStatusLabel
+                ? `<small>${requestCopy.httpBridgeStatusLabel}</small>`
+                : ""
+            }
+            ${
+              requestCopy?.httpBridgePayloadLabel
+                ? `<small>${requestCopy.httpBridgePayloadLabel}</small>`
+                : ""
+            }
+            ${
+              requestCopy?.httpBridgeSourceLabel
+                ? `<small>${requestCopy.httpBridgeSourceLabel}</small>`
+                : ""
+            }
+            ${
+              requestCopy?.httpBridgeImplementationLabel
+                ? `<small>${requestCopy.httpBridgeImplementationLabel}</small>`
+                : ""
+            }
+            ${
+              requestCopy?.httpBridgeModeLabel
+                ? `<small>${requestCopy.httpBridgeModeLabel}</small>`
+                : ""
+            }
             ${requestCopy?.executorLabel ? `<small>${requestCopy.executorLabel}</small>` : ""}
             ${
               requestCopy?.executorSummary

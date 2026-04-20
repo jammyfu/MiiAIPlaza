@@ -384,6 +384,20 @@ test("world data request copy stays readable in the hud and provider status flow
         "Preview payload injection selected without network I/O.",
       runnerMode: "preview",
     },
+    httpBridge: {
+      id: "openclaw-live-http-bridge",
+      label: "OpenClaw live HTTP bridge",
+      summary:
+        "Represents the future-facing HTTP bridge selected by the request-dispatch handler before actual live transport is enabled.",
+      status: "preview-payload",
+      payloadLabel:
+        "Preview payload available from no-network live-preview execution.",
+      sourceRequestDispatchLabel:
+        "Preview payload from GET OpenClaw live endpoint pending configuration?view=plaza&workspace=mii-plaza-client",
+      implementationLabel:
+        "Preview payload injection selected without network I/O.",
+      runnerMode: "preview",
+    },
     executor: {
       status: "needs-config",
       mode: "dry-run",
@@ -584,6 +598,17 @@ test("world data request copy stays readable in the hud and provider status flow
     requestDispatchImplementationLabel:
       "Dispatch implementation: Preview payload injection selected without network I/O.",
     requestDispatchModeLabel: "Dispatch mode: Preview",
+    httpBridgeLabel: "OpenClaw live HTTP bridge",
+    httpBridgeSummary:
+      "Represents the future-facing HTTP bridge selected by the request-dispatch handler before actual live transport is enabled.",
+    httpBridgeStatusLabel: "HTTP bridge status: Preview payload",
+    httpBridgePayloadLabel:
+      "HTTP payload: Preview payload available from no-network live-preview execution.",
+    httpBridgeSourceLabel:
+      "HTTP source dispatch: Preview payload from GET OpenClaw live endpoint pending configuration?view=plaza&workspace=mii-plaza-client",
+    httpBridgeImplementationLabel:
+      "HTTP implementation: Preview payload injection selected without network I/O.",
+    httpBridgeModeLabel: "HTTP mode: Preview",
     executorLabel: "Dry run needs config",
     executorSummary: "Configure a live OpenClaw endpoint before enabling fetch execution.",
   });

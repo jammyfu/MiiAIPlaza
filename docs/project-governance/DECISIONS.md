@@ -242,6 +242,14 @@ Represent the next `OpenClaw` execution step as a typed request-dispatch handler
 Why:
 This creates a clean handoff point for the future concrete HTTP bridge, keeps preview and live-stub execution aligned on one injectable handler contract, and ensures the eventual move to real transport remains additive rather than rewriting the network-execution seam itself.
 
+### Route request dispatch through a shared HTTP-bridge handler before real fetch transport exists
+
+Decision:
+Represent the next `OpenClaw` execution step as a typed HTTP-bridge handler selected from request-dispatch metadata, and make the request-dispatch seam call that bridge instead of constructing preview payloads directly.
+
+Why:
+This creates the final pre-fetch handoff point for a future concrete transport implementation, keeps preview and live-stub behavior aligned on one injectable bridge contract, and makes the eventual swap to real HTTP execution additive rather than structural.
+
 ### Put execution-boundary payload posture on the shared request contract before real live execution exists
 
 Decision:
