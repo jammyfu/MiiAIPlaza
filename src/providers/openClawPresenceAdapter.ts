@@ -7,6 +7,7 @@ import type {
   PlazaWorldDataRequestDescriptor,
   PlazaWorldDataRequestFetchRunner,
   PlazaWorldDataRequestFetchRunnerFactory,
+  PlazaWorldDataRequestRunnerEnvelope,
   PlazaWorldDataRequestTransportDelegate,
   PlazaWorldDataRequestExecutor,
   PlazaWorldDataRequest,
@@ -110,6 +111,7 @@ export interface OpenClawTransportDelegate<TPayload> {
 
 export interface OpenClawFetchRunner<TPayload> {
   metadata: PlazaWorldDataRequestFetchRunner;
+  envelope: PlazaWorldDataRequestRunnerEnvelope;
   run(now?: Date | string | number): Promise<TPayload>;
 }
 
@@ -125,19 +127,24 @@ export interface OpenClawLivePreviewExecution {
   payload: OpenClawLiveResponsePayload;
 }
 
+export interface OpenClawFixtureOptions {
+  workspace?: string;
+}
+
 function isoOffset(baseTimestamp: number, minutesAgo: number): string {
   return new Date(baseTimestamp - minutesAgo * 60_000).toISOString();
 }
 
 export function createOpenClawPresenceFixture(
-  now: Date | string | number = Date.now()
+  now: Date | string | number = Date.now(),
+  options: OpenClawFixtureOptions = {}
 ): OpenClawFixturePayload {
   const baseTimestamp =
     now instanceof Date ? now.getTime() : new Date(now).getTime();
 
   return {
     generatedAt: new Date(baseTimestamp).toISOString(),
-    workspace: "mii-plaza-client",
+    workspace: options.workspace ?? "mii-plaza-client",
     agents: [
       {
         id: "openclaw",
@@ -228,9 +235,10 @@ export const openClawPresenceFixture: OpenClawFixturePayload =
   createOpenClawPresenceFixture("2026-04-20T10:12:00Z");
 
 export function createOpenClawLivePreviewResponsePayload(
-  now: Date | string | number = Date.now()
+  now: Date | string | number = Date.now(),
+  options: OpenClawFixtureOptions = {}
 ): OpenClawLiveResponsePayload {
-  const fixture = createOpenClawPresenceFixture(now);
+  const fixture = createOpenClawPresenceFixture(now, options);
   return {
     generated_at: fixture.generatedAt,
     workspace: fixture.workspace,
@@ -282,6 +290,9 @@ export function createOpenClawPreviewExecutorContract(
 export function createOpenClawFetchRunnerFactory(
   request: PlazaWorldDataRequest
 ): OpenClawFetchRunnerFactory<OpenClawLiveResponsePayload> {
+  const envelope =
+    request.runnerEnvelope ?? createOpenClawRunnerRequestEnvelope(request);
+
   return {
     metadata:
       request.fetchRunnerFactory ?? {
@@ -292,8 +303,8 @@ export function createOpenClawFetchRunnerFactory(
       },
     createRunner() {
       return request.liveEnabled
-        ? createOpenClawLiveStubFetchRunner(request)
-        : createOpenClawPreviewFetchRunner(request);
+        ? createOpenClawLiveStubFetchRunner(request, envelope)
+        : createOpenClawPreviewFetchRunner(request, envelope);
     },
   };
 }
@@ -321,7 +332,9 @@ export function createOpenClawPreviewTransportDelegate(
 }
 
 export function createOpenClawPreviewFetchRunner(
-  request: PlazaWorldDataRequest
+  request: PlazaWorldDataRequest,
+  envelope: PlazaWorldDataRequestRunnerEnvelope =
+    request.runnerEnvelope ?? createOpenClawRunnerRequestEnvelope(request)
 ): OpenClawFetchRunner<OpenClawLiveResponsePayload> {
   return {
     metadata:
@@ -333,14 +346,19 @@ export function createOpenClawPreviewFetchRunner(
         summary:
           "Provides preview payloads for the transport delegate without invoking a real network fetch.",
       },
+    envelope,
     async run(now: Date | string | number = Date.now()) {
-      return createOpenClawLivePreviewResponsePayload(now);
+      return createOpenClawLivePreviewResponsePayload(now, {
+        workspace: envelope.workspaceHint,
+      });
     },
   };
 }
 
 export function createOpenClawLiveStubFetchRunner(
-  request: PlazaWorldDataRequest
+  request: PlazaWorldDataRequest,
+  envelope: PlazaWorldDataRequestRunnerEnvelope =
+    request.runnerEnvelope ?? createOpenClawRunnerRequestEnvelope(request)
 ): OpenClawFetchRunner<OpenClawLiveResponsePayload> {
   return {
     metadata:
@@ -352,8 +370,11 @@ export function createOpenClawLiveStubFetchRunner(
         summary:
           "Represents the future live fetch runner while still returning preview payloads without network I/O.",
       },
+    envelope,
     async run(now: Date | string | number = Date.now()) {
-      return createOpenClawLivePreviewResponsePayload(now);
+      return createOpenClawLivePreviewResponsePayload(now, {
+        workspace: envelope.workspaceHint,
+      });
     },
   };
 }
@@ -450,6 +471,27 @@ export function createOpenClawLiveRequestDescriptor(
   };
 }
 
+export function createOpenClawRunnerRequestEnvelope(
+  request: PlazaWorldDataRequest
+): PlazaWorldDataRequestRunnerEnvelope {
+  return {
+    id: "openclaw-runner-envelope",
+    label: "OpenClaw runner request envelope",
+    summary:
+      "Normalizes endpoint, auth, and descriptor inputs into one runner-consumable shape before live fetches exist.",
+    transport: request.transport,
+    endpointLabel: request.endpointLabel,
+    authKind: request.authKind,
+    runnerMode: request.liveEnabled ? "live" : "preview",
+    ...(request.workspaceHint ? { workspaceHint: request.workspaceHint } : {}),
+    descriptor:
+      request.descriptor ?? createOpenClawLiveRequestDescriptor({
+        authKind: request.authKind,
+        workspaceHint: request.workspaceHint,
+      }),
+  };
+}
+
 export function resolveOpenClawLiveRequestOverrides(
   overrides: OpenClawLiveRequestOverrides = {}
 ): PlazaWorldDataRequest {
@@ -486,6 +528,19 @@ export function resolveOpenClawLiveRequestOverrides(
     summary:
       "Chooses between preview and live-capable runner implementations without changing the transport delegate seam.",
   };
+  const runnerEnvelope = createOpenClawRunnerRequestEnvelope({
+    transport: "http",
+    endpointLabel,
+    authKind,
+    liveEnabled: overrides.liveEnabled ?? false,
+    descriptor,
+    transportDelegate,
+    fetchRunner,
+    fetchRunnerFactory,
+    ...(overrides.workspaceHint
+      ? { workspaceHint: overrides.workspaceHint }
+      : {}),
+  });
   const executor = planOpenClawLiveFetchExecutor({
     transport: "http",
     endpointLabel,
@@ -495,6 +550,7 @@ export function resolveOpenClawLiveRequestOverrides(
     transportDelegate,
     fetchRunner,
     fetchRunnerFactory,
+    runnerEnvelope,
     ...(overrides.workspaceHint
       ? { workspaceHint: overrides.workspaceHint }
       : {}),
@@ -509,6 +565,7 @@ export function resolveOpenClawLiveRequestOverrides(
     transportDelegate,
     fetchRunner,
     fetchRunnerFactory,
+    runnerEnvelope,
     ...(overrides.workspaceHint
       ? { workspaceHint: overrides.workspaceHint }
       : {}),

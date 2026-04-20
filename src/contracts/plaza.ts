@@ -85,6 +85,7 @@ export interface PlazaWorldDataRequest {
   transportDelegate?: PlazaWorldDataRequestTransportDelegate;
   fetchRunner?: PlazaWorldDataRequestFetchRunner;
   fetchRunnerFactory?: PlazaWorldDataRequestFetchRunnerFactory;
+  runnerEnvelope?: PlazaWorldDataRequestRunnerEnvelope;
   executor?: PlazaWorldDataRequestExecutor;
 }
 
@@ -114,6 +115,18 @@ export interface PlazaWorldDataRequestFetchRunnerFactory {
   id: string;
   label: string;
   summary: string;
+}
+
+export interface PlazaWorldDataRequestRunnerEnvelope {
+  id: string;
+  label: string;
+  summary: string;
+  transport: PlazaWorldDataRequest["transport"];
+  endpointLabel: string;
+  authKind: PlazaWorldDataRequest["authKind"];
+  runnerMode: "preview" | "live";
+  workspaceHint?: string;
+  descriptor: PlazaWorldDataRequestDescriptor;
 }
 
 export interface PlazaWorldDataRequestExecutor {

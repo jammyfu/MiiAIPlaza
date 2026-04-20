@@ -163,6 +163,24 @@ test("world data request copy stays readable in the hud and provider status flow
       summary:
         "Chooses between preview and live-capable runner implementations without changing the transport delegate seam.",
     },
+    runnerEnvelope: {
+      id: "openclaw-runner-envelope",
+      label: "OpenClaw runner request envelope",
+      summary:
+        "Normalizes endpoint, auth, and descriptor inputs into one runner-consumable shape before live fetches exist.",
+      transport: "http",
+      endpointLabel: "OpenClaw live endpoint pending configuration",
+      authKind: "token",
+      runnerMode: "preview",
+      workspaceHint: "mii-plaza-client",
+      descriptor: {
+        method: "GET",
+        pathLabel: "/presence",
+        queryLabel: "view=plaza&workspace=mii-plaza-client",
+        acceptLabel: "application/json",
+        authHeaderLabel: "Authorization: Bearer OPENCLAW_TOKEN",
+      },
+    },
     executor: {
       status: "needs-config",
       mode: "dry-run",
@@ -190,6 +208,11 @@ test("world data request copy stays readable in the hud and provider status flow
     fetchRunnerFactoryLabel: "OpenClaw fetch-runner factory",
     fetchRunnerFactorySummary:
       "Chooses between preview and live-capable runner implementations without changing the transport delegate seam.",
+    runnerEnvelopeLabel: "OpenClaw runner request envelope",
+    runnerEnvelopeSummary:
+      "Normalizes endpoint, auth, and descriptor inputs into one runner-consumable shape before live fetches exist.",
+    runnerEnvelopeTargetLabel:
+      "Envelope target: GET /presence via OpenClaw live endpoint pending configuration",
     executorLabel: "Dry run needs config",
     executorSummary: "Configure a live OpenClaw endpoint before enabling fetch execution.",
   });

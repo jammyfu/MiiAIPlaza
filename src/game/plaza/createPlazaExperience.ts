@@ -175,6 +175,21 @@ export function createPlazaExperience({
                 ? `<small>${requestCopy.fetchRunnerFactorySummary}</small>`
                 : ""
             }
+            ${
+              requestCopy?.runnerEnvelopeLabel
+                ? `<small>${requestCopy.runnerEnvelopeLabel}</small>`
+                : ""
+            }
+            ${
+              requestCopy?.runnerEnvelopeSummary
+                ? `<small>${requestCopy.runnerEnvelopeSummary}</small>`
+                : ""
+            }
+            ${
+              requestCopy?.runnerEnvelopeTargetLabel
+                ? `<small>${requestCopy.runnerEnvelopeTargetLabel}</small>`
+                : ""
+            }
             ${requestCopy?.executorLabel ? `<small>${requestCopy.executorLabel}</small>` : ""}
             ${
               requestCopy?.executorSummary

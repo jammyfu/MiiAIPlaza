@@ -49,6 +49,23 @@ test("loadPlazaWorldData passes through successful provider results", async () =
               summary:
                 "Chooses between preview and live-capable runner implementations without changing the transport delegate seam.",
             },
+            runnerEnvelope: {
+              id: "openclaw-runner-envelope",
+              label: "OpenClaw runner request envelope",
+              summary:
+                "Normalizes endpoint, auth, and descriptor inputs into one runner-consumable shape before live fetches exist.",
+              transport: "http",
+              endpointLabel: "Configured via future live request seam",
+              authKind: "token",
+              runnerMode: "preview",
+              descriptor: {
+                method: "GET",
+                pathLabel: "/presence",
+                queryLabel: "view=plaza&workspace=mii-plaza-client",
+                acceptLabel: "application/json",
+                authHeaderLabel: "Authorization: Bearer OPENCLAW_TOKEN",
+              },
+            },
             executor: {
               status: "ready",
               mode: "dry-run",
@@ -89,6 +106,12 @@ test("loadPlazaWorldData passes through successful provider results", async () =
   );
   expect(world.hotspots[0]?.details).toContain(
     "Fetch runner factory: OpenClaw fetch-runner factory"
+  );
+  expect(world.hotspots[0]?.details).toContain(
+    "Runner envelope: OpenClaw runner request envelope"
+  );
+  expect(world.hotspots[0]?.details).toContain(
+    "Envelope target: GET /presence via Configured via future live request seam"
   );
   expect(world.hotspots[0]?.details).toContain("Live request: Config only");
   expect(world.hotspots[0]?.details).toContain("Executor: Dry run ready");

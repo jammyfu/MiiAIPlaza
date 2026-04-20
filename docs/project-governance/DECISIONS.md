@@ -218,6 +218,14 @@ Extend the current preview fetch runner metadata so it explicitly declares it is
 Why:
 This keeps the future live-runner swap additive instead of structural. A later network-capable implementation can reuse the same request and delegate seams, while diagnostics already know how to describe contract posture instead of only one-off preview behavior.
 
+### Normalize runner inputs into a shared request envelope before concrete request building
+
+Decision:
+Represent preview and future live-capable runner inputs as one typed runner request envelope on the shared `OpenClaw` request contract before adding concrete request-builder logic.
+
+Why:
+This keeps runner selection additive behind the factory seam, gives diagnostics one stable place to describe runner-consumable input posture, and lets the next request-builder slice focus on translating one normalized shape into fetch-ready inputs instead of re-deriving request state in multiple runner implementations.
+
 ### Select fetch runners through a factory before introducing live-capable implementations
 
 Decision:

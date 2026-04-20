@@ -90,3 +90,6 @@
 - Added a live-capable `OpenClaw` runner stub and factory selection policy so `liveEnabled` requests now choose a live-mode runner without introducing any real network traffic.
 - Kept diagnostics, HUD provider metadata, and the shared `Provider Status` hotspot compatible with the new live-capable runner-stub posture.
 - Expanded verification to cover runner selection behavior and advanced `CURRENT_PLAN.md` to the next runner-envelope slice.
+- Added a typed `OpenClaw` runner request envelope so preview and future live-capable runners now share one normalized input shape behind the runner factory.
+- Taught preview and live-capable stub runners to carry the shared runner envelope and reuse it when generating no-network preview payloads.
+- Surfaced runner-envelope metadata through plaza diagnostics, HUD provider metadata, and the shared `Provider Status` hotspot, then advanced `CURRENT_PLAN.md` to the next live request-builder slice.
