@@ -3,16 +3,15 @@ import { Box3, Group, Mesh, BoxGeometry, MeshBasicMaterial } from "three";
 import { listMockResidents } from "../../providers/mockPlazaPresence";
 import {
   createResidentAvatarRig,
-  createResidentAvatarModelUrl,
   describeResidentAvatarSceneMode,
   normalizeResidentAvatarModel,
 } from "./plazaResidentAvatarScene";
 
-test("supported residents use the studio full-body rig in the plaza scene", () => {
+test("supported residents use the local full-body rig in the plaza scene", () => {
   for (const resident of listMockResidents()) {
     const rig = createResidentAvatarRig(resident);
     expect(rig).not.toBeNull();
-    expect(rig!.mode).toBe("studio-body-glb");
+    expect(rig!.mode).toBe("local-ffl-body");
     expect(rig!.bodyTargetHeight).toBeGreaterThan(0);
     expect(rig!.bodyAnchorY).toBeGreaterThanOrEqual(0);
     expect(rig!.markerY).toBeGreaterThan(rig!.bodyAnchorY);
@@ -22,7 +21,7 @@ test("supported residents use the studio full-body rig in the plaza scene", () =
 test("resident avatar scene mode stays readable for supported and unsupported residents", () => {
   const supportedResident = listMockResidents()[0]!;
   expect(describeResidentAvatarSceneMode(supportedResident)).toBe(
-    "Studio full-body GLB"
+    "Local FFL full-body"
   );
 
   const unsupportedResident = {
@@ -36,16 +35,6 @@ test("resident avatar scene mode stays readable for supported and unsupported re
   expect(describeResidentAvatarSceneMode(unsupportedResident)).toBe(
     "Fallback proxy geometry"
   );
-});
-
-test("resident model urls use the stable studio full-body glb path", () => {
-  const supportedResident = listMockResidents()[0]!;
-  const url = createResidentAvatarModelUrl(supportedResident);
-  expect(url).not.toBeNull();
-  expect(url!).toContain(
-    "https://mii-unsecure.ariankordi.net/miis/image.glb"
-  );
-  expect(url!).toContain("type=all_body");
 });
 
 test("resident model normalization recenters and scales the imported avatar model", () => {

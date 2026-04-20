@@ -1,30 +1,30 @@
 import {
   Box3,
+  Color,
   Group,
   Vector3,
+  Vector4,
   type Mesh,
   type Object3D,
+  type WebGLRenderer,
 } from "three";
-import type { WebGLRenderer } from "three";
-import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+import { cMaterialName } from "../../class/3d/shader/fflShaderConst";
 import type { PlazaResident } from "../../contracts/plaza";
 import {
   createResidentAvatarMii,
   supportsResidentAvatar,
 } from "./plazaResidentAvatarAdapter";
-
-const REMOTE_RENDERER_BASE_URL =
-  "https://mii-unsecure.ariankordi.net/miis/image";
+import { LUTShaderMaterial } from "../../external/ffl.js/LUTShaderMaterial";
 
 export type ResidentAvatarRig = {
-  mode: "studio-body-glb";
+  mode: "local-ffl-body";
   bodyAnchorY: number;
   bodyTargetHeight: number;
   markerY: number;
 };
 
 const residentAvatarRig: ResidentAvatarRig = {
-  mode: "studio-body-glb",
+  mode: "local-ffl-body",
   bodyAnchorY: 0,
   bodyTargetHeight: 3.1,
   markerY: 3.75,
@@ -44,7 +44,7 @@ export function describeResidentAvatarSceneMode(
   resident: PlazaResident
 ): string {
   return createResidentAvatarRig(resident)
-    ? "Studio full-body GLB"
+    ? "Local FFL full-body"
     : "Fallback proxy geometry";
 }
 
@@ -77,10 +77,6 @@ export function normalizeResidentAvatarModel(
   avatarScene.updateMatrixWorld(true);
 }
 
-function bytesToHex(bytes: Uint8Array) {
-  return Array.from(bytes, (byte) => byte.toString(16).padStart(2, "0")).join("");
-}
-
 function flagResidentAvatarMeshes(object: Object3D) {
   object.traverse((child) => {
     const maybeMesh = child as Mesh;
@@ -93,46 +89,124 @@ function flagResidentAvatarMeshes(object: Object3D) {
   });
 }
 
-export function createResidentAvatarModelUrl(
-  resident: PlazaResident
-): string | null {
-  const avatarMii = createResidentAvatarMii(resident);
-  if (!avatarMii) {
+type BodyModelSet = {
+  m?: Group;
+  f?: Group;
+};
+
+function getBodyModelSet(): BodyModelSet | null {
+  const globalBodyModels = (globalThis as { bodyModels?: { Miitomo?: BodyModelSet } })
+    .bodyModels;
+  return globalBodyModels?.Miitomo ?? null;
+}
+
+function buildLocalBodyModel(charModel: any): Group | null {
+  const bodyModels = getBodyModelSet();
+  if (!bodyModels) {
     return null;
   }
 
-  return avatarMii.studioUrl({
-    ext: "glb",
-    type: "all_body",
-    width: 512,
-  });
+  const gender = charModel._getGender();
+  const bodyModel = (gender === 0 ? bodyModels.m : bodyModels.f)?.clone(
+    true
+  ) as Group | undefined;
+  if (!bodyModel) {
+    return null;
+  }
+
+  const bodyMeshName = gender === 0 ? "body_m" : "body_f";
+  const handsMeshName = gender === 0 ? "hands_m" : "hands_f";
+  const legsMeshName = gender === 0 ? "legs_m" : "legs_f";
+
+  const bodyMesh = bodyModel.getObjectByName(bodyMeshName) as Mesh | null;
+  const handsMesh = bodyModel.getObjectByName(handsMeshName) as Mesh | null;
+  const legsMesh = bodyModel.getObjectByName(legsMeshName) as Mesh | null;
+
+  const bodyScale = charModel.getBodyScale();
+  bodyModel.scale.set(bodyScale.x * 10, bodyScale.y * 10, bodyScale.z * 10);
+
+  const bodyBounds = new Box3().setFromObject(bodyModel);
+  bodyModel.position.set(0, -bodyBounds.max.y, 0);
+
+  const favoriteColor = charModel._getFavoriteColor(true);
+
+  if (bodyMesh) {
+    bodyMesh.material = new LUTShaderMaterial({
+      modulateType: cMaterialName.FFL_MODULATE_TYPE_SHAPE_BODY,
+      modulateMode: 0,
+      modulateColor: new Vector4(
+        favoriteColor.r,
+        favoriteColor.g,
+        favoriteColor.b,
+        1
+      ),
+    });
+  }
+
+  if (legsMesh) {
+    legsMesh.material = new LUTShaderMaterial({
+      modulateType: cMaterialName.FFL_MODULATE_TYPE_SHAPE_PANTS,
+      modulateMode: 0,
+      modulateColor: new Vector4(0.3, 0.3, 0.3, 1),
+    });
+  }
+
+  if (handsMesh?.material && "color" in handsMesh.material) {
+    (handsMesh.material as { color: Color }).color = new Color("#f0cfaf");
+  }
+
+  return bodyModel;
 }
 
 export async function buildResidentAvatarModel(
   resident: PlazaResident,
-  _renderer: WebGLRenderer
+  renderer: WebGLRenderer
 ): Promise<Group | null> {
   const rig = createResidentAvatarRig(resident);
   if (!rig) {
     return null;
   }
 
-  const gltfUrl = createResidentAvatarModelUrl(resident);
-  if (!gltfUrl) {
+  const avatarMii = createResidentAvatarMii(resident);
+  if (!avatarMii) {
     return null;
   }
 
-  const loader = new GLTFLoader();
-  const avatarModel = await loader.loadAsync(gltfUrl);
-  avatarModel.scene.name = "PlazaResidentBody";
-  normalizeResidentAvatarModel(avatarModel.scene, {
+  const { createCharModel, initCharModelTextures, FFLCharModelDescDefault } =
+    await import("../../external/ffl.js/ffl");
+  const { getFFL } = await import("../../main");
+
+  const charModel = createCharModel(
+    avatarMii.encodeStudio(),
+    {
+      ...FFLCharModelDescDefault,
+      resolution: 512,
+      allExpressionFlag: new Uint32Array([1, 0, 0]),
+    },
+    LUTShaderMaterial,
+    getFFL(),
+    false
+  );
+  initCharModelTextures(charModel, renderer);
+
+  const avatarScene = new Group();
+  avatarScene.name = "PlazaResidentBody";
+
+  const bodyModel = buildLocalBodyModel(charModel);
+  if (bodyModel) {
+    avatarScene.add(bodyModel);
+  }
+
+  avatarScene.add(charModel.meshes.clone());
+  flagResidentAvatarMeshes(avatarScene);
+  normalizeResidentAvatarModel(avatarScene, {
     anchorY: rig.bodyAnchorY,
     targetHeight: rig.bodyTargetHeight,
   });
-  flagResidentAvatarMeshes(avatarModel.scene);
 
   const avatarRoot = new Group();
   avatarRoot.name = `PlazaResidentAvatar:${resident.agent.id}`;
-  avatarRoot.add(avatarModel.scene);
+  avatarRoot.userData.charModel = charModel;
+  avatarRoot.add(avatarScene);
   return avatarRoot;
 }
