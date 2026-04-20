@@ -66,6 +66,13 @@ export interface PlazaWorldDataRequestCopy {
   fetchResultPayloadLabel: string | null;
   fetchResultSourceLabel: string | null;
   fetchResultModeLabel: string | null;
+  responseEnvelopeLabel: string | null;
+  responseEnvelopeSummary: string | null;
+  responseEnvelopeStatusLabel: string | null;
+  responseEnvelopePayloadLabel: string | null;
+  responseEnvelopeSourceLabel: string | null;
+  responseEnvelopeTargetLabel: string | null;
+  responseEnvelopeModeLabel: string | null;
   executorLabel: string | null;
   executorSummary: string | null;
 }
@@ -307,6 +314,29 @@ export function describeWorldDataRequest(
     fetchResultModeLabel: request.fetchResult
       ? `Result mode: ${
           request.fetchResult.runnerMode === "live" ? "Live" : "Preview"
+        }`
+      : null,
+    responseEnvelopeLabel: request.responseEnvelope?.label ?? null,
+    responseEnvelopeSummary: request.responseEnvelope?.summary ?? null,
+    responseEnvelopeStatusLabel: request.responseEnvelope
+      ? `Response envelope status: ${
+          request.responseEnvelope.status === "live-ready"
+            ? "Live ready"
+            : "Preview payload"
+        }`
+      : null,
+    responseEnvelopePayloadLabel: request.responseEnvelope
+      ? `Envelope payload: ${request.responseEnvelope.payloadLabel}`
+      : null,
+    responseEnvelopeSourceLabel: request.responseEnvelope
+      ? `Envelope source result: ${request.responseEnvelope.sourceResultLabel}`
+      : null,
+    responseEnvelopeTargetLabel: request.responseEnvelope
+      ? `Normalization handoff: ${request.responseEnvelope.normalizationTargetLabel}`
+      : null,
+    responseEnvelopeModeLabel: request.responseEnvelope
+      ? `Envelope mode: ${
+          request.responseEnvelope.runnerMode === "live" ? "Live" : "Preview"
         }`
       : null,
     executorLabel: executorCopy?.label ?? null,

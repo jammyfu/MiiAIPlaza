@@ -105,6 +105,19 @@ test("loadPlazaWorldData passes through successful provider results", async () =
                 "GET Configured via future live request seam?view=plaza&workspace=mii-plaza-client",
               runnerMode: "preview",
             },
+            responseEnvelope: {
+              id: "openclaw-live-response-envelope",
+              label: "OpenClaw live response envelope",
+              summary:
+                "Represents the normalization-ready handoff state derived from the fetch result before real transport responses are processed.",
+              status: "preview-payload",
+              payloadLabel:
+                "Preview payload available from no-network live-preview execution.",
+              sourceResultLabel:
+                "Preview payload from GET Configured via future live request seam?view=plaza&workspace=mii-plaza-client",
+              normalizationTargetLabel: "OpenClaw live response normalizer",
+              runnerMode: "preview",
+            },
             executor: {
               status: "ready",
               mode: "dry-run",
@@ -184,6 +197,22 @@ test("loadPlazaWorldData passes through successful provider results", async () =
     "Result source attempt: GET Configured via future live request seam?view=plaza&workspace=mii-plaza-client"
   );
   expect(world.hotspots[0]?.details).toContain("Result mode: Preview");
+  expect(world.hotspots[0]?.details).toContain(
+    "Response envelope: OpenClaw live response envelope"
+  );
+  expect(world.hotspots[0]?.details).toContain(
+    "Response envelope status: Preview payload"
+  );
+  expect(world.hotspots[0]?.details).toContain(
+    "Envelope payload: Preview payload available from no-network live-preview execution."
+  );
+  expect(world.hotspots[0]?.details).toContain(
+    "Envelope source result: Preview payload from GET Configured via future live request seam?view=plaza&workspace=mii-plaza-client"
+  );
+  expect(world.hotspots[0]?.details).toContain(
+    "Normalization handoff: OpenClaw live response normalizer"
+  );
+  expect(world.hotspots[0]?.details).toContain("Envelope mode: Preview");
   expect(world.hotspots[0]?.details).toContain("Live request: Config only");
   expect(world.hotspots[0]?.details).toContain("Executor: Dry run ready");
   expect(world.hotspots[0]?.details).toContain(

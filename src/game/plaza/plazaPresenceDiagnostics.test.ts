@@ -219,6 +219,18 @@ test("world data request copy stays readable in the hud and provider status flow
         "GET OpenClaw live endpoint pending configuration?view=plaza&workspace=mii-plaza-client",
       runnerMode: "preview",
     },
+    responseEnvelope: {
+      id: "openclaw-live-response-envelope",
+      label: "OpenClaw live response envelope",
+      summary:
+        "Represents the normalization-ready handoff state derived from the fetch result before real transport responses are processed.",
+      status: "preview-payload",
+      payloadLabel: "Preview payload available from no-network live-preview execution.",
+      sourceResultLabel:
+        "Preview payload from GET OpenClaw live endpoint pending configuration?view=plaza&workspace=mii-plaza-client",
+      normalizationTargetLabel: "OpenClaw live response normalizer",
+      runnerMode: "preview",
+    },
     executor: {
       status: "needs-config",
       mode: "dry-run",
@@ -275,6 +287,17 @@ test("world data request copy stays readable in the hud and provider status flow
     fetchResultSourceLabel:
       "Result source attempt: GET OpenClaw live endpoint pending configuration?view=plaza&workspace=mii-plaza-client",
     fetchResultModeLabel: "Result mode: Preview",
+    responseEnvelopeLabel: "OpenClaw live response envelope",
+    responseEnvelopeSummary:
+      "Represents the normalization-ready handoff state derived from the fetch result before real transport responses are processed.",
+    responseEnvelopeStatusLabel: "Response envelope status: Preview payload",
+    responseEnvelopePayloadLabel:
+      "Envelope payload: Preview payload available from no-network live-preview execution.",
+    responseEnvelopeSourceLabel:
+      "Envelope source result: Preview payload from GET OpenClaw live endpoint pending configuration?view=plaza&workspace=mii-plaza-client",
+    responseEnvelopeTargetLabel:
+      "Normalization handoff: OpenClaw live response normalizer",
+    responseEnvelopeModeLabel: "Envelope mode: Preview",
     executorLabel: "Dry run needs config",
     executorSummary: "Configure a live OpenClaw endpoint before enabling fetch execution.",
   });

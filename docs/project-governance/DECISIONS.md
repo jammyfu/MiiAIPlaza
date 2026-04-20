@@ -250,6 +250,14 @@ Represent the immediate post-attempt `OpenClaw` state as a typed fetch-result re
 Why:
 This keeps pre-execution transport input separate from post-attempt response posture. Future live execution can move from attempt to result without redesigning diagnostics, while the current preview path can already expose whether a result is just a placeholder preview payload or a live-ready waiting state.
 
+### Resolve response envelopes from fetch results before normalizer handoff exists
+
+Decision:
+Represent the normalization-ready `OpenClaw` handoff as a typed response-envelope record derived from the shared fetch-result seam, and carry that envelope on the shared request contract before adding a concrete normalization-boundary handoff object.
+
+Why:
+This keeps placeholder transport results separate from the next normalization stage. Future live execution can move from result to normalization handoff without refactoring runners or diagnostics, while the current preview path can already describe what normalization target would receive the payload.
+
 ### Select fetch runners through a factory before introducing live-capable implementations
 
 Decision:

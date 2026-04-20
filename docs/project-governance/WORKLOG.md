@@ -102,3 +102,6 @@
 - Added a typed `OpenClaw` live fetch-result record so fetch-attempt output now resolves into one placeholder transport-response shape without network calls.
 - Taught preview and live-capable stub runners to carry the shared fetch-result record alongside fetch attempts so future transport execution can hand off one stable result shape.
 - Surfaced fetch-result metadata through plaza diagnostics, HUD provider metadata, and the shared `Provider Status` hotspot, then advanced `CURRENT_PLAN.md` to the next live response-envelope slice.
+- Added a typed `OpenClaw` live response-envelope record so fetch-result output now resolves into one normalization-ready handoff shape without network calls.
+- Taught preview and live-capable stub runners to carry the shared response-envelope record alongside fetch results so future normalizer/execution plumbing can reuse one handoff shape.
+- Surfaced response-envelope metadata through plaza diagnostics, HUD provider metadata, and the shared `Provider Status` hotspot, then advanced `CURRENT_PLAN.md` to the next live normalizer-handoff slice.

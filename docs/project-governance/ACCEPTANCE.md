@@ -36,6 +36,7 @@
 - The shared `OpenClaw` request contract now carries a typed live request builder so runner envelopes resolve into concrete request URL, method, and header metadata without network calls.
 - The shared `OpenClaw` request contract now carries a typed live fetch-attempt record so request builders resolve into one runner-consumable transport input without network calls.
 - The shared `OpenClaw` request contract now carries a typed live fetch-result record so fetch attempts resolve into one placeholder transport-response shape without network calls.
+- The shared `OpenClaw` request contract now carries a typed live response-envelope record so fetch results resolve into one normalization-ready handoff shape without network calls.
 
 ## Current Verification Evidence
 
@@ -77,3 +78,4 @@
 - The live path now resolves a shared request builder and surfaces that fetch-ready request posture through diagnostics, HUD provider metadata, and `Provider Status` details before transport attempts or network execution exist.
 - The live path now resolves a shared fetch-attempt record and surfaces that pre-execution transport input through diagnostics, HUD provider metadata, and `Provider Status` details before transport results or network execution exist.
 - The live path now resolves a shared fetch-result record and surfaces that post-attempt placeholder response posture through diagnostics, HUD provider metadata, and `Provider Status` details before normalization handoff or network execution exist.
+- The live path now resolves a shared response-envelope record and surfaces that normalization-ready handoff posture through diagnostics, HUD provider metadata, and `Provider Status` details before actual normalization-boundary execution exists.
