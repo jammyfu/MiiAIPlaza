@@ -243,6 +243,18 @@ test("world data request copy stays readable in the hud and provider status flow
       normalizationTargetLabel: "OpenClaw live response normalizer",
       runnerMode: "preview",
     },
+    executionPayload: {
+      id: "openclaw-live-execution-payload",
+      label: "OpenClaw live execution payload",
+      summary:
+        "Represents the placeholder execution-boundary payload derived from the normalizer handoff before live transport execution runs.",
+      status: "preview-payload",
+      payloadLabel: "Preview payload available from no-network live-preview execution.",
+      sourceHandoffLabel:
+        "Preview payload from GET OpenClaw live endpoint pending configuration?view=plaza&workspace=mii-plaza-client",
+      executionTargetLabel: "OpenClaw live execution bridge",
+      runnerMode: "preview",
+    },
     executor: {
       status: "needs-config",
       mode: "dry-run",
@@ -321,6 +333,17 @@ test("world data request copy stays readable in the hud and provider status flow
     normalizerHandoffTargetLabel:
       "Normalizer target: OpenClaw live response normalizer",
     normalizerHandoffModeLabel: "Normalizer mode: Preview",
+    executionPayloadLabel: "OpenClaw live execution payload",
+    executionPayloadSummary:
+      "Represents the placeholder execution-boundary payload derived from the normalizer handoff before live transport execution runs.",
+    executionPayloadStatusLabel: "Execution payload status: Preview payload",
+    executionPayloadPayloadLabel:
+      "Execution payload: Preview payload available from no-network live-preview execution.",
+    executionPayloadSourceLabel:
+      "Execution source handoff: Preview payload from GET OpenClaw live endpoint pending configuration?view=plaza&workspace=mii-plaza-client",
+    executionPayloadTargetLabel:
+      "Execution target: OpenClaw live execution bridge",
+    executionPayloadModeLabel: "Execution mode: Preview",
     executorLabel: "Dry run needs config",
     executorSummary: "Configure a live OpenClaw endpoint before enabling fetch execution.",
   });

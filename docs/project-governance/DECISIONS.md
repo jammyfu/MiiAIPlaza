@@ -218,6 +218,14 @@ Extend the current preview fetch runner metadata so it explicitly declares it is
 Why:
 This keeps the future live-runner swap additive instead of structural. A later network-capable implementation can reuse the same request and delegate seams, while diagnostics already know how to describe contract posture instead of only one-off preview behavior.
 
+### Put execution-boundary payload posture on the shared request contract before real live execution exists
+
+Decision:
+Resolve a typed execution-payload record from the current normalizer-handoff seam and surface it through the shared request contract before any real live execution bridge or network call is introduced.
+
+Why:
+This keeps the final handoff into future live execution explicit and testable, lets preview and live-capable stub runners share one execution-boundary placeholder shape, and prevents the later live-execution slice from having to rediscover how normalized payload posture should cross the provider boundary.
+
 ### Normalize runner inputs into a shared request envelope before concrete request building
 
 Decision:

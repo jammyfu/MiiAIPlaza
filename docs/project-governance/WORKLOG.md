@@ -108,3 +108,6 @@
 - Added a typed `OpenClaw` live normalizer-handoff record so response-envelope output now resolves into one normalization-boundary placeholder shape without network calls.
 - Taught preview and live-capable stub runners to carry the shared normalizer-handoff record alongside response envelopes so future execution plumbing can reuse one boundary handoff shape.
 - Surfaced normalizer-handoff metadata through plaza diagnostics, HUD provider metadata, and the shared `Provider Status` hotspot, then advanced `CURRENT_PLAN.md` to the next live execution-payload slice.
+- Added a typed `OpenClaw` live execution-payload record so normalizer-handoff output now resolves into one execution-boundary placeholder shape without network calls.
+- Taught preview and live-capable stub runners to carry the shared execution-payload record alongside normalizer handoffs so future live execution plumbing can reuse one boundary handoff shape.
+- Surfaced execution-payload metadata through plaza diagnostics, HUD provider metadata, and the shared `Provider Status` hotspot, then advanced `CURRENT_PLAN.md` to the next live execution-bridge slice.

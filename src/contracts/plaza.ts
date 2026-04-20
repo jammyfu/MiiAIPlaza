@@ -91,6 +91,7 @@ export interface PlazaWorldDataRequest {
   fetchResult?: PlazaWorldDataRequestFetchResult;
   responseEnvelope?: PlazaWorldDataRequestResponseEnvelope;
   normalizerHandoff?: PlazaWorldDataRequestNormalizerHandoff;
+  executionPayload?: PlazaWorldDataRequestExecutionPayload;
   executor?: PlazaWorldDataRequestExecutor;
 }
 
@@ -182,6 +183,17 @@ export interface PlazaWorldDataRequestNormalizerHandoff {
   payloadLabel: string;
   sourceEnvelopeLabel: string;
   normalizationTargetLabel: string;
+  runnerMode: "preview" | "live";
+}
+
+export interface PlazaWorldDataRequestExecutionPayload {
+  id: string;
+  label: string;
+  summary: string;
+  status: PlazaWorldDataRequestNormalizerHandoff["status"];
+  payloadLabel: string;
+  sourceHandoffLabel: string;
+  executionTargetLabel: string;
   runnerMode: "preview" | "live";
 }
 

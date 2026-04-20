@@ -80,6 +80,13 @@ export interface PlazaWorldDataRequestCopy {
   normalizerHandoffSourceLabel: string | null;
   normalizerHandoffTargetLabel: string | null;
   normalizerHandoffModeLabel: string | null;
+  executionPayloadLabel: string | null;
+  executionPayloadSummary: string | null;
+  executionPayloadStatusLabel: string | null;
+  executionPayloadPayloadLabel: string | null;
+  executionPayloadSourceLabel: string | null;
+  executionPayloadTargetLabel: string | null;
+  executionPayloadModeLabel: string | null;
   executorLabel: string | null;
   executorSummary: string | null;
 }
@@ -367,6 +374,29 @@ export function describeWorldDataRequest(
     normalizerHandoffModeLabel: request.normalizerHandoff
       ? `Normalizer mode: ${
           request.normalizerHandoff.runnerMode === "live" ? "Live" : "Preview"
+        }`
+      : null,
+    executionPayloadLabel: request.executionPayload?.label ?? null,
+    executionPayloadSummary: request.executionPayload?.summary ?? null,
+    executionPayloadStatusLabel: request.executionPayload
+      ? `Execution payload status: ${
+          request.executionPayload.status === "live-ready"
+            ? "Live ready"
+            : "Preview payload"
+        }`
+      : null,
+    executionPayloadPayloadLabel: request.executionPayload
+      ? `Execution payload: ${request.executionPayload.payloadLabel}`
+      : null,
+    executionPayloadSourceLabel: request.executionPayload
+      ? `Execution source handoff: ${request.executionPayload.sourceHandoffLabel}`
+      : null,
+    executionPayloadTargetLabel: request.executionPayload
+      ? `Execution target: ${request.executionPayload.executionTargetLabel}`
+      : null,
+    executionPayloadModeLabel: request.executionPayload
+      ? `Execution mode: ${
+          request.executionPayload.runnerMode === "live" ? "Live" : "Preview"
         }`
       : null,
     executorLabel: executorCopy?.label ?? null,
