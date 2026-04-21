@@ -2,31 +2,35 @@ import {
   Box3,
   CanvasTexture,
   Group,
-  Mesh,
   Sprite,
   SpriteMaterial,
   Vector3,
+  type Object3D,
   type WebGLRenderer,
 } from "three";
 import type { PlazaResident } from "../../contracts/plaza";
-import { LUTShaderMaterial } from "../../external/ffl.js/LUTShaderMaterial";
 import {
   createResidentAvatarMii,
   supportsResidentAvatar,
 } from "./plazaResidentAvatarAdapter";
+import { getMiiRender, MiiCustomRenderType } from "../../util/miiImageUtils";
 
 export type ResidentAvatarRig = {
-  mode: "local-body-render";
+  mode: "local-body-glb";
   bodyAnchorY: number;
-  bodyTargetHeight: number;
+  bodyScale: number;
+  headAnchorY: number;
+  headTargetHeight: number;
   markerY: number;
 };
 
 const residentAvatarRig: ResidentAvatarRig = {
-  mode: "local-body-render",
+  mode: "local-body-glb",
   bodyAnchorY: 0,
-  bodyTargetHeight: 3.2,
-  markerY: 3.75,
+  bodyScale: 0.115,
+  headAnchorY: 1.88,
+  headTargetHeight: 0.92,
+  markerY: 3.25,
 };
 
 export function createResidentAvatarRig(
@@ -43,7 +47,7 @@ export function describeResidentAvatarSceneMode(
   resident: PlazaResident
 ): string {
   return createResidentAvatarRig(resident)
-    ? "Local full-body render"
+    ? "Local body GLB + head render"
     : "Fallback proxy geometry";
 }
 
@@ -76,55 +80,23 @@ export function normalizeResidentAvatarModel(
   avatarScene.updateMatrixWorld(true);
 }
 
-async function renderLocalResidentBodyImage(
-  resident: PlazaResident,
-  renderer: WebGLRenderer
-): Promise<string | null> {
-  const avatarMii = createResidentAvatarMii(resident);
-  if (!avatarMii) {
-    return null;
-  }
+function flagResidentAvatarMeshes(object: Object3D) {
+  object.traverse((child) => {
+    const maybeMesh = child as Object3D & {
+      isMesh?: boolean;
+      castShadow?: boolean;
+      receiveShadow?: boolean;
+    };
+    if (!maybeMesh.isMesh) {
+      return;
+    }
 
-  const dataU8 = avatarMii.encodeStudio();
-  const { getFFL, getFFLWorkerExists, getFFLWorkerMakeIcon } = await import(
-    "../../main"
-  );
-  const { ViewType, createCharModel, createCharModelIcon, initCharModelTextures } =
-    await import("../../external/ffl.js/ffl");
-
-  if (getFFLWorkerExists()) {
-    return (await getFFLWorkerMakeIcon(
-      dataU8,
-      "all_body_sugar",
-      1024,
-      1024
-    )) as string;
-  }
-
-  let charModel: any;
-  try {
-    charModel = createCharModel(
-      dataU8,
-      undefined,
-      LUTShaderMaterial,
-      getFFL(),
-      false
-    );
-    initCharModelTextures(charModel, renderer);
-    return (await createCharModelIcon(
-      charModel,
-      renderer,
-      ViewType.AllBody,
-      1024,
-      1024,
-      true
-    )) as string;
-  } finally {
-    charModel?.dispose?.();
-  }
+    maybeMesh.castShadow = true;
+    maybeMesh.receiveShadow = true;
+  });
 }
 
-async function cropResidentBodyRender(dataUrl: string): Promise<{
+async function cropResidentRender(dataUrl: string): Promise<{
   texture: CanvasTexture;
   width: number;
   height: number;
@@ -133,7 +105,7 @@ async function cropResidentBodyRender(dataUrl: string): Promise<{
     const nextImage = new Image();
     nextImage.onload = () => resolve(nextImage);
     nextImage.onerror = () =>
-      reject(new Error("Failed to load local resident body render."));
+      reject(new Error("Failed to load local resident render."));
     nextImage.src = dataUrl;
   });
 
@@ -142,7 +114,7 @@ async function cropResidentBodyRender(dataUrl: string): Promise<{
   sourceCanvas.height = image.naturalHeight || image.height;
   const sourceContext = sourceCanvas.getContext("2d");
   if (!sourceContext) {
-    throw new Error("Could not read local resident body render.");
+    throw new Error("Could not read local resident render.");
   }
 
   sourceContext.drawImage(image, 0, 0);
@@ -183,11 +155,14 @@ async function cropResidentBodyRender(dataUrl: string): Promise<{
     };
   }
 
-  const paddingX = Math.max(8, Math.round((maxX - minX + 1) * 0.06));
-  const paddingY = Math.max(8, Math.round((maxY - minY + 1) * 0.04));
+  const paddingX = Math.max(6, Math.round((maxX - minX + 1) * 0.05));
+  const paddingY = Math.max(6, Math.round((maxY - minY + 1) * 0.05));
   const cropX = Math.max(0, minX - paddingX);
   const cropY = Math.max(0, minY - paddingY);
-  const cropWidth = Math.min(sourceCanvas.width - cropX, maxX - minX + 1 + paddingX * 2);
+  const cropWidth = Math.min(
+    sourceCanvas.width - cropX,
+    maxX - minX + 1 + paddingX * 2
+  );
   const cropHeight = Math.min(
     sourceCanvas.height - cropY,
     maxY - minY + 1 + paddingY * 2
@@ -198,7 +173,7 @@ async function cropResidentBodyRender(dataUrl: string): Promise<{
   croppedCanvas.height = cropHeight;
   const croppedContext = croppedCanvas.getContext("2d");
   if (!croppedContext) {
-    throw new Error("Could not crop local resident body render.");
+    throw new Error("Could not crop local resident render.");
   }
 
   croppedContext.drawImage(
@@ -223,27 +198,20 @@ async function cropResidentBodyRender(dataUrl: string): Promise<{
   };
 }
 
-export async function buildResidentAvatarModel(
+async function buildResidentHeadSprite(
   resident: PlazaResident,
-  renderer: WebGLRenderer
-): Promise<Group | null> {
-  const rig = createResidentAvatarRig(resident);
-  if (!rig) {
+  rig: ResidentAvatarRig
+): Promise<Sprite | null> {
+  const avatarMii = createResidentAvatarMii(resident);
+  if (!avatarMii) {
     return null;
   }
 
-  const renderUrl = await renderLocalResidentBodyImage(resident, renderer);
-  if (!renderUrl) {
-    return null;
-  }
+  const image = await getMiiRender(avatarMii, MiiCustomRenderType.HeadOnly);
+  const { texture, width, height } = await cropResidentRender(image.src);
+  const aspectRatio = width > 0 && height > 0 ? width / height : 0.82;
 
-  const { texture, width, height } = await cropResidentBodyRender(renderUrl);
-
-  const aspectRatio = width > 0 && height > 0 ? width / height : 0.72;
-  const planeHeight = rig.bodyTargetHeight;
-  const planeWidth = planeHeight * aspectRatio;
-
-  const avatarSprite = new Sprite(
+  const headSprite = new Sprite(
     new SpriteMaterial({
       map: texture,
       transparent: true,
@@ -251,13 +219,82 @@ export async function buildResidentAvatarModel(
       depthWrite: false,
     })
   );
-  avatarSprite.name = "PlazaResidentBodyRender";
-  avatarSprite.center.set(0.5, 0);
-  avatarSprite.scale.set(planeWidth, planeHeight, 1);
-  avatarSprite.position.y = rig.bodyAnchorY;
+  headSprite.name = "PlazaResidentHeadRender";
+  headSprite.center.set(0.5, 0);
+  headSprite.scale.set(rig.headTargetHeight * aspectRatio, rig.headTargetHeight, 1);
+  headSprite.position.y = rig.headAnchorY;
+  return headSprite;
+}
+
+function getResidentBodyModelPath(resident: PlazaResident): string | null {
+  const avatarMii = createResidentAvatarMii(resident);
+  if (!avatarMii) {
+    return null;
+  }
+
+  return avatarMii.gender === 0
+    ? "/assets/models/miiBodyM_miitomo.glb"
+    : "/assets/models/miiBodyF_miitomo.glb";
+}
+
+export async function buildResidentAvatarModel(
+  resident: PlazaResident,
+  _renderer: WebGLRenderer
+): Promise<Group | null> {
+  const rig = createResidentAvatarRig(resident);
+  if (!rig) {
+    return null;
+  }
+
+  const modelPath = getResidentBodyModelPath(resident);
+  if (!modelPath) {
+    return null;
+  }
 
   const avatarRoot = new Group();
   avatarRoot.name = `PlazaResidentAvatar:${resident.agent.id}`;
-  avatarRoot.add(avatarSprite);
+  let hasBody = false;
+  let hasHeadSprite = false;
+
+  try {
+    const { GLTFLoader } = await import("three/addons/loaders/GLTFLoader.js");
+    const loader = new GLTFLoader();
+    const gltf = await loader.loadAsync(modelPath);
+
+    const bodyScene = gltf.scene.clone(true);
+    bodyScene.name = "PlazaResidentBody";
+    bodyScene.scale.setScalar(rig.bodyScale);
+    bodyScene.position.set(0, rig.bodyAnchorY, 0);
+    bodyScene.rotation.y = Math.PI;
+    bodyScene.updateMatrixWorld(true);
+    flagResidentAvatarMeshes(bodyScene);
+    avatarRoot.add(bodyScene);
+    hasBody = true;
+  } catch (error) {
+    console.error(
+      `Plaza resident body GLB failed for ${resident.agent.id}.`,
+      error
+    );
+  }
+
+  try {
+    const headSprite = await buildResidentHeadSprite(resident, rig);
+    if (headSprite) {
+      avatarRoot.add(headSprite);
+      hasHeadSprite = true;
+    }
+  } catch (error) {
+    console.error(
+      `Plaza resident head sprite failed for ${resident.agent.id}.`,
+      error
+    );
+  }
+
+  if (!hasBody && !hasHeadSprite) {
+    return null;
+  }
+
+  avatarRoot.userData.avatarKind = hasBody ? "body" : "head";
+  avatarRoot.userData.hasHeadSprite = hasHeadSprite;
   return avatarRoot;
 }

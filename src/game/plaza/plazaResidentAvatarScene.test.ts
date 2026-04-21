@@ -11,8 +11,9 @@ test("supported residents use the local full-body rig in the plaza scene", () =>
   for (const resident of listMockResidents()) {
     const rig = createResidentAvatarRig(resident);
     expect(rig).not.toBeNull();
-    expect(rig!.mode).toBe("local-body-render");
-    expect(rig!.bodyTargetHeight).toBeGreaterThan(0);
+    expect(rig!.mode).toBe("local-body-glb");
+    expect(rig!.bodyScale).toBeGreaterThan(0);
+    expect(rig!.headTargetHeight).toBeGreaterThan(0);
     expect(rig!.bodyAnchorY).toBeGreaterThanOrEqual(0);
     expect(rig!.markerY).toBeGreaterThan(rig!.bodyAnchorY);
   }
@@ -21,7 +22,7 @@ test("supported residents use the local full-body rig in the plaza scene", () =>
 test("resident avatar scene mode stays readable for supported and unsupported residents", () => {
   const supportedResident = listMockResidents()[0]!;
   expect(describeResidentAvatarSceneMode(supportedResident)).toBe(
-    "Local full-body render"
+    "Local body GLB + head render"
   );
 
   const unsupportedResident = {

@@ -1002,9 +1002,16 @@ export function createPlazaExperience({
           }
 
           group.add(image);
-          body.visible = false;
-          head.visible = false;
-          marker.position.y = 3.75;
+          if (image.userData.avatarKind === "body") {
+            body.visible = false;
+            if (image.userData.hasHeadSprite === true) {
+              head.visible = false;
+            }
+            marker.position.y = image.userData.hasHeadSprite === true ? 3.75 : 3.05;
+          } else {
+            head.visible = false;
+            marker.position.y = 2.45;
+          }
 
           return getMiiRender(residentMii, MiiCustomRenderType.HeadOnly);
         })
