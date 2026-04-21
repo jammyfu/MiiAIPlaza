@@ -121,7 +121,7 @@ let sendMessageToWorker: (data: any) => Promise<any>;
 if (Config.renderer.useRendererServer === false && !isPlazaBoot) {
   var m = Modal.modal(
     "Notice",
-    "Mii Creator is loading assets, please wait..."
+    "MiiAIPlaza is loading assets, please wait..."
   );
 
   FFL = (await import("./external/ffl.js/ffl-emscripten.js")).default
@@ -172,7 +172,7 @@ if (Config.renderer.useRendererServer === false && !isPlazaBoot) {
     } else {
       Modal.modal(
         "Notice",
-        "Your browser doesn't support OffscreenCanvas, so Mii Creator may experience lag.",
+        "Your browser doesn't support OffscreenCanvas, so MiiAIPlaza may experience lag.",
         "body",
         ...buttonsOkCancel
       );
@@ -180,7 +180,7 @@ if (Config.renderer.useRendererServer === false && !isPlazaBoot) {
   } else {
     Modal.modal(
       "Notice",
-      "Your browser doesn't support Web Workers, so Mii Creator may experience lag.",
+      "Your browser doesn't support Web Workers, so MiiAIPlaza may experience lag.",
       "body",
       ...buttonsOkCancel
     );

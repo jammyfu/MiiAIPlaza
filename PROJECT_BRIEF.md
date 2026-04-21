@@ -2,7 +2,7 @@
 
 ## Project
 
-Mii Plaza Client
+MiiAIPlaza
 
 ## Problem
 
@@ -10,7 +10,7 @@ The current repository is a capable Mii editor and renderer, but it does not yet
 
 ## Goal
 
-Evolve this repository into the client plane for a `Mii Plaza` platform:
+Evolve this repository into the client plane for `MiiAIPlaza`:
 
 - keep Mii editing and rendering as the identity subsystem
 - add a third-person playable plaza runtime

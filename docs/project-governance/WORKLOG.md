@@ -157,3 +157,5 @@
 - Fixed the plaza's screen-relative left/right movement so `A/D` and the arrow keys now track the camera-facing left/right directions correctly.
 - Replaced resident body cloning with a skeleton-safe clone path so Miitomo body GLBs no longer rely on plain `clone(true)` for skinned meshes.
 - Added focused plaza movement and skinned-body clone regression tests, then re-ran build and repository verification.
+- Renamed the project identity to `MiiAIPlaza` across the primary package metadata, README, project brief, browser title, and user-facing app title.
+- Updated the git `origin` remote to `https://github.com/jammyfu/MiiAIPlaza.git` and rebuilt the published frontend bundle.

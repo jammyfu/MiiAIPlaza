@@ -66,3 +66,5 @@
 - Added cache-busting to the main entry HTML so plaza debugging changes are less likely to get hidden behind stale browser bundles.
 - Fixed reversed screen-relative left/right movement in the plaza so keyboard strafing now matches the camera-facing direction.
 - Switched resident Miitomo body cloning onto a skeleton-safe clone path to avoid giant or collapsed skinned-body artifacts in the plaza scene.
+- Renamed the project identity to `MiiAIPlaza` in the package metadata, app title, browser title, and primary docs.
+- Updated the repository `origin` to `https://github.com/jammyfu/MiiAIPlaza.git`.

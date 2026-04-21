@@ -1,8 +1,8 @@
-# Mii Plaza 客户端
+# MiiAIPlaza
 
 ![预览图像](public/assets/images/preview_dark.png)
 
-`mii-creator` 现在正被开发为一个 `Mii Plaza Client`（Mii 广场客户端）：一个基于浏览器的 3D 广场，构建在现有的 Mii 编辑器、渲染器和本地资源管道之上。
+`MiiAIPlaza` 是当前仓库的项目名称。它在原始 `mii-creator` 的编辑器、渲染器和本地资源管道之上，继续演进为一个基于浏览器的 3D Mii + Agent 广场系统。
 
 本仓库仍然保留了原始的 Mii 编辑和库体验，但目前的产品方向已不再仅仅是一个独立的化身编辑器：
 
@@ -33,7 +33,7 @@
 
 当前的分支遵循分层平台路径：
 
-- 本仓库中的 `Mii Plaza Client`
+- 本仓库中的 `MiiAIPlaza` 客户端
 - 用于 `OpenClaw` 和未来代理系统的提供者适配器
 - 在开启真实网络依赖之前的“合约优先”集成
 - 通过 `CURRENT_PLAN.md`、`MASTER_PLAN.md` 和 `docs/project-governance/` 进行持续的项目治理
