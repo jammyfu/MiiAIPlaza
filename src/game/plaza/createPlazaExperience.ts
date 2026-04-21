@@ -980,24 +980,33 @@ export function createPlazaExperience({
         <strong>${resident.agent.displayName}</strong>
         <small>${statusLabels[resident.presence.status]} · ${freshnessLabel} · ${diagnostics.updatedLabel}</small>
         <small>${resident.presence.headline}</small>
+        <small data-avatar-state>Avatar: proxy</small>
       </span>
     `;
     item.addEventListener("click", () => openResident(resident));
     residentList.appendChild(item);
 
-    return { group, index, resident, body, head, marker, item };
+    const avatarState = item.querySelector<HTMLElement>("[data-avatar-state]");
+
+    return { group, index, resident, body, head, marker, item, avatarState };
   });
 
   residentMeshes.forEach(
-    ({ resident, group, body, head, marker, item }) => {
+    ({ resident, group, body, head, marker, item, avatarState }) => {
       const residentMii = createResidentAvatarMii(resident);
       if (!residentMii) {
+        if (avatarState) {
+          avatarState.textContent = "Avatar: unavailable";
+        }
         return;
       }
 
       buildResidentAvatarModel(resident, renderer)
         .then((image) => {
           if (!image) {
+            if (avatarState) {
+              avatarState.textContent = "Avatar: proxy";
+            }
             return;
           }
 
@@ -1008,9 +1017,18 @@ export function createPlazaExperience({
               head.visible = false;
             }
             marker.position.y = image.userData.hasHeadSprite === true ? 3.75 : 3.05;
+            if (avatarState) {
+              avatarState.textContent =
+                image.userData.hasHeadSprite === true
+                  ? "Avatar: body + head"
+                  : "Avatar: body only";
+            }
           } else {
             head.visible = false;
             marker.position.y = 2.45;
+            if (avatarState) {
+              avatarState.textContent = "Avatar: head only";
+            }
           }
 
           return getMiiRender(residentMii, MiiCustomRenderType.HeadOnly);
@@ -1027,6 +1045,9 @@ export function createPlazaExperience({
           item.prepend(avatarChip);
         })
         .catch((error) => {
+          if (avatarState) {
+            avatarState.textContent = "Avatar: failed";
+          }
           console.error(
             `Plaza resident avatar render failed for ${resident.agent.id}`,
             error

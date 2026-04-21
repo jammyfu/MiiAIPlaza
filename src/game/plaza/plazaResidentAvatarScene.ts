@@ -27,10 +27,10 @@ export type ResidentAvatarRig = {
 const residentAvatarRig: ResidentAvatarRig = {
   mode: "local-body-glb",
   bodyAnchorY: 0,
-  bodyScale: 0.115,
-  headAnchorY: 1.88,
-  headTargetHeight: 0.92,
-  markerY: 3.25,
+  bodyScale: 0.024,
+  headAnchorY: 1.52,
+  headTargetHeight: 0.74,
+  markerY: 2.7,
 };
 
 export function createResidentAvatarRig(
@@ -94,6 +94,22 @@ function flagResidentAvatarMeshes(object: Object3D) {
     maybeMesh.castShadow = true;
     maybeMesh.receiveShadow = true;
   });
+}
+
+function alignResidentBodyModel(
+  bodyScene: Group,
+  options: { anchorY: number; scale: number }
+) {
+  bodyScene.scale.setScalar(options.scale);
+  bodyScene.updateMatrixWorld(true);
+
+  const bounds = new Box3().setFromObject(bodyScene);
+  const center = bounds.getCenter(new Vector3());
+  const min = bounds.min.clone();
+
+  bodyScene.position.set(-center.x, options.anchorY - min.y, -center.z);
+  bodyScene.rotation.y = Math.PI;
+  bodyScene.updateMatrixWorld(true);
 }
 
 async function cropResidentRender(dataUrl: string): Promise<{
@@ -263,10 +279,10 @@ export async function buildResidentAvatarModel(
 
     const bodyScene = gltf.scene.clone(true);
     bodyScene.name = "PlazaResidentBody";
-    bodyScene.scale.setScalar(rig.bodyScale);
-    bodyScene.position.set(0, rig.bodyAnchorY, 0);
-    bodyScene.rotation.y = Math.PI;
-    bodyScene.updateMatrixWorld(true);
+    alignResidentBodyModel(bodyScene, {
+      anchorY: rig.bodyAnchorY,
+      scale: rig.bodyScale,
+    });
     flagResidentAvatarMeshes(bodyScene);
     avatarRoot.add(bodyScene);
     hasBody = true;
