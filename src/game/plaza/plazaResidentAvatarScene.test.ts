@@ -1,8 +1,21 @@
 import { expect, test } from "bun:test";
-import { Box3, Group, Mesh, BoxGeometry, MeshBasicMaterial } from "three";
+import {
+  Bone,
+  Box3,
+  BoxGeometry,
+  Group,
+  Matrix4,
+  Mesh,
+  MeshBasicMaterial,
+  Skeleton,
+  SkinnedMesh,
+  Uint16BufferAttribute,
+  Vector3,
+} from "three";
 import { listMockResidents } from "../../providers/mockPlazaPresence";
 import {
   buildResidentRemoteHeadRenderUrl,
+  cloneResidentBodyScene,
   createResidentAvatarRig,
   describeResidentAvatarSceneMode,
   normalizeResidentAvatarModel,
@@ -74,4 +87,38 @@ test("resident remote head render url targets the public renderer", () => {
   expect(url.searchParams.get("type")).toBe("face");
   expect(url.searchParams.get("shaderType")).toBe("miitomo");
   expect(url.searchParams.get("width")).toBe("180");
+});
+
+test("resident body cloning keeps skinned bones detached from the original scene", () => {
+  const root = new Group();
+  const bone = new Bone();
+  bone.name = "root-bone";
+  bone.position.y = 1;
+
+  const geometry = new BoxGeometry(1, 1, 1);
+  const vertexCount = geometry.attributes.position.count;
+  const skinIndices = new Uint16Array(vertexCount * 4);
+  const skinWeights = new Float32Array(vertexCount * 4);
+  for (let index = 0; index < vertexCount; index += 1) {
+    skinIndices[index * 4] = 0;
+    skinWeights[index * 4] = 1;
+  }
+  geometry.setAttribute("skinIndex", new Uint16BufferAttribute(skinIndices, 4));
+  geometry.setAttribute("skinWeight", new Uint16BufferAttribute(skinWeights, 4));
+
+  const skinnedMesh = new SkinnedMesh(geometry, new MeshBasicMaterial());
+  const skeleton = new Skeleton([bone]);
+  const bindMatrix = new Matrix4();
+  root.add(bone);
+  root.add(skinnedMesh);
+  skinnedMesh.bind(skeleton, bindMatrix);
+
+  const clone = cloneResidentBodyScene(root);
+  const clonedMesh = clone.getObjectByProperty("type", "SkinnedMesh") as SkinnedMesh;
+
+  expect(clonedMesh).toBeDefined();
+  expect(clonedMesh).not.toBe(skinnedMesh);
+  expect(clonedMesh.skeleton).not.toBe(skinnedMesh.skeleton);
+  expect(clonedMesh.skeleton.bones[0]).not.toBe(skinnedMesh.skeleton.bones[0]);
+  expect(clonedMesh.skeleton.bones[0]?.name).toBe("root-bone");
 });

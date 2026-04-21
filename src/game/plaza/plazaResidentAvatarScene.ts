@@ -14,6 +14,7 @@ import {
   supportsResidentAvatar,
 } from "./plazaResidentAvatarAdapter";
 import { Config } from "../../config";
+import { clone as cloneSkeletonScene } from "three/addons/utils/SkeletonUtils.js";
 
 export type ResidentAvatarRig = {
   mode: "local-body-glb";
@@ -129,6 +130,10 @@ function alignResidentBodyModel(
   bodyScene.position.set(-center.x, options.anchorY - min.y, -center.z);
   bodyScene.rotation.y = Math.PI;
   bodyScene.updateMatrixWorld(true);
+}
+
+export function cloneResidentBodyScene(bodyScene: Group): Group {
+  return cloneSkeletonScene(bodyScene);
 }
 
 async function cropResidentRender(sourceUrl: string): Promise<{
@@ -296,7 +301,7 @@ export async function buildResidentAvatarModel(
     const loader = new GLTFLoader();
     const gltf = await loader.loadAsync(modelPath);
 
-    const bodyScene = gltf.scene.clone(true);
+    const bodyScene = cloneResidentBodyScene(gltf.scene);
     bodyScene.name = "PlazaResidentBody";
     alignResidentBodyModel(bodyScene, {
       anchorY: rig.bodyAnchorY,

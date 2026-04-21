@@ -77,6 +77,25 @@ const statusLabels: Record<string, string> = {
   blocked: "Blocked",
 };
 
+export function computePlazaMovementDirection(
+  cameraYaw: number,
+  inputX: number,
+  inputY: number
+) {
+  const cameraDirection = new Vector3(
+    -Math.sin(cameraYaw),
+    0,
+    -Math.cos(cameraYaw)
+  );
+  const sideDirection = new Vector3(
+    -cameraDirection.z,
+    0,
+    cameraDirection.x
+  );
+
+  return cameraDirection.multiplyScalar(inputY).add(sideDirection.multiplyScalar(inputX));
+}
+
 export function createPlazaExperience({
   root,
   source,
@@ -1307,11 +1326,14 @@ export function createPlazaExperience({
     }
 
     cameraDirection.set(-Math.sin(cameraYaw), 0, -Math.cos(cameraYaw));
-    sideDirection.set(cameraDirection.z, 0, -cameraDirection.x);
-    moveDirection
-      .copy(cameraDirection)
-      .multiplyScalar(movementInput.y)
-      .add(sideDirection.multiplyScalar(movementInput.x));
+    sideDirection.set(-cameraDirection.z, 0, cameraDirection.x);
+    moveDirection.copy(
+      computePlazaMovementDirection(
+        cameraYaw,
+        movementInput.x,
+        movementInput.y
+      )
+    );
 
     if (moveDirection.lengthSq() > 0) {
       moveDirection.normalize();

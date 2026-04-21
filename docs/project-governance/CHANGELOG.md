@@ -64,3 +64,5 @@
 - Fixed a localhost plaza boot regression so `/?plaza=1` no longer waits on the editor's full local FFL asset preload before the plaza route can mount.
 - Kept plaza resident bodies on the local Miitomo GLB path while moving plaza resident heads and resident list portrait chips onto the public renderer path for more reliable plaza startup.
 - Added cache-busting to the main entry HTML so plaza debugging changes are less likely to get hidden behind stale browser bundles.
+- Fixed reversed screen-relative left/right movement in the plaza so keyboard strafing now matches the camera-facing direction.
+- Switched resident Miitomo body cloning onto a skeleton-safe clone path to avoid giant or collapsed skinned-body artifacts in the plaza scene.

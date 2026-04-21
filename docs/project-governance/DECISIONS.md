@@ -220,6 +220,14 @@ When the app boots directly into `/?plaza=1`, skip the top-level local FFL asset
 Why:
 The plaza route only needs its own runtime shell plus resident embodiment, but the previous localhost bootstrap forced it to wait on the editor's full local FFL initialization first. That made plaza startup fragile and could strand the app on the global loading notice before the plaza route ever mounted.
 
+### Clone plaza resident body GLBs with skeleton-aware utilities
+
+Decision:
+Use `SkeletonUtils.clone(...)` for plaza resident Miitomo body GLBs instead of plain `clone(true)`.
+
+Why:
+The body models are skinned meshes with bones and animations. Plain scene cloning is not reliable for that shape and can produce giant or collapsed body artifacts when the skeleton references are reused incorrectly.
+
 ### Make the preview fetch runner declare the future live-runner contract now
 
 Decision:

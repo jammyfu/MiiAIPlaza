@@ -154,3 +154,6 @@
 - Fixed a plaza boot regression where `/?plaza=1` on localhost still waited for the full local FFL asset bootstrap before the plaza route could mount.
 - Kept plaza resident bodies on the local Miitomo GLB path while moving plaza resident head renders and resident list portrait chips onto the public renderer URL so plaza startup no longer depends on editor-only FFL preload.
 - Added a targeted plaza avatar URL test and cache-busting entrypoint update, then re-ran the standard build and verification commands.
+- Fixed the plaza's screen-relative left/right movement so `A/D` and the arrow keys now track the camera-facing left/right directions correctly.
+- Replaced resident body cloning with a skeleton-safe clone path so Miitomo body GLBs no longer rely on plain `clone(true)` for skinned meshes.
+- Added focused plaza movement and skinned-body clone regression tests, then re-ran build and repository verification.

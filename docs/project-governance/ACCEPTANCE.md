@@ -50,6 +50,7 @@
 - `bun run build.ts --once` passes
 - `python3 tools/verify.py` passes
 - `bun test src/game/plaza/plazaResidentAvatarScene.test.ts src/game/plaza/plazaResidentAvatarAdapter.test.ts` passes
+- `bun test src/game/plaza/plazaMovement.test.ts src/game/plaza/plazaResidentAvatarScene.test.ts src/game/plaza/plazaResidentAvatarAdapter.test.ts` passes
 
 ## Completed Slice
 
