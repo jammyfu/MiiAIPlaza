@@ -26,7 +26,6 @@ import type {
   PlazaWorldDataSnapshot,
   PlazaWorldDataSource,
 } from "../../contracts/plaza";
-import { createResidentAvatarMii } from "./plazaResidentAvatarAdapter";
 import {
   describePresenceFreshness,
   describeWorldDataHealth,
@@ -40,8 +39,10 @@ import {
   describePollingPlanUi,
   describeRefreshUiState,
 } from "./plazaRefreshUi";
-import { buildResidentAvatarModel } from "./plazaResidentAvatarScene";
-import { getMiiRender, MiiCustomRenderType } from "../../util/miiImageUtils";
+import {
+  buildResidentAvatarModel,
+  buildResidentRemoteHeadRenderUrl,
+} from "./plazaResidentAvatarScene";
 
 interface PlazaExperienceOptions {
   root: HTMLElement;
@@ -993,8 +994,10 @@ export function createPlazaExperience({
 
   residentMeshes.forEach(
     ({ resident, group, body, head, marker, item, avatarState }) => {
-      const residentMii = createResidentAvatarMii(resident);
-      if (!residentMii) {
+      const avatarPreviewUrl = buildResidentRemoteHeadRenderUrl(resident, {
+        width: 180,
+      });
+      if (!avatarPreviewUrl) {
         if (avatarState) {
           avatarState.textContent = "Avatar: unavailable";
         }
@@ -1031,16 +1034,16 @@ export function createPlazaExperience({
             }
           }
 
-          return getMiiRender(residentMii, MiiCustomRenderType.HeadOnly);
+          return avatarPreviewUrl;
         })
-        .then((image) => {
-          if (!image) {
+        .then((imageUrl) => {
+          if (!imageUrl) {
             return;
           }
 
           const avatarChip = document.createElement("img");
           avatarChip.className = "plaza-resident-avatar";
-          avatarChip.src = image.src;
+          avatarChip.src = imageUrl;
           avatarChip.alt = `${resident.agent.displayName} Mii portrait`;
           item.prepend(avatarChip);
         })

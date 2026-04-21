@@ -58,3 +58,9 @@
 - Added a typed `OpenClaw` live HTTP-bridge handler so request dispatch now flows through an injectable bridge boundary before any real HTTP calls exist.
 - Added a typed `OpenClaw` live transport-callable handler so the HTTP bridge now flows through an injectable callable boundary before any real HTTP calls exist.
 - 将 README.md 翻译为中文，方便开发者更好地理解项目。
+
+## 2026-04-21
+
+- Fixed a localhost plaza boot regression so `/?plaza=1` no longer waits on the editor's full local FFL asset preload before the plaza route can mount.
+- Kept plaza resident bodies on the local Miitomo GLB path while moving plaza resident heads and resident list portrait chips onto the public renderer path for more reliable plaza startup.
+- Added cache-busting to the main entry HTML so plaza debugging changes are less likely to get hidden behind stale browser bundles.

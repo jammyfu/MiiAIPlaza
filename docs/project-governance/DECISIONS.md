@@ -210,6 +210,16 @@ Move preview payload generation behind a dedicated fetch-runner seam and make th
 Why:
 This preserves the new transport delegate boundary while creating the exact replacement point future live network runners will need. The next runner-contract slice can now focus on describing live-capable execution semantics instead of first untangling payload generation from the delegate layer.
 
+## 2026-04-21
+
+### Keep plaza boot independent from local editor FFL preload
+
+Decision:
+When the app boots directly into `/?plaza=1`, skip the top-level local FFL asset preload in `main.ts` and keep plaza resident heads on an explicit public renderer path instead of the editor's local screenshot renderer.
+
+Why:
+The plaza route only needs its own runtime shell plus resident embodiment, but the previous localhost bootstrap forced it to wait on the editor's full local FFL initialization first. That made plaza startup fragile and could strand the app on the global loading notice before the plaza route ever mounted.
+
 ### Make the preview fetch runner declare the future live-runner contract now
 
 Decision:

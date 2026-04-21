@@ -94,6 +94,7 @@ const nnidFetchOrigin = publicApiOrigin;
 export const Config = {
   renderer: {
     baseURL,
+    publicBaseURL: publicRendererBaseURL,
     useRendererServer,
     fflResourcePath,
     renderFFLMakeIcon: `${baseURL}.png?shaderType=miitomo&type=fflmakeicon&width=360&verifyCharInfo=0`,

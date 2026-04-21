@@ -148,3 +148,9 @@
 - Taught preview and live-capable runners to reuse the same transport-callable contract while keeping the same dry-run/live-preview payload behavior and request-shape assumptions.
 - Surfaced transport-callable metadata through plaza diagnostics, HUD provider metadata, and the shared `Provider Status` hotspot, then advanced `CURRENT_PLAN.md` to the next fetch-adapter slice.
 - 将 README.md 翻译为中文版本，并根据项目治理规则更新了相关文档。
+
+## 2026-04-21
+
+- Fixed a plaza boot regression where `/?plaza=1` on localhost still waited for the full local FFL asset bootstrap before the plaza route could mount.
+- Kept plaza resident bodies on the local Miitomo GLB path while moving plaza resident head renders and resident list portrait chips onto the public renderer URL so plaza startup no longer depends on editor-only FFL preload.
+- Added a targeted plaza avatar URL test and cache-busting entrypoint update, then re-ran the standard build and verification commands.

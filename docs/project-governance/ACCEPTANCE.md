@@ -6,6 +6,7 @@
 - `tools/verify.py` succeeds in a non-interactive shell.
 - The project has a current implementation plan and a next-plan helper.
 - The plaza shell is reachable through `/?plaza=1`.
+- The plaza route can boot on localhost without waiting on the editor's full local FFL preload.
 - The plaza shell supports movement, orbiting the camera, and interaction with residents or hotspots.
 - The plaza runtime can hydrate residents through an explicit world-data provider seam.
 - A fixture-backed `OpenClaw` adapter exists and is covered by automated tests.
@@ -48,6 +49,7 @@
 - `python3 -m unittest tools.test_sync_or_queue tools.test_queue_local_git_sync tools.test_verify` passes
 - `bun run build.ts --once` passes
 - `python3 tools/verify.py` passes
+- `bun test src/game/plaza/plazaResidentAvatarScene.test.ts src/game/plaza/plazaResidentAvatarAdapter.test.ts` passes
 
 ## Completed Slice
 

@@ -70,6 +70,11 @@ if (Config.apis.useSentry) {
 
 // Make the theme ready before settings is initialized
 document.documentElement.dataset.theme = "default";
+const searchParams =
+  typeof location === "undefined"
+    ? new URLSearchParams()
+    : new URLSearchParams(location.search);
+const isPlazaBoot = searchParams.has("plaza");
 
 let FFL: any, FFLWorker: Worker | undefined;
 export const getFFL = () => FFL;
@@ -113,7 +118,7 @@ export const getFFLWorkerMakeIcon = (
 let sendMessageToWorker: (data: any) => Promise<any>;
 
 // Depending on config, load FFL.js
-if (Config.renderer.useRendererServer === false) {
+if (Config.renderer.useRendererServer === false && !isPlazaBoot) {
   var m = Modal.modal(
     "Notice",
     "Mii Creator is loading assets, please wait..."

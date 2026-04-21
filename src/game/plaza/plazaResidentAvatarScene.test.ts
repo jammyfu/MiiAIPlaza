@@ -2,6 +2,7 @@ import { expect, test } from "bun:test";
 import { Box3, Group, Mesh, BoxGeometry, MeshBasicMaterial } from "three";
 import { listMockResidents } from "../../providers/mockPlazaPresence";
 import {
+  buildResidentRemoteHeadRenderUrl,
   createResidentAvatarRig,
   describeResidentAvatarSceneMode,
   normalizeResidentAvatarModel,
@@ -22,7 +23,7 @@ test("supported residents use the local full-body rig in the plaza scene", () =>
 test("resident avatar scene mode stays readable for supported and unsupported residents", () => {
   const supportedResident = listMockResidents()[0]!;
   expect(describeResidentAvatarSceneMode(supportedResident)).toBe(
-    "Local body GLB + head render"
+    "Local body GLB + remote head render"
   );
 
   const unsupportedResident = {
@@ -60,4 +61,17 @@ test("resident model normalization recenters and scales the imported avatar mode
   expect(box.max.y - box.min.y).toBeCloseTo(2.55, 4);
   expect(centerX).toBeCloseTo(0, 4);
   expect(centerZ).toBeCloseTo(0, 4);
+});
+
+test("resident remote head render url targets the public renderer", () => {
+  const resident = listMockResidents()[0]!;
+  const renderUrl = buildResidentRemoteHeadRenderUrl(resident, { width: 180 });
+  expect(renderUrl).not.toBeNull();
+
+  const url = new URL(renderUrl!);
+  expect(url.origin).toBe("https://mii-unsecure.ariankordi.net");
+  expect(url.pathname).toBe("/miis/image.png");
+  expect(url.searchParams.get("type")).toBe("face");
+  expect(url.searchParams.get("shaderType")).toBe("miitomo");
+  expect(url.searchParams.get("width")).toBe("180");
 });

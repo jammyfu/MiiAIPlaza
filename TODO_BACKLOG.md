@@ -1,6 +1,7 @@
 # TODO Backlog
 
 - Integrate existing Mii body and head assets into the plaza runtime
+- Revisit fully local plaza head rendering after a route-scoped FFL bootstrap exists that does not block `/?plaza=1`
 - Fetch live `OpenClaw` provider data once endpoint details and auth shape are confirmed
 - Add typed `OpenClaw` endpoint/auth override resolution ahead of real live fetches
 - Add a typed `OpenClaw` fetch executor seam ahead of real network calls

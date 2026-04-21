@@ -37,4 +37,5 @@ Prepare an `OpenClaw` live fetch-adapter seam so the new transport-callable laye
 
 - Add actual live `OpenClaw` network execution once the fetch-adapter seam and endpoint rules exist
 - Add actual background polling once live endpoint rules exist
+- Revisit fully local plaza head rendering once a route-scoped FFL bootstrap can avoid blocking `/?plaza=1`
 - Add persistent plaza board and mailbox data

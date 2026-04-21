@@ -13,7 +13,7 @@ import {
   createResidentAvatarMii,
   supportsResidentAvatar,
 } from "./plazaResidentAvatarAdapter";
-import { getMiiRender, MiiCustomRenderType } from "../../util/miiImageUtils";
+import { Config } from "../../config";
 
 export type ResidentAvatarRig = {
   mode: "local-body-glb";
@@ -47,8 +47,27 @@ export function describeResidentAvatarSceneMode(
   resident: PlazaResident
 ): string {
   return createResidentAvatarRig(resident)
-    ? "Local body GLB + head render"
+    ? "Local body GLB + remote head render"
     : "Fallback proxy geometry";
+}
+
+export function buildResidentRemoteHeadRenderUrl(
+  resident: PlazaResident,
+  options: { width?: number } = {}
+): string | null {
+  const avatarMii = createResidentAvatarMii(resident);
+  if (!avatarMii) {
+    return null;
+  }
+
+  const params = new URLSearchParams();
+  params.set("data", avatarMii.encodeStudio().toString("hex"));
+  params.set("type", "face");
+  params.set("shaderType", "miitomo");
+  params.set("width", String(options.width ?? 256));
+  params.set("verifyCharInfo", "0");
+
+  return `${Config.renderer.publicBaseURL}.png?${params.toString()}`;
 }
 
 export function normalizeResidentAvatarModel(
@@ -112,17 +131,18 @@ function alignResidentBodyModel(
   bodyScene.updateMatrixWorld(true);
 }
 
-async function cropResidentRender(dataUrl: string): Promise<{
+async function cropResidentRender(sourceUrl: string): Promise<{
   texture: CanvasTexture;
   width: number;
   height: number;
 }> {
   const image = await new Promise<HTMLImageElement>((resolve, reject) => {
     const nextImage = new Image();
+    nextImage.crossOrigin = "anonymous";
     nextImage.onload = () => resolve(nextImage);
     nextImage.onerror = () =>
-      reject(new Error("Failed to load local resident render."));
-    nextImage.src = dataUrl;
+      reject(new Error("Failed to load resident render."));
+    nextImage.src = sourceUrl;
   });
 
   const sourceCanvas = document.createElement("canvas");
@@ -218,13 +238,12 @@ async function buildResidentHeadSprite(
   resident: PlazaResident,
   rig: ResidentAvatarRig
 ): Promise<Sprite | null> {
-  const avatarMii = createResidentAvatarMii(resident);
-  if (!avatarMii) {
+  const renderUrl = buildResidentRemoteHeadRenderUrl(resident);
+  if (!renderUrl) {
     return null;
   }
 
-  const image = await getMiiRender(avatarMii, MiiCustomRenderType.HeadOnly);
-  const { texture, width, height } = await cropResidentRender(image.src);
+  const { texture, width, height } = await cropResidentRender(renderUrl);
   const aspectRatio = width > 0 && height > 0 ? width / height : 0.82;
 
   const headSprite = new Sprite(
