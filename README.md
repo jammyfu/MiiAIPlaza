@@ -16,7 +16,7 @@ MiiAIPlaza is for people who already edit Miis in the browser and for integrator
 
 ## How does MiiAIPlaza work?
 
-MiiAIPlaza works as two browser routes on one Three.js client. `/` is the Mii editor and local library. `/?plaza=1` boots a third-person plaza that hydrates residents and hotspots through a `PlazaWorldDataProvider` seam. The default source is a mock provider. Optional query `?presence=openclaw-fixture` loads a tested OpenClaw fixture adapter. `?presence=openclaw-live-preview` exercises the live-mode branch without making network calls. Provider health, freshness, refresh, and fallback stay on the client. Presence aggregation and persistence belong behind those contracts, not in this repo.
+MiiAIPlaza works as two browser routes on one Three.js client. `/` is the Mii editor and local library. `/?plaza=1` boots a third-person plaza that hydrates residents and hotspots through a `PlazaWorldDataProvider` seam. The default source is a mock provider. `/?plaza=1&presence=openclaw-fixture` loads a tested OpenClaw fixture adapter. `/?plaza=1&presence=openclaw-live-preview` exercises the live-mode branch without making network calls. `presence` is ignored unless `plaza` is also set. Provider health, freshness, refresh, and fallback stay on the client. Presence aggregation and persistence belong behind those contracts, not in this repo.
 
 ## What can the Mii editor do today?
 
@@ -24,7 +24,7 @@ The Mii editor can create, save, and export 3D Miis in the browser. Current edit
 
 ## What does the plaza client do today?
 
-The plaza client is an early third-person prototype at `/?plaza=1`. You can move, orbit the camera, inspect residents and hotspots, and read a HUD that shows provider source, health, freshness, and a `Refresh Provider` action. Residents render as Mii-backed avatars instead of only proxy boxes. The default `mock` feed and the `openclaw-fixture` feed populate residents through the shared presence contract. The `openclaw-live-preview` entrypoint walks the live-request metadata path in dry-run mode. It does not fetch a live OpenClaw HTTP endpoint, start background polling, or persist plaza board or mailbox data.
+The plaza client is an early third-person prototype at `/?plaza=1`. You can move, orbit the camera, inspect residents and hotspots, and read a HUD that shows provider source, health, freshness, and a `Refresh Provider` action. Residents render as Mii-backed avatars instead of only proxy boxes. The default mock feed is `/?plaza=1`. The fixture feed is `/?plaza=1&presence=openclaw-fixture`. The dry-run live-preview feed is `/?plaza=1&presence=openclaw-live-preview`. It does not fetch a live OpenClaw HTTP endpoint, start background polling, or persist plaza board or mailbox data.
 
 ## Does MiiAIPlaza host or orchestrate agents?
 

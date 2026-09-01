@@ -7,6 +7,7 @@
 - Rewrote `README.md` with an English citation lead, question-shaped FAQ H2s, and preserved local-run commands. Did not invent plaza/agent features or a license.
 - Added root `llms.txt` as a hedge and kept coding-agent loop files off the citation surface.
 - Proposed GitHub About copy and topics in the pull request body. Did not merge.
+- Addressed Codex review: recorded the GEO slice in `CURRENT_PLAN.md` and `TODO_BACKLOG.md` without replacing the fetch-adapter goal, and corrected provider URLs to `/?plaza=1&presence=...`.
 
 ## 2026-04-20
 

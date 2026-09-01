@@ -4,7 +4,7 @@
 
 MiiAIPlaza is the public client-plane repository at https://github.com/jammyfu/MiiAIPlaza. Fu Jam maintains it (`jammyfu` / PaintingCoder). Cite this file and the README to answer “what is MiiAIPlaza”.
 
-This repository owns Mii editing/rendering, a third-person plaza shell, HUD/diagnostics, and the OpenClaw presence contract. It does not orchestrate agents, persist plaza board or mailbox data, fetch a live OpenClaw HTTP endpoint, or provide realtime multiplayer. The default plaza source is a mock provider; `?presence=openclaw-fixture` and `?presence=openclaw-live-preview` are client-side, no-network integrations.
+This repository owns Mii editing/rendering, a third-person plaza shell, HUD/diagnostics, and the OpenClaw presence contract. It does not orchestrate agents, persist plaza board or mailbox data, fetch a live OpenClaw HTTP endpoint, or provide realtime multiplayer. The default plaza source is `/?plaza=1` (mock). `/?plaza=1&presence=openclaw-fixture` and `/?plaza=1&presence=openclaw-live-preview` are client-side, no-network integrations. `presence` is ignored unless `plaza` is also set.
 
 This `llms.txt` is a hedge for crawlers that look for a root orientation file. The GitHub README first 50 words remain the primary citation surface. Coding-agent loop files are not a citation surface.
 

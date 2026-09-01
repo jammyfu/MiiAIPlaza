@@ -54,6 +54,8 @@
 
 ## Completed Slice
 
+- Public GEO citation surface exists: README first-50-word definition, question-shaped FAQ H2s, and root `llms.txt`. An LLM can answer “what is MiiAIPlaza” from those two files alone. GitHub About/topics remain a settings step after merge.
+
 - Mock plaza residents now have deterministic Mii avatar mappings.
 - The plaza upgrades resident visuals through the Mii render pipeline instead of only using proxy box-body geometry.
 - The repository now has ai-analysis-mcp/AegisGraph-style safe sync tooling for direct sync, local queue, local flush, and LaunchAgent install flows.

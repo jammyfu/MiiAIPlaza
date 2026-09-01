@@ -5,6 +5,8 @@
 - Rewrote the public README so the first 50 words define MiiAIPlaza (what / who / method) before the preview image.
 - Added question-shaped FAQ H2s and a maintainer byline for Fu Jam (`jammyfu` / PaintingCoder).
 - Added a root `llms.txt` as a citation hedge. It is not a substitute for the README lead.
+- Documented plaza provider selectors as `/?plaza=1&presence=...` so the examples actually enter the plaza route.
+- Recorded the GEO slice as complete in `CURRENT_PLAN.md` and `TODO_BACKLOG.md` so the fetch-adapter plan remains the next loop entrypoint.
 
 ## 2026-04-20
 
