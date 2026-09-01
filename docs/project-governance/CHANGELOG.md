@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-09-01
+
+- Rewrote the public README so the first 50 words define MiiAIPlaza (what / who / method) before the preview image.
+- Added question-shaped FAQ H2s and a maintainer byline for Fu Jam (`jammyfu` / PaintingCoder).
+- Added a root `llms.txt` as a citation hedge. It is not a substitute for the README lead.
+
 ## 2026-04-20
 
 - Added the Mii Plaza platform design spec.
