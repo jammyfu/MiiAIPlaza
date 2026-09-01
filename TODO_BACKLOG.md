@@ -1,5 +1,15 @@
 # TODO Backlog
 
+## Done recently (do not pick)
+
+- Public GitHub GEO citation surface in `README.md` and `llms.txt` (PR #1). Do not reopen unless the README lead or FAQ facts change.
+
+## After merge (GitHub settings, not code)
+
+- Apply the proposed GitHub About description and topics from PR #1. A pull request cannot set them.
+
+## Deferred
+
 - Integrate existing Mii body and head assets into the plaza runtime
 - Revisit fully local plaza head rendering after a route-scoped FFL bootstrap exists that does not block `/?plaza=1`
 - Fetch live `OpenClaw` provider data once endpoint details and auth shape are confirmed

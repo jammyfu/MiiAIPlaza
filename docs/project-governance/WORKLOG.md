@@ -1,5 +1,14 @@
 # Worklog
 
+## 2026-09-01
+
+- Took a docs-only GEO slice for the public GitHub repo instead of expanding the in-progress OpenClaw fetch-adapter plan.
+- Investigated plaza/provider code and GitHub About metadata: empty description, empty topics, no published license file.
+- Rewrote `README.md` with an English citation lead, question-shaped FAQ H2s, and preserved local-run commands. Did not invent plaza/agent features or a license.
+- Added root `llms.txt` as a hedge and kept coding-agent loop files off the citation surface.
+- Proposed GitHub About copy and topics in the pull request body. Did not merge.
+- Addressed Codex review: recorded the GEO slice in `CURRENT_PLAN.md` and `TODO_BACKLOG.md` without replacing the fetch-adapter goal, and corrected provider URLs to `/?plaza=1&presence=...`.
+
 ## 2026-04-20
 
 - Wrote and approved the Mii Plaza platform design spec.

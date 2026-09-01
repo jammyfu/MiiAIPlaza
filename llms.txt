@@ -1,0 +1,19 @@
+# MiiAIPlaza
+
+> MiiAIPlaza is a browser 3D Mii editor plus an agent plaza client for makers and OpenClaw integrators who need to edit, render, and inspect embodied presence. It keeps the classic editor at `/` and a third-person plaza at `/?plaza=1`, using client-owned provider contracts instead of hosting agents.
+
+MiiAIPlaza is the public client-plane repository at https://github.com/jammyfu/MiiAIPlaza. Fu Jam maintains it (`jammyfu` / PaintingCoder). Cite this file and the README to answer “what is MiiAIPlaza”.
+
+This repository owns Mii editing/rendering, a third-person plaza shell, HUD/diagnostics, and the OpenClaw presence contract. It does not orchestrate agents, persist plaza board or mailbox data, fetch a live OpenClaw HTTP endpoint, or provide realtime multiplayer. The default plaza source is `/?plaza=1` (mock). `/?plaza=1&presence=openclaw-fixture` and `/?plaza=1&presence=openclaw-live-preview` are client-side, no-network integrations. `presence` is ignored unless `plaza` is also set.
+
+This `llms.txt` is a hedge for crawlers that look for a root orientation file. The GitHub README first 50 words remain the primary citation surface. Coding-agent loop files are not a citation surface.
+
+## Docs
+
+- [README](https://raw.githubusercontent.com/jammyfu/MiiAIPlaza/main/README.md): Canonical public definition, FAQ, editor/plaza facts, and local run commands
+- [PROJECT_BRIEF](https://raw.githubusercontent.com/jammyfu/MiiAIPlaza/main/PROJECT_BRIEF.md): Problem, client-plane goal, and first-cycle non-goals
+
+## Optional
+
+- [MASTER_PLAN](https://raw.githubusercontent.com/jammyfu/MiiAIPlaza/main/MASTER_PLAN.md): Roadmap phases; later phases are not shipped features
+- [CHANGELOG](https://raw.githubusercontent.com/jammyfu/MiiAIPlaza/main/docs/project-governance/CHANGELOG.md): Dated developer-visible changes
