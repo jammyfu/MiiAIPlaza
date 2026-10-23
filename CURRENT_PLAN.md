@@ -33,6 +33,10 @@ Prepare an `OpenClaw` live fetch-adapter seam so the new transport-callable laye
 - realtime sync
 - persistent plaza board and mailbox data
 
+## Completed Adjacent Slice
+
+Public GEO citation surface is done: README first-50-word lead, question-shaped FAQ H2s, and root `llms.txt`. Subsequent continuous-loop runs should resume the fetch-adapter goal above, not reopen GEO unless GitHub About/topics still need applying in repository settings after merge.
+
 ## Next Candidates
 
 - Add actual live `OpenClaw` network execution once the fetch-adapter seam and endpoint rules exist
