@@ -76,3 +76,7 @@
 - Switched resident Miitomo body cloning onto a skeleton-safe clone path to avoid giant or collapsed skinned-body artifacts in the plaza scene.
 - Renamed the project identity to `MiiAIPlaza` in the package metadata, app title, browser title, and primary docs.
 - Updated the repository `origin` to `https://github.com/jammyfu/MiiAIPlaza.git`.
+
+## 2026-11-12 documentation slice
+
+Added five-language landing guides, an attributed existing editor preview, a concise mode table and accurate llms.txt navigation. No runtime behavior, network transport, license or repository visibility was changed.

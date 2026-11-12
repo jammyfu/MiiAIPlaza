@@ -102,3 +102,7 @@
 - The live path now resolves a shared request-dispatch handler and routes network execution through that handler while surfacing its metadata through diagnostics, HUD provider metadata, and `Provider Status` details before any real HTTP execution exists.
 - The live path now resolves a shared HTTP-bridge handler and routes request dispatch through that bridge while surfacing its metadata through diagnostics, HUD provider metadata, and `Provider Status` details before any real HTTP execution exists.
 - The live path now resolves a shared transport-callable handler and routes the HTTP bridge through that callable while surfacing its metadata through diagnostics, HUD provider metadata, and `Provider Status` details before any real HTTP execution exists.
+
+## 2026-11-12 documentation slice
+
+Documentation slice: all five guides share route selectors, Bun commands, real preview boundaries, upstream attribution and the missing root LICENSE caveat. Static README links pass. GitHub-rendered desktop/mobile visual review is not checked in this environment.
