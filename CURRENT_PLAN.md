@@ -43,3 +43,7 @@ Public GEO citation surface is done: README first-50-word lead, question-shaped 
 - Add actual background polling once live endpoint rules exist
 - Revisit fully local plaza head rendering once a route-scoped FFL bootstrap can avoid blocking `/?plaza=1`
 - Add persistent plaza board and mailbox data
+
+## 2026-11-12 documentation slice
+
+Completed a separate documentation slice: five-language reader guides, upstream provenance and explicit no-network preview boundaries. The fetch-adapter goal above is unchanged.

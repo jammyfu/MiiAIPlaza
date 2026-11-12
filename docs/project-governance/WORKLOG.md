@@ -168,3 +168,7 @@
 - Added focused plaza movement and skinned-body clone regression tests, then re-ran build and repository verification.
 - Renamed the project identity to `MiiAIPlaza` across the primary package metadata, README, project brief, browser title, and user-facing app title.
 - Updated the git `origin` remote to `https://github.com/jammyfu/MiiAIPlaza.git` and rebuilt the published frontend bundle.
+
+## 2026-11-12 documentation slice
+
+Rebuilt reader guides in English, Simplified Chinese, Taiwan Traditional Chinese, Japanese and Korean. Retained the prior README verbatim below a historical-reference notice. Reused the original editor image with an explicit non-live-plaza caption. Verified with tools/verify.py: 38 Bun tests, 7 Python tests and one-shot build passed. Restored generated bundles and lockfile after verification; no runtime changes.

@@ -403,3 +403,7 @@ Represent the next fetch-runner-boundary `OpenClaw` state as a typed transport-r
 
 Why:
 This keeps network-runner posture separate from the eventual executable transport code while giving preview and future live-capable runners one stable runner handoff shape. Diagnostics can show the final no-network runner boundary without implying that a real network fetch has already happened.
+
+## 2026-11-12 documentation slice
+
+Keep the existing development goal unchanged. Preserve historical technical details and third-party credits in README.reference.md rather than delete them. Do not present public source visibility as permission to reuse Nintendo-related assets or upstream code.

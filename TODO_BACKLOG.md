@@ -36,3 +36,7 @@
 - Add friendship and affinity modeling
 - Add realtime sync transport
 - Add shared plaza sessions
+
+## 2026-11-12 documentation slice
+
+Completed: five-language documentation/discovery slice. Remaining release gate: inspect actual GitHub desktop/mobile rendering after PR creation; do not treat documentation translation as application localization.
